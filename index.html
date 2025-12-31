@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanConnect V4.4 - 粉絲管理系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --indigo-primary: #4B0082; }
+        body { background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%); color: #e0e0e0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+        
+        /* 側邊欄 */
+        .sidebar { background-color: rgba(75, 0, 130, 0.15); border-right: 1px solid rgba(75, 0, 130, 0.3); transition: width 0.3s ease; width: 240px; }
+        .sidebar.collapsed { width: 70px; }
+        .sidebar.collapsed .menu-text, .sidebar.collapsed .logo-text { display: none; }
+        
+        /* 表格優化 */
+        .table-container { height: calc(100vh - 140px); overflow-y: auto; position: relative; }
+        .table-row:hover { background-color: rgba(75, 0, 130, 0.2); transition: background-color 0.2s; }
+        table { border-collapse: separate; border-spacing: 0; width: 100%; }
+        /* 凍結表頭 */
+        th { background-color: #202020; position: sticky; top: 0; z-index: 20; padding: 10px; text-align: left; font-size: 0.8rem; color: #aaa; letter-spacing: 1px; border-bottom: 2px solid #4B0082; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        td { padding: 8px 10px; border-bottom: 1px solid #333; vertical-align: middle; }
+        
+        /* 元件樣式 */
+        .btn-indigo { background-color: var(--indigo-primary); transition: all 0.2s; }
+        .btn-indigo:hover { background-color: #5a009d; box-shadow: 0 0 15px rgba(75, 0, 130, 0.5); transform: translateY(-1px); }
+        .input-dark { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 4px; padding: 8px 12px; width: 100%; transition: border-color 0.3s; }
+        .input-dark:focus { outline: none; border-color: #4B0082; }
+        .input-error { border-color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
+        
+        /* 星星按鈕動畫 */
+        .star-btn { transition: transform 0.2s, color 0.2s; cursor: pointer; }
+        .star-btn:hover { transform: scale(1.2); }
+        .star-active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+        .star-inactive { color: #4b5563; }
+
+        /* 卷軸 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #4B0082; border-radius: 4px; }
+    </style>
+</head>
+<body class="flex">
+
+    <aside id="sidebar" class="sidebar flex flex-col h-screen overflow-hidden backdrop-blur-md">
+        <div class="p-4 flex items-center gap-4 h-16 border-b border-white/10 shrink-0">
+            <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V4.4</span></span>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+            <div class="mt-4">
+                <a href="#" onclick="showSection('fans')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
+                    <i class="fas fa-users-cog w-6 text-center"></i> <span class="menu-text">粉絲管理列表</span>
+                </a>
+                <a href="#" onclick="showSection('manual')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
+                    <i class="fas fa-keyboard w-6 text-center"></i> <span class="menu-text">手動新增紀錄</span>
+                </a>
+                <a href="#" onclick="showSection('templates')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
+                    <i class="fas fa-pen-nib w-6 text-center"></i> <span class="menu-text">訊息模板設定</span>
+                </a>
+            </div>
+
+            <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
+            
+            <div>
+                <a href="#" onclick="document.getElementById('excelImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-file-import w-6 text-center text-green-500"></i> <span class="menu-text">匯入 Excel/CSV</span>
+                </a>
+                <a href="#" onclick="exportToExcel()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-file-export w-6 text-center text-blue-400"></i> <span class="menu-text">匯出 Excel</span>
+                </a>
+            </div>
+
+            <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
+            
+            <div>
+                <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-cloud-download-alt w-6 text-center text-yellow-400"></i> <span class="menu-text">備份資料 (雲端)</span>
+                </a>
+                <a href="#" onclick="document.getElementById('restoreImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-cloud-upload-alt w-6 text-center text-yellow-400"></i> <span class="menu-text">還原資料 (雲端)</span>
+                </a>
+            </div>
+
+            <div class="mt-auto p-4 border-t border-white/10 bg-black/20">
+                <a href="https://www.instagram.com" target="_blank" class="flex items-center gap-4 text-sm text-gray-400 hover:text-white group">
+                    <i class="fab fa-instagram w-6 text-center text-pink-500 group-hover:scale-110 transition-transform"></i> 
+                    <span class="menu-text font-bold">開啟 Instagram</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)">
+        <input type="file" id="restoreImport" class="hidden" accept=".json" onchange="handleRestore(event)">
+
+        <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0">
+            <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide">粉絲管理中心</h2>
+            <div class="flex gap-4 items-center">
+                
+                <div class="relative">
+                    <select id="sortSelect" onchange="renderTable()" class="bg-[#222] border border-gray-700 text-gray-300 text-sm rounded-full pl-3 pr-8 py-1.5 focus:outline-none focus:border-indigo-500 appearance-none cursor-pointer hover:bg-[#333]">
+                        <option value="az">字母順序 (A-Z)</option>
+                        <option value="za">字母順序 (Z-A)</option>
+                    </select>
+                    <i class="fas fa-sort absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
+                </div>
+
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
+                    <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..." 
+                           class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-4 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
+                           onkeyup="renderTable()">
+                </div>
+            </div>
+        </header>
+
+        <div id="contentArea" class="flex-1 overflow-hidden p-0 bg-[#0a0a0a]">
+            
+            <div id="fansSection" class="h-full p-4 flex flex-col">
+                <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
+                    <div class="table-container custom-scrollbar">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr>
+                                    <th width="4%" class="text-center"><i class="fas fa-star text-yellow-500"></i></th>
+                                    <th width="15%">帳號名稱 (點擊開啟)</th>
+                                    <th width="12%">暱稱</th>
+                                    <th width="15%" class="text-indigo-300">
+                                        <i class="fas fa-history mr-1"></i>最新動態
+                                    </th>
+                                    <th width="20%">互動標籤</th>
+                                    <th width="19%">詳細內容</th>
+                                    <th width="8%">訊息狀態</th>
+                                    <th width="7%" class="text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fanTableBody"></tbody>
+                        </table>
+                        
+                        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-gray-500">
+                            <i class="fas fa-file-csv text-4xl mb-4 opacity-50"></i>
+                            <p>尚無資料，請匯入 Excel/CSV 或手動新增</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="manualSection" class="hidden h-full p-8 overflow-y-auto">
+                <div class="max-w-3xl mx-auto bg-[#1a1a1a] p-8 rounded-2xl border border-indigo-500/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-indigo-400 border-b border-white/10 pb-4">
+                        <i class="fas fa-plus-circle mr-2"></i>手動新增互動紀錄
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username) <span class="text-red-500">*</span></label>
+                                <input type="text" id="manualUsername" placeholder="輸入帳號 (僅限英數底線)" class="input-dark py-3" oninput="validateInput(this)">
+                                <p class="text-[10px] text-red-500 mt-1 hidden" id="manualUsernameErr">格式錯誤：僅允許英文字母、數字、底線( _ ) 與句點( . )</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 text-xs mb-2">暱稱 (選填)</label>
+                                <input type="text" id="manualNickname" placeholder="粉絲怎麼稱呼？" class="input-dark py-3">
+                            </div>
+                        </div>
+
+                        <div class="bg-black/20 p-4 rounded-lg border border-white/5">
+                            <div class="mb-3 text-indigo-300 text-sm font-bold">互動類型 (可多選)</div>
+                            <div class="grid grid-cols-4 gap-3 interaction-checkboxes">
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 text-pink-400 font-bold border border-pink-900/30 bg-pink-900/10 p-2 rounded">
+                                    <input type="checkbox" value="粉絲" class="accent-indigo-500"> 粉絲
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="投票" class="accent-indigo-500"> 投票</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="分享" class="accent-indigo-500"> 分享</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="回覆" class="accent-indigo-500"> 回覆</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="提及" class="accent-indigo-500"> 提及</label>
+                                <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="轉發" class="accent-indigo-500"> 轉發</label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
+                            <textarea id="manualDetails" placeholder="例如：限動投票「A選項」" class="input-dark h-32"></textarea>
+                        </div>
+
+                        <button onclick="addManualInteraction()" class="btn-indigo w-full py-3 rounded-lg font-bold text-white text-lg shadow-lg hover:shadow-indigo-500/50">
+                            新增並更新
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="templatesSection" class="hidden h-full p-8 overflow-y-auto">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-[#1a1a1a] p-6 rounded-xl border border-white/10 mb-8">
+                        <h3 class="text-xl font-bold mb-4 text-indigo-300">訊息模板設定</h3>
+                        <div class="space-y-4">
+                            <input type="hidden" id="tmpId">
+                            <input type="text" id="tmpTitle" placeholder="模板標題" class="input-dark">
+                            <div class="relative">
+                                <textarea id="tmpBody" placeholder="輸入訊息內容..." class="input-dark h-32"></textarea>
+                                <div class="absolute bottom-2 right-2 text-xs text-gray-500">可用變數: {nickname}</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="saveTmpBtn" onclick="addTemplate()" class="btn-indigo flex-1 py-2 rounded font-bold text-white">儲存模板</button>
+                                <button id="cancelTmpBtn" onclick="cancelEditTemplate()" class="hidden bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-white">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="templateListDisplay" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="msgModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-indigo-500/50 w-[600px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-indigo-900/20 p-4 border-b border-indigo-500/30 flex justify-between items-center">
+                <h3 class="text-indigo-300 font-bold text-lg">發送訊息</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between text-sm text-gray-400 bg-black/40 p-2 rounded">
+                    <span>目標帳號：<span id="targetUser" class="text-white font-mono"></span></span>
+                    <span>稱呼：<span id="targetNickname" class="text-indigo-300"></span></span>
+                </div>
+                <select id="modalTempSelect" onchange="applyTemplate()" class="input-dark">
+                    <option value="">-- 選擇模板 --</option>
+                </select>
+                <textarea id="modalText" class="w-full bg-black border border-indigo-500/30 p-4 rounded h-40 text-sm leading-relaxed text-gray-200 focus:border-indigo-500 focus:outline-none"></textarea>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="confirmSend()" class="btn-indigo px-6 py-2 rounded text-white font-bold flex items-center gap-2">
+                    <i class="fas fa-copy"></i> 複製並開啟 IG
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editFanModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-indigo-500/30 w-[650px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-indigo-400 font-bold text-lg"><i class="fas fa-edit mr-2"></i>編輯粉絲資料</h3>
+                <button onclick="closeEditFanModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <input type="hidden" id="editFanId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username)</label>
+                        <input type="text" id="editFanUsername" class="input-dark" oninput="validateInput(this)">
+                        <p class="text-[10px] text-red-500 mt-1 hidden" id="editFanUsernameErr">格式錯誤</p>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">暱稱 (Nickname)</label>
+                        <input type="text" id="editFanNickname" class="input-dark">
+                    </div>
+                </div>
+                
+                <div class="bg-black/20 p-4 rounded border border-white/5">
+                    <label class="block text-gray-400 text-xs mb-2">編輯互動標籤</label>
+                    <div class="grid grid-cols-4 gap-3" id="editFanCheckboxes">
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 text-pink-400 font-bold"><input type="checkbox" value="粉絲" class="accent-indigo-500"> 粉絲</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="投票" class="accent-indigo-500"> 投票</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="分享" class="accent-indigo-500"> 分享</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="回覆" class="accent-indigo-500"> 回覆</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="提及" class="accent-indigo-500"> 提及</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="轉發" class="accent-indigo-500"> 轉發</label>
+                    </div>
+                    
+                    <div id="editFanExtraTags" class="mt-3 flex flex-wrap gap-2 text-xs"></div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
+                    <textarea id="editFanDetails" class="input-dark h-24"></textarea>
+                </div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="closeEditFanModal()" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="saveFanEdit()" class="btn-indigo px-6 py-2 rounded text-white font-bold">儲存變更</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-8 right-8 bg-indigo-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">
+        操作成功
+    </div>
+
+    <script>
+        let fans = JSON.parse(localStorage.getItem('fans')) || [];
+        let templates = JSON.parse(localStorage.getItem('templates')) || [
+            { id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！❤️" }
+        ];
+        let activeFanId = null;
+
+        function validateInput(input) {
+            const regex = /^[a-zA-Z0-9._]+$/;
+            const errId = input.id + "Err";
+            const errEl = document.getElementById(errId);
+            
+            if (input.value && !regex.test(input.value)) {
+                input.classList.add('input-error');
+                if(errEl) errEl.classList.remove('hidden');
+                return false;
+            } else {
+                input.classList.remove('input-error');
+                if(errEl) errEl.classList.add('hidden');
+                return true;
+            }
+        }
+
+        // --- 核心：渲染與排序 (V4.4 優化) ---
+        function renderTable() {
+            const tbody = document.getElementById('fanTableBody');
+            const search = document.getElementById('globalSearch').value.toLowerCase();
+            const sortType = document.getElementById('sortSelect').value; // 抓取排序設定
+            const emptyState = document.getElementById('emptyState');
+            
+            tbody.innerHTML = '';
+            
+            // 1. 搜尋過濾
+            let filteredFans = fans.filter(f => 
+                (f.username || '').toLowerCase().includes(search) || 
+                (f.nickname || '').toLowerCase().includes(search) || 
+                (f.interactions || []).join('').toLowerCase().includes(search) || 
+                (f.details || '').toLowerCase().includes(search)
+            );
+
+            if (filteredFans.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+
+                // 2. 排序邏輯 (V4.4 重點)
+                // 分離出摯友 (starred) 與 普通粉絲 (others)
+                const starredFans = filteredFans.filter(f => f.isCloseFriend);
+                const otherFans = filteredFans.filter(f => !f.isCloseFriend);
+
+                // 定義排序函數
+                const sorter = (a, b) => {
+                    if (sortType === 'za') {
+                        return b.username.toLowerCase().localeCompare(a.username.toLowerCase());
+                    } else { // az (預設)
+                        return a.username.toLowerCase().localeCompare(b.username.toLowerCase());
+                    }
+                };
+
+                // 摯友永遠固定 A-Z (或者跟隨設定? 使用者說"摯友粉絲固定依字母順序(順)在上方")
+                starredFans.sort((a, b) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
+                
+                // 普通粉絲依下拉選單排序
+                otherFans.sort(sorter);
+
+                // 合併列表
+                const finalFans = [...starredFans, ...otherFans];
+                
+                finalFans.forEach(fan => {
+                    const row = document.createElement('tr');
+                    row.className = 'table-row';
+                    
+                    const statusHtml = fan.sent 
+                        ? `<div class="flex flex-col"><span class="text-green-400 text-xs font-bold border border-green-400/30 px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${fan.sentDate || ''}</span></div>`
+                        : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
+
+                    const latestInfo = (fan.latestDate || fan.latestType) 
+                        ? `<div class="flex flex-col">
+                             <span class="text-white font-bold text-xs">${fan.latestType || '無'}</span>
+                             <span class="text-[10px] text-gray-500">${fan.latestDate || '未知日期'}</span>
+                           </div>`
+                        : `<span class="text-gray-600 text-xs">-</span>`;
+
+                    // 帳號驗證顯示 (V4.4: 增加 title 提示僅為格式檢查)
+                    const isValidAccount = /^[a-zA-Z0-9._]+$/.test(fan.username);
+                    const nameClass = isValidAccount 
+                        ? "text-indigo-300 hover:text-indigo-100 hover:underline" 
+                        : "text-red-800 font-bold hover:text-red-600 hover:underline";
+                    
+                    const accountLink = `<span class="${nameClass} cursor-pointer" onclick="window.open('https://www.instagram.com/${fan.username}', '_blank')" title="${isValidAccount ? '開啟 Instagram' : '格式錯誤 (注意：無法偵測帳號是否停用)'}">@${fan.username}</span>`;
+
+                    // 標籤渲染
+                    const tagsHtml = fan.interactions.map(tag => {
+                        const style = tag === '粉絲' 
+                            ? 'bg-pink-900/40 text-pink-200 border-pink-500/30' 
+                            : 'bg-white/5 text-gray-300 border-white/10';
+                        return `<span class="px-2 py-0.5 rounded text-xs border whitespace-nowrap ${style}">${tag}</span>`;
+                    }).join('');
+
+                    // V4.4: 星星 HTML
+                    const starClass = fan.isCloseFriend ? 'star-active' : 'star-inactive';
+                    const starHtml = `<i class="fas fa-star ${starClass} star-btn" onclick="toggleStar(${fan.id})"></i>`;
+
+                    row.innerHTML = `
+                        <td class="text-center">${starHtml}</td>
+                        <td class="font-medium">${accountLink}</td>
+                        <td class="text-gray-300 text-xs">${fan.nickname || '-'}</td>
+                        <td class="bg-indigo-900/10 border-l border-r border-indigo-900/30">
+                            ${latestInfo}
+                        </td>
+                        <td>
+                            <div class="flex flex-wrap gap-1">
+                                ${tagsHtml}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-xs text-gray-400 line-clamp-2 hover:line-clamp-none transition-all cursor-help" title="${fan.details}">
+                                ${fan.details.split('/').map(d => `<span class="block border-b border-dashed border-white/10 pb-0.5 mb-0.5 last:border-0">${d.trim()}</span>`).join('')}
+                            </div>
+                        </td>
+                        <td>${statusHtml}</td>
+                        <td class="text-center">
+                            <div class="flex justify-center gap-1">
+                                <button onclick="openModal(${fan.id})" class="group btn-indigo px-2 py-1.5 rounded text-xs text-white font-bold" title="發訊息">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                                <button onclick="openEditFanModal(${fan.id})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors" title="編輯資料">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteFan(${fan.id})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors" title="刪除">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // --- V4.4: 摯友切換 ---
+        function toggleStar(id) {
+            const fan = fans.find(f => f.id === id);
+            if(fan) {
+                fan.isCloseFriend = !fan.isCloseFriend; // 切換狀態
+                saveData();
+                renderTable(); // 重新排序
+            }
+        }
+
+        function addManualInteraction() {
+            const usernameInput = document.getElementById('manualUsername');
+            if (!validateInput(usernameInput)) {
+                return alert("帳號格式錯誤，請檢查紅框欄位");
+            }
+            const username = usernameInput.value.trim();
+            const nickname = document.getElementById('manualNickname').value.trim();
+            if (!username) return alert("請輸入帳號");
+
+            const checkedBoxes = document.querySelector('#manualSection .interaction-checkboxes').querySelectorAll('input:checked');
+            let tags = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            const details = document.getElementById('manualDetails').value.trim();
+            const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            
+            const existingFan = fans.find(f => f.username === username);
+            if (existingFan) {
+                const typeSet = new Set([...existingFan.interactions, ...tags]);
+                existingFan.interactions = Array.from(typeSet);
+                
+                if (details) existingFan.details = existingFan.details ? existingFan.details + " / " + details : details;
+                if (nickname) existingFan.nickname = nickname;
+                
+                existingFan.latestType = tags.join(' / ');
+                existingFan.latestDate = todayStr;
+                existingFan.sent = false;
+                showToast(`已更新 @${username}`);
+            } else {
+                fans.push({
+                    id: Date.now(),
+                    username, nickname, 
+                    interactions: tags,
+                    latestType: tags.join(' / '),
+                    latestDate: todayStr,
+                    details, 
+                    sent: false, 
+                    sentDate: '',
+                    isCloseFriend: false // 預設非摯友
+                });
+                showToast(`已新增 @${username}`);
+            }
+            
+            usernameInput.value = '';
+            document.getElementById('manualNickname').value = '';
+            document.getElementById('manualDetails').value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            saveData(); renderTable();
+        }
+
+        function openEditFanModal(id) {
+            const fan = fans.find(f => f.id === id);
+            if(!fan) return;
+            document.getElementById('editFanId').value = id;
+            document.getElementById('editFanUsername').value = fan.username;
+            document.getElementById('editFanNickname').value = fan.nickname || '';
+            document.getElementById('editFanDetails').value = fan.details || '';
+            
+            const checkContainer = document.getElementById('editFanCheckboxes');
+            const inputs = checkContainer.querySelectorAll('input');
+            const standardTags = [];
+            
+            inputs.forEach(input => {
+                standardTags.push(input.value);
+                input.checked = fan.interactions.includes(input.value);
+            });
+
+            const extraTags = fan.interactions.filter(t => !standardTags.includes(t));
+            const extraContainer = document.getElementById('editFanExtraTags');
+            
+            if(extraTags.length > 0) {
+                extraContainer.innerHTML = '其它標籤(點擊刪除): ' + extraTags.map(t => 
+                    `<span onclick="removeExtraTag(${id}, '${t}')" class="cursor-pointer hover:bg-red-900 border border-white/20 px-1 rounded ml-1 bg-white/5">${t} <i class="fas fa-times text-[10px]"></i></span>`
+                ).join('');
+            } else {
+                extraContainer.innerHTML = '';
+            }
+            document.getElementById('editFanModal').classList.remove('hidden');
+        }
+
+        function removeExtraTag(fanId, tag) {
+            const fan = fans.find(f => f.id === fanId);
+            if(fan) {
+                fan.interactions = fan.interactions.filter(t => t !== tag);
+                saveData();
+                openEditFanModal(fanId);
+            }
+        }
+
+        function saveFanEdit() {
+            const id = parseFloat(document.getElementById('editFanId').value);
+            const fan = fans.find(f => f.id === id);
+            if(fan) {
+                const usernameInput = document.getElementById('editFanUsername');
+                if(!validateInput(usernameInput)) return alert("帳號格式錯誤");
+                
+                fan.username = usernameInput.value.trim();
+                fan.nickname = document.getElementById('editFanNickname').value.trim();
+                fan.details = document.getElementById('editFanDetails').value.trim();
+                
+                const checked = Array.from(document.querySelectorAll('#editFanCheckboxes input:checked')).map(cb => cb.value);
+                const standardValues = Array.from(document.querySelectorAll('#editFanCheckboxes input')).map(cb => cb.value);
+                const currentExtra = fan.interactions.filter(t => !standardValues.includes(t));
+                
+                fan.interactions = Array.from(new Set([...checked, ...currentExtra]));
+
+                saveData(); renderTable(); closeEditFanModal(); showToast('資料已更新');
+            }
+        }
+        function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden'); }
+
+        // --- Excel 匯入 (V4.4: 強化暱稱抓取) ---
+        function handleExcelImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = new Uint8Array(event.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+                    let newCount = 0, updateCount = 0;
+                    const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    
+                    json.forEach(row => {
+                        const getVal = (keywords) => {
+                            const key = Object.keys(row).find(k => keywords.some(kw => k.toLowerCase().includes(kw)));
+                            return key ? row[key] : '';
+                        };
+
+                        const usernameRaw = getVal(['帳號', 'user', 'name', 'id']).toString().trim();
+                        if (!usernameRaw) return;
+
+                        // V4.4: 擴充暱稱關鍵字 (Profile Name, Full Name, Display Name...)
+                        const nicknameRaw = getVal(['暱稱', 'nickname', 'display', 'profile name', 'full name', 'title', '稱呼', '姓名', '名稱']).toString().trim();
+
+                        const typeRaw = getVal(['互動', 'type']).toString();
+                        let rawTypes = typeRaw.split(/[\/,，]/).map(s => s.trim()).filter(s => s); 
+                        rawTypes = rawTypes.map(t => t === '新粉絲' ? '粉絲' : t);
+                        
+                        const fileDate = getVal(['日期', 'date']).toString().trim() || todayStr;
+                        const detailRaw = getVal(['詳細', 'content', 'details']).toString().trim();
+
+                        const existingFan = fans.find(f => f.username === usernameRaw);
+
+                        if (existingFan) {
+                            existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...rawTypes]));
+                            if (detailRaw && !existingFan.details.includes(detailRaw)) existingFan.details += " / " + detailRaw;
+                            if (nicknameRaw && !existingFan.nickname) existingFan.nickname = nicknameRaw; // 更新暱稱
+                            
+                            existingFan.latestType = rawTypes.join(' / ');
+                            existingFan.latestDate = fileDate;
+                            existingFan.sent = false;
+                            updateCount++;
+                        } else {
+                            fans.push({
+                                id: Date.now() + Math.random(),
+                                username: usernameRaw,
+                                nickname: nicknameRaw,
+                                interactions: rawTypes,
+                                latestType: rawTypes.join(' / '),
+                                latestDate: fileDate,
+                                details: detailRaw,
+                                sent: false, sentDate: '',
+                                isCloseFriend: false // 預設值
+                            });
+                            newCount++;
+                        }
+                    });
+                    saveData(); renderTable();
+                    showToast(`匯入成功：新 ${newCount} / 更 ${updateCount}`);
+                    e.target.value = '';
+                } catch (err) { alert("匯入失敗：" + err.message); }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- 匯出 (V4.4: 包含摯友狀態) ---
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(fans.map(f => ({
+                '帳號名稱': f.username, 
+                '暱稱': f.nickname,
+                '互動類型': f.interactions.join(' / '), 
+                '詳細內容/選項': f.details,
+                '是否為摯友': f.isCloseFriend ? 'Yes' : 'No'
+            })));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Fans");
+            XLSX.writeFile(wb, `FanConnect_V4.4_Export.xlsx`);
+        }
+
+        function deleteFan(id) {
+            if(confirm('刪除資料？')) { fans = fans.filter(f => f.id !== id); saveData(); renderTable(); showToast('已刪除'); }
+        }
+        function openModal(id) {
+            activeFanId = id; const fan = fans.find(f => f.id === id); if(!fan) return;
+            document.getElementById('targetUser').innerText = "@" + fan.username;
+            document.getElementById('targetNickname').innerText = fan.nickname || fan.username;
+            document.getElementById('modalText').value = "";
+            document.getElementById('modalTempSelect').innerHTML = '<option value="">-- 選擇模板 --</option>' + templates.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+            document.getElementById('msgModal').classList.remove('hidden');
+        }
+        function confirmSend() {
+            const fan = fans.find(f => f.id === activeFanId); const text = document.getElementById('modalText').value;
+            navigator.clipboard.writeText(text).then(() => {
+                fan.sent = true; const now = new Date();
+                fan.sentDate = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                saveData(); renderTable(); closeModal(); window.open(`https://ig.me/m/${fan.username}`, '_blank');
+            });
+        }
+        function applyTemplate() {
+            const tId = document.getElementById('modalTempSelect').value;
+            const fan = fans.find(f => f.id === activeFanId);
+            const template = templates.find(t => t.id == tId);
+            if(template) document.getElementById('modalText').value = template.body.replace(/{nickname}/g, fan.nickname || fan.username);
+        }
+        function saveData() { localStorage.setItem('fans', JSON.stringify(fans)); }
+        function closeModal() { document.getElementById('msgModal').classList.add('hidden'); }
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
+        function addTemplate() {
+            const id = document.getElementById('tmpId').value; const title = document.getElementById('tmpTitle').value; const body = document.getElementById('tmpBody').value;
+            if(!title || !body) return;
+            if(id) { const t = templates.find(x => x.id == id); t.title = title; t.body = body; }
+            else { templates.push({ id: Date.now(), title, body }); }
+            localStorage.setItem('templates', JSON.stringify(templates)); cancelEditTemplate(); renderTemplateList();
+        }
+        function editTemplate(id) {
+            const t = templates.find(x => x.id === id);
+            document.getElementById('tmpId').value = t.id; document.getElementById('tmpTitle').value = t.title; document.getElementById('tmpBody').value = t.body;
+            document.getElementById('saveTmpBtn').innerText = "更新模板"; document.getElementById('cancelTmpBtn').classList.remove('hidden');
+        }
+        function cancelEditTemplate() {
+            document.getElementById('tmpId').value = ''; document.getElementById('tmpTitle').value = ''; document.getElementById('tmpBody').value = '';
+            document.getElementById('saveTmpBtn').innerText = "儲存模板"; document.getElementById('cancelTmpBtn').classList.add('hidden');
+        }
+        function deleteTemplate(id) { if(confirm('刪除模板？')) { templates = templates.filter(t => t.id !== id); localStorage.setItem('templates', JSON.stringify(templates)); renderTemplateList(); } }
+        function renderTemplateList() {
+            document.getElementById('templateListDisplay').innerHTML = templates.map(t => `
+                <div class="flex justify-between items-center bg-black/30 p-3 rounded border border-white/5">
+                    <div><div class="font-bold text-indigo-200 text-sm">${t.title}</div><div class="text-xs text-gray-500 truncate w-64">${t.body}</div></div>
+                    <div><button onclick="editTemplate(${t.id})" class="text-gray-400 hover:text-white px-2"><i class="fas fa-edit"></i></button><button onclick="deleteTemplate(${t.id})" class="text-gray-600 hover:text-red-500 px-2"><i class="fas fa-trash"></i></button></div>
+                </div>`).join('');
+        }
+        function backupData() {
+            const link = document.createElement('a'); link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates })); link.download = `FanConnect_Backup.json`; link.click();
+        }
+        function handleRestore(e) {
+            const r = new FileReader(); r.onload = (ev) => { try { const o = JSON.parse(ev.target.result); if(confirm(`還原 ${o.fans.length} 筆？`)) { fans=o.fans; templates=o.templates; saveData(); localStorage.setItem('templates', JSON.stringify(templates)); renderTable(); renderTemplateList(); } } catch(e){alert("格式誤");} }; r.readAsText(e.target.files[0]);
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+        function showSection(s) { ['fans', 'manual', 'templates'].forEach(x => document.getElementById(x+'Section').classList.add('hidden')); document.getElementById(s+'Section').classList.remove('hidden'); if(s==='templates') renderTemplateList(); }
+
+        window.onload = () => { renderTable(); renderTemplateList(); };
+    </script>
+</body>
+</html>
