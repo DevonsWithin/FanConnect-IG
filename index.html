@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.1 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.12 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -640,8 +640,11 @@
                 if (details) existingFan.details = existingFan.details ? existingFan.details + " / " + details : details;
                 if (nickname) existingFan.nickname = nickname;
                 
-                existingFan.latestType = tags.join(' / ');
-                existingFan.latestDate = manualDateStr; // V5.2: Use manual date
+                if (parseDate(manualDateStr) >= parseDate(existingFan.latestDate)) {
+    existingFan.latestType = tags.join(' / ');
+    existingFan.latestDate = manualDateStr;
+}
+ // V5.2: Use manual date
                 existingFan.sent = false;
                 showToast(`已更新 @${username}`);
             } else {
@@ -809,9 +812,15 @@
                             existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...rawTypes]));
                             if (detailRaw && !existingFan.details.includes(detailRaw)) existingFan.details += " / " + detailRaw;
                             if (nicknameRaw && !existingFan.nickname) existingFan.nickname = nicknameRaw;
-                            existingFan.latestType = rawTypes.join(' / ');
-                            existingFan.latestDate = fileDate;
-                            existingFan.sent = false;
+                            existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...rawTypes]));
+if (detailRaw && !existingFan.details.includes(detailRaw)) existingFan.details += " / " + detailRaw;
+
+// 最新動態判斷更新
+if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
+    existingFan.latestType = rawTypes.join(' / ');
+    existingFan.latestDate = fileDate;
+}
+existingFan.sent = false;
                             updateCount++;
                         } else {
                             fans.push({
