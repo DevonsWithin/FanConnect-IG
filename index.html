@@ -239,7 +239,9 @@
                         <div class="grid grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username) <span class="text-red-500">*</span></label>
-                                <input type="text" id="manualUsername" placeholder="輸入帳號" class="input-dark py-3" oninput="validateInput(this)">
+                                <input type="text" id="manualUsername" list="usernameOptions" placeholder="輸入帳號" class="input-dark py-3" oninput="validateInput(this)">
+
+<datalist id="usernameOptions"></datalist>
                                 <p class="text-[10px] text-red-500 mt-1 hidden" id="manualUsernameErr">格式錯誤</p>
                             </div>
                             <div>
@@ -987,10 +989,30 @@ existingFan.sent = false;
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed');
         }
-        function showSection(s) { ['fans', 'manual', 'templates'].forEach(x => document.getElementById(x+'Section').classList.add('hidden')); document.getElementById(s+'Section').classList.remove('hidden'); if(s==='templates') renderTemplateList();
-        }
+        function showSection(s) {
+    ['fans', 'manual', 'templates'].forEach(x => document.getElementById(x+'Section').classList.add('hidden'));
+    document.getElementById(s+'Section').classList.remove('hidden');
+    
+    if(s==='templates') renderTemplateList();
+    
+    // --- 新增這一行：當切換到手動新增分頁時，更新建議清單 ---
+    if(s==='manual') updateUsernameDatalist(); 
+}
 
         window.onload = () => { loadProfile(); renderTable(); renderTemplateList(); initDateInput(); };
+// 新增：自動更新帳號建議清單
+function updateUsernameDatalist() {
+    const datalist = document.getElementById('usernameOptions');
+    if (!datalist) return;
+
+    // 從現有的 fans 資料中提取所有不重複的 username
+    const usernames = Array.from(new Set(fans.map(f => f.username)));
+    
+    // 將帳號轉換為 datalist 的選項
+    datalist.innerHTML = usernames
+        .map(u => `<option value="${u}">`)
+        .join('');
+}
     </script>
 </body>
 </html>
