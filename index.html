@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.14 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.12 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -985,46 +985,21 @@ existingFan.sent = false;
 
 
         function applyTemplate() {
-    const tempId = document.getElementById('modalTempSelect').value;
-    if (!tempId) return;
+            const tId = document.getElementById('modalTempSelect').value;
+            const fan = fans.find(f => f.id === activeFanId);
+            const template = templates.find(t => t.id == tId);
+            const generatedLink = document.getElementById('finalGeneratedLink').value || "(尚未生成連結)";
 
 
-    const temp = templates.find(x => x.id == tempId);
-    const fan = fans.find(x => x.id === activeFanId);
-    if (!temp || !fan) return;
+            if(template) {
+                let content = template.body;
+                content = content.replace(/{nickname}/g, fan.nickname || fan.username);
+                content = content.replace(/{link}|{url}/g, generatedLink);
+                document.getElementById('modalText').value = content;
+            }
+        }
 
 
-    // 1. 獲取目標網址 (如果沒填，預設給個提示文字以免出錯)
-    let targetInput = document.getElementById('targetLinkInput');
-    let rawUrl = targetInput ? targetInput.value.trim() : "";
-    
-    if (!rawUrl) {
-        // 如果沒填網址，就用你現在的 Vercel 網址當預設值（請把下面換成你的網址）
-        rawUrl = "https://our-vault-iota.vercel.app/vault/late-night-limited/";
-    }
-
-
-    // 2. 產生加密 ID (使用 username，若無則用 id)
-    const identifier = fan.username || fan.id || "guest";
-    const userId = btoa(encodeURIComponent(identifier));
-    
-    // 3. 組合連結 (自動處理斜線)
-    const separator = rawUrl.endsWith('/') ? '' : '/';
-    const finalLink = `${rawUrl}${separator}${userId}`;
-
-
-    // 4. 替換模板文字
-    let body = temp.body
-        .replace(/{nickname}/g, fan.nickname || fan.username || "親愛的")
-        .replace(/{link}/g, finalLink);
-
-
-    // 5. 塞回訊息框
-    const msgBody = document.getElementById('modalMsgBody');
-    if (msgBody) {
-        msgBody.value = body;
-    }
-}
         function saveData() { localStorage.setItem('fans', JSON.stringify(fans));
         }
         function closeModal() { document.getElementById('msgModal').classList.add('hidden');
