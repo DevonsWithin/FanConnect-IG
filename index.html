@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.13 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.14 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -27,6 +27,7 @@
         .profile-name-input { background: transparent; border: none; border-bottom: 1px solid transparent; color: white; text-align: center; font-weight: bold; font-size: 0.9rem; width: 100%; padding: 4px; transition: all 0.3s; }
         .profile-name-input:focus { outline: none; border-bottom: 1px solid #a78bfa; }
 
+
         /* 表格優化 (V5.1 RWD Update) */
         .table-container { 
             height: calc(100vh - 140px); overflow-y: auto; 
@@ -37,15 +38,18 @@
         
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
 
+
         /* V5.1 RWD: 手機版強制寬度以觸發捲動 & 凍結欄位設定 */
         @media (max-width: 768px) {
             table { min-width: 900px; }
         }
 
+
         /* 凍結欄位樣式 */
         .sticky-col-1 { position: sticky; left: 0; z-index: 25; background-color: #151515; }
         .sticky-col-2 { position: sticky; left: 45px; z-index: 25; background-color: #151515; border-right: 1px solid #333; }
         .sticky-col-last { position: sticky; right: 0; z-index: 25; background-color: #151515; border-left: 1px solid #333; }
+
 
         /* 確保表頭層級最高且顏色正確 */
         th.sticky-col-1, th.sticky-col-2, th.sticky-col-last { z-index: 30; background-color: #202020; }
@@ -54,6 +58,7 @@
         .table-row:hover .sticky-col-1,
         .table-row:hover .sticky-col-2,
         .table-row:hover .sticky-col-last { background-color: #2a1b3d; }
+
 
         th { background-color: #202020; position: sticky; top: 0; z-index: 20; padding: 10px; text-align: left; font-size: 0.8rem; color: #aaa; letter-spacing: 1px; border-bottom: 2px solid #4B0082; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         td { padding: 8px 10px; border-bottom: 1px solid #333; vertical-align: middle; }
@@ -72,10 +77,12 @@
         .star-active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
         .star-inactive { color: #4b5563; }
 
+
         /* 卷軸 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #4B0082; border-radius: 4px; }
+
 
         /* V5.2 新增樣式: 時間輸入格式 */
         .date-segment-container {
@@ -86,7 +93,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 4px;
             padding: 4px 8px;
-            width: fit-content; /* V5.2.13 Update: Adjusted to data width */
+            width: fit-content; /* V5.2.1 Update: Adjusted to data width */
         }
         .date-segment-container input {
             background: transparent;
@@ -109,13 +116,15 @@
 </head>
 <body class="flex">
 
+
     <aside id="sidebar" class="sidebar backdrop-blur-md">
         <div class="p-4 flex items-center gap-4 h-16 border-b border-white/10 shrink-0">
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.13</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.1</span></span>
         </div>
+
 
         <div class="profile-section">
             <input type="file" id="avatarUpload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
@@ -139,6 +148,7 @@
                 </a>
             </div>
 
+
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
             <div>
@@ -149,6 +159,7 @@
                     <i class="fas fa-file-export w-6 text-center text-blue-400"></i> <span class="menu-text">匯出 Excel</span>
                 </a>
             </div>
+
 
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
@@ -165,6 +176,7 @@
             </div>
         </nav>
 
+
         <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
             <a href="https://www.instagram.com" target="_blank" class="flex items-center gap-4 text-sm text-gray-400 hover:text-white group">
                 <i class="fab fa-instagram w-6 text-center text-pink-500 group-hover:scale-110 transition-transform"></i> 
@@ -173,9 +185,11 @@
         </div>
     </aside>
 
+
     <main class="flex-1 flex flex-col overflow-hidden relative">
         <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)">
         <input type="file" id="restoreImport" class="hidden" accept=".json" onchange="handleRestore(event)">
+
 
         <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0">
             <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide">粉絲滿意度管理系統</h2>
@@ -190,6 +204,7 @@
                     <i class="fas fa-sort absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
                 </div>
 
+
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
                     <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..." 
@@ -198,6 +213,7 @@
                 </div>
             </div>
         </header>
+
 
         <div id="contentArea" class="flex-1 overflow-hidden p-0 bg-[#0a0a0a]">
             
@@ -229,6 +245,7 @@
                 </div>
             </div>
 
+
             <div id="manualSection" class="hidden h-full p-8 overflow-y-auto">
                 <div class="max-w-3xl mx-auto bg-[#1a1a1a] p-8 rounded-2xl border border-indigo-500/20 shadow-2xl">
                     <h3 class="text-2xl font-bold mb-6 text-indigo-400 border-b border-white/10 pb-4">
@@ -241,6 +258,7 @@
                                 <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username) <span class="text-red-500">*</span></label>
                                 <input type="text" id="manualUsername" list="usernameOptions" placeholder="輸入帳號" class="input-dark py-3" oninput="validateInput(this)">
 
+
 <datalist id="usernameOptions"></datalist>
                                 <p class="text-[10px] text-red-500 mt-1 hidden" id="manualUsernameErr">格式錯誤</p>
                             </div>
@@ -249,6 +267,7 @@
                                 <input type="text" id="manualNickname" placeholder="粉絲怎麼稱呼？" class="input-dark py-3">
                             </div>
                         </div>
+
 
                         <div class="bg-black/20 p-4 rounded-lg border border-white/5">
                             <div class="mb-3 text-indigo-300 text-sm font-bold">互動類型 (可多選)</div>
@@ -264,6 +283,7 @@
                             </div>
                         </div>
 
+
                         <div class="mt-4">
                             <label class="block text-gray-400 text-xs mb-2">最新互動/活動日期</label>
                             <div class="date-segment-container">
@@ -275,10 +295,12 @@
                             </div>
                         </div>
 
+
                         <div>
                             <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
                             <textarea id="manualDetails" placeholder="例如：限動投票「A選項」" class="input-dark h-32"></textarea>
                         </div>
+
 
                         <button onclick="addManualInteraction()" class="btn-indigo w-full py-3 rounded-lg font-bold text-white text-lg shadow-lg hover:shadow-indigo-500/50">
                             新增並更新
@@ -286,6 +308,7 @@
                     </div>
                 </div>
             </div>
+
 
             <div id="templatesSection" class="hidden h-full p-8 overflow-y-auto">
                 <div class="max-w-3xl mx-auto">
@@ -310,6 +333,7 @@
         </div>
     </main>
 
+
     <div id="msgModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-indigo-500/50 w-[600px] rounded-xl shadow-2xl overflow-hidden">
             <div class="bg-indigo-900/20 p-4 border-b border-indigo-500/30 flex justify-between items-center">
@@ -321,6 +345,7 @@
                     <span>目標帳號：<span id="targetUser" class="text-white font-mono"></span></span>
                     <span>稱呼：<span id="targetNickname" class="text-indigo-300"></span></span>
                 </div>
+
 
                 <div class="bg-indigo-900/10 p-3 rounded border border-indigo-500/20">
                     <label class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold mb-2 block flex justify-between">
@@ -337,6 +362,7 @@
                     <p class="text-[10px] text-gray-500 mt-1 italic">* 系統將「粉絲帳號+目前時間」打包加密成亂碼參數，Next.js 端需解碼驗證。</p>
                 </div>
 
+
                 <select id="modalTempSelect" onchange="applyTemplate()" class="input-dark">
                     <option value="">-- 選擇模板 --</option>
                 </select>
@@ -350,6 +376,7 @@
             </div>
         </div>
     </div>
+
 
     <div id="editFanModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-indigo-500/30 w-[650px] rounded-xl shadow-2xl overflow-hidden">
@@ -386,6 +413,7 @@
                     <div id="editFanExtraTags" class="mt-3 flex flex-wrap gap-2 text-xs"></div>
                 </div>
 
+
                 <div>
                     <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
                     <textarea id="editFanDetails" class="input-dark h-24"></textarea>
@@ -398,9 +426,11 @@
         </div>
     </div>
 
+
     <div id="toast" class="fixed bottom-8 right-8 bg-indigo-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">
         操作成功
     </div>
+
 
     <script>
         let fans = JSON.parse(localStorage.getItem('fans')) || [];
@@ -409,6 +439,7 @@
         ];
         let activeFanId = null;
 
+
         // V5.0: Profile Management
         function loadProfile() {
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand Name', avatar: 'https://ui-avatars.com/api/?name=Brand&background=4B0082&color=fff' };
@@ -416,12 +447,14 @@
             document.getElementById('userAvatar').src = profile.avatar;
         }
 
+
         function saveProfile() {
             const name = document.getElementById('userName').value;
             const avatar = document.getElementById('userAvatar').src;
             localStorage.setItem('userProfile', JSON.stringify({ name, avatar }));
             showToast('個人品牌設定已儲存');
         }
+
 
         function handleAvatarUpload(event) {
             const file = event.target.files[0];
@@ -433,6 +466,7 @@
             };
             reader.readAsDataURL(file);
         }
+
 
         function validateInput(input) {
             const regex = /^[a-zA-Z0-9._]+$/;
@@ -449,12 +483,14 @@
             }
         }
 
+
         // V5.0: 日期解析 (字串或數字)
         function parseDate(str) {
             if (!str) return 0;
             const d = new Date(str);
             return isNaN(d.getTime()) ? 0 : d.getTime();
         }
+
 
         // V5.0: Excel 數字日期轉字串 (處理 46016 -> 2025/12/25)
         function excelDateToJSDate(serial) {
@@ -463,6 +499,7 @@
            var date_info = new Date(utc_value * 1000);
            return date_info.toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
         }
+
 
         function renderTable() {
             const tbody = document.getElementById('fanTableBody');
@@ -495,6 +532,7 @@
                     }
                 };
 
+
                 starredFans.sort(sorter);
                 otherFans.sort(sorter);
                 const finalFans = [...starredFans, ...otherFans];
@@ -506,6 +544,7 @@
                     const statusHtml = fan.sent 
                         ? `<div class="flex flex-col"><span class="text-green-400 text-xs font-bold border border-green-400/30 px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${fan.sentDate || ''}</span></div>`
                         : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
+
 
                     const latestInfo = (fan.latestDate || fan.latestType) 
                         ? `<div class="flex flex-col">
@@ -567,11 +606,13 @@
             }
         }
 
+
         function handleAccountClick(element, username) {
             window.open(`https://www.instagram.com/${username}`, '_blank');
             element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
             element.classList.add('visited-link');
         }
+
 
         function toggleStar(id) {
             const fan = fans.find(f => f.id === id);
@@ -582,6 +623,7 @@
             }
         }
 
+
         // V5.2 Update: Date Input Logic
         function initDateInput() {
             const today = new Date();
@@ -590,6 +632,7 @@
                 { id: 'dateMM', val: String(today.getMonth()+1).padStart(2,'0'), max: 2 },
                 { id: 'dateDD', val: String(today.getDate()).padStart(2,'0'), max: 2 }
             ];
+
 
             const inputs = els.map((c, i) => {
                 const el = document.getElementById(c.id);
@@ -602,7 +645,7 @@
                     this.value = this.value.replace(/[^0-9]/g, '');
                     if(this.value.length >= c.max) {
                         if(i < els.length - 1) {
-                            // V5.2.13 Fix: Use setTimeout to ensure the last char is processed before focus shift
+                            // V5.2.1 Fix: Use setTimeout to ensure the last char is processed before focus shift
                             setTimeout(() => {
                                 document.getElementById(els[i+1].id).focus();
                             }, 0);
@@ -613,6 +656,7 @@
             });
         }
 
+
         function addManualInteraction() {
             const usernameInput = document.getElementById('manualUsername');
             if (!validateInput(usernameInput)) {
@@ -621,6 +665,7 @@
             const username = usernameInput.value.trim();
             const nickname = document.getElementById('manualNickname').value.trim();
             if (!username) return alert("請輸入帳號");
+
 
             const checkedBoxes = document.querySelector('#manualSection .interaction-checkboxes').querySelectorAll('input:checked');
             let tags = Array.from(checkedBoxes).map(cb => cb.value);
@@ -633,6 +678,7 @@
             const m = document.getElementById('dateMM').value.padStart(2, '0');
             const d = document.getElementById('dateDD').value.padStart(2, '0');
             const manualDateStr = `${y}/${m}/${d}`;
+
 
             const existingFan = fans.find(f => f.username === username);
             if (existingFan) {
@@ -647,6 +693,7 @@
     existingFan.latestDate = manualDateStr;
 }
  // V5.2: Use manual date
+                existingFan.sent = false;
                 showToast(`已更新 @${username}`);
             } else {
                 fans.push({
@@ -672,6 +719,7 @@
             saveData(); renderTable();
         }
 
+
         function openEditFanModal(id) {
             const fan = fans.find(f => f.id === id);
             if(!fan) return;
@@ -690,6 +738,7 @@
                 input.checked = fan.interactions.includes(checkVal);
             });
 
+
             const extraTags = fan.interactions.filter(t => !standardTags.includes(t));
             const extraContainer = document.getElementById('editFanExtraTags');
             if(extraTags.length > 0) {
@@ -702,6 +751,7 @@
             document.getElementById('editFanModal').classList.remove('hidden');
         }
 
+
         function removeExtraTag(fanId, tag) {
             const fan = fans.find(f => f.id === fanId);
             if(fan) {
@@ -710,6 +760,7 @@
                 openEditFanModal(fanId);
             }
         }
+
 
         function saveFanEdit() {
             const id = parseFloat(document.getElementById('editFanId').value);
@@ -730,12 +781,14 @@
                 
                 fan.interactions = Array.from(new Set([...checkedClean, ...currentExtra]));
 
+
                 saveData(); renderTable();
                 closeEditFanModal(); showToast('資料已更新');
             }
         }
         function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden');
         }
+
 
         // V5.0: 清空列表資料 (使用 Brand Name 驗證)
         function clearAllData() {
@@ -755,10 +808,12 @@
             }
         }
 
+
         // --- Excel 匯入 ---
         function handleExcelImport(e) {
             const file = e.target.files[0];
             if (!file) return;
+
 
             const reader = new FileReader();
             reader.onload = (event) => {
@@ -776,6 +831,7 @@
                         '稱呼', '姓名', '名稱'
                     ];
 
+
                     const dateKeywords = ['活動日期', '日期', 'date', 'time', '時間'];
                     json.forEach(row => {
                         const getVal = (keywords) => {
@@ -783,8 +839,10 @@
                             return key ? row[key] : '';
                         };
 
+
                         const usernameRaw = getVal(['帳號', 'user', 'name', 'id', 'username']).toString().trim();
                         if (!usernameRaw) return;
+
 
                         let nicknameRaw = getVal(nicknameKeywords).toString().trim();
                         
@@ -808,6 +866,7 @@
                         rawTypes = rawTypes.map(t => (t === '新粉絲' || t === 'New Fan') ? '粉絲' : t);
                         const detailRaw = getVal(['詳細', 'content', 'details']).toString().trim();
 
+
                         const existingFan = fans.find(f => f.username === usernameRaw);
                         if (existingFan) {
                             existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...rawTypes]));
@@ -816,11 +875,13 @@
                             existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...rawTypes]));
 if (detailRaw && !existingFan.details.includes(detailRaw)) existingFan.details += " / " + detailRaw;
 
+
 // 最新動態判斷更新
 if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
     existingFan.latestType = rawTypes.join(' / ');
     existingFan.latestDate = fileDate;
 }
+existingFan.sent = false;
                             updateCount++;
                         } else {
                             fans.push({
@@ -846,6 +907,7 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
             reader.readAsArrayBuffer(file);
         }
 
+
         function exportToExcel() {
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -864,6 +926,7 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
             XLSX.utils.book_append_sheet(wb, ws, "Fans");
             XLSX.writeFile(wb, `FanConnect_Export_${dateStr}.xlsx`);
         }
+
 
         function deleteFan(id) {
             if(confirm('刪除資料？')) { fans = fans.filter(f => f.id !== id);
@@ -895,6 +958,7 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
             });
         }
 
+
         function generateHashLink() {
             const rawUrl = document.getElementById('targetLinkInput').value.trim();
             const fan = fans.find(f => f.id === activeFanId);
@@ -909,6 +973,7 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
             const separator = rawUrl.includes('?') ? '&' : '?';
             const finalLink = `${rawUrl}${separator}token=${encodedPayload}`;
 
+
             document.getElementById('finalGeneratedLink').value = finalLink;
             const btn = document.getElementById('genLinkBtn');
             btn.innerHTML = '<i class="fas fa-check"></i> 已生成';
@@ -918,11 +983,13 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
             }
         }
 
+
         function applyTemplate() {
             const tId = document.getElementById('modalTempSelect').value;
             const fan = fans.find(f => f.id === activeFanId);
             const template = templates.find(t => t.id == tId);
             const generatedLink = document.getElementById('finalGeneratedLink').value || "(尚未生成連結)";
+
 
             if(template) {
                 let content = template.body;
@@ -931,6 +998,7 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
                 document.getElementById('modalText').value = content;
             }
         }
+
 
         function saveData() { localStorage.setItem('fans', JSON.stringify(fans));
         }
@@ -997,11 +1065,13 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
     if(s==='manual') updateUsernameDatalist(); 
 }
 
+
         window.onload = () => { loadProfile(); renderTable(); renderTemplateList(); initDateInput(); };
 // 新增：自動更新帳號建議清單
 function updateUsernameDatalist() {
     const datalist = document.getElementById('usernameOptions');
     if (!datalist) return;
+
 
     // 從現有的 fans 資料中提取所有不重複的 username
     const usernames = Array.from(new Set(fans.map(f => f.username)));
