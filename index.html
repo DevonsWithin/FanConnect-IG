@@ -985,18 +985,30 @@ existingFan.sent = false;
 
 
         function applyTemplate() {
-            const tId = document.getElementById('modalTempSelect').value;
-            const fan = fans.find(f => f.id === activeFanId);
-            const template = templates.find(t => t.id == tId);
-            const generatedLink = document.getElementById('finalGeneratedLink').value || "(尚未生成連結)";
+            const tempId = document.getElementById('modalTempSelect').value;
+            if(!tempId) return;
+            const temp = templates.find(x => x.id == tempId);
+            const fan = fans.find(x => x.id === activeFanId);
+            if(!temp || !fan) return;
 
 
-            if(template) {
-                let content = template.body;
-                content = content.replace(/{nickname}/g, fan.nickname || fan.username);
-                content = content.replace(/{link}|{url}/g, generatedLink);
-                document.getElementById('modalText').value = content;
-            }
+            // --- 核心修改：確保這裡產生的也是三段式網址 ---
+            let rawUrl = document.getElementById('targetLinkInput').value.trim();
+            if(!rawUrl) rawUrl = window.location.origin + window.location.pathname;
+            
+            // 產生加密帳號 (Base64)
+            const userId = btoa(encodeURIComponent(fan.username));
+            const separator = rawUrl.endsWith('/') ? '' : '/';
+            const finalLink = `${rawUrl}${separator}${userId}`;
+            // --------------------------------------------
+
+
+            let body = temp.body
+                .replace(/{nickname}/g, fan.nickname || fan.username)
+                .replace(/{link}/g, finalLink); // 替換成我們的新網址
+
+
+            document.getElementById('modalMsgBody').value = body;
         }
 
 
