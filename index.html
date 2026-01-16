@@ -985,31 +985,46 @@ existingFan.sent = false;
 
 
         function applyTemplate() {
-            const tempId = document.getElementById('modalTempSelect').value;
-            if(!tempId) return;
-            const temp = templates.find(x => x.id == tempId);
-            const fan = fans.find(x => x.id === activeFanId);
-            if(!temp || !fan) return;
+    const tempId = document.getElementById('modalTempSelect').value;
+    if (!tempId) return;
 
 
-            // --- 核心修改：確保這裡產生的也是三段式網址 ---
-            let rawUrl = document.getElementById('targetLinkInput').value.trim();
-            if(!rawUrl) rawUrl = window.location.origin + window.location.pathname;
-            
-            // 產生加密帳號 (Base64)
-            const userId = btoa(encodeURIComponent(fan.username));
-            const separator = rawUrl.endsWith('/') ? '' : '/';
-            const finalLink = `${rawUrl}${separator}${userId}`;
-            // --------------------------------------------
+    const temp = templates.find(x => x.id == tempId);
+    const fan = fans.find(x => x.id === activeFanId);
+    if (!temp || !fan) return;
 
 
-            let body = temp.body
-                .replace(/{nickname}/g, fan.nickname || fan.username)
-                .replace(/{link}/g, finalLink); // 替換成我們的新網址
+    // 1. 獲取目標網址 (如果沒填，預設給個提示文字以免出錯)
+    let targetInput = document.getElementById('targetLinkInput');
+    let rawUrl = targetInput ? targetInput.value.trim() : "";
+    
+    if (!rawUrl) {
+        // 如果沒填網址，就用你現在的 Vercel 網址當預設值（請把下面換成你的網址）
+        rawUrl = "https://our-vault-iota.vercel.app/vault/late-night-limited/";
+    }
 
 
-            document.getElementById('modalMsgBody').value = body;
-        }
+    // 2. 產生加密 ID (使用 username，若無則用 id)
+    const identifier = fan.username || fan.id || "guest";
+    const userId = btoa(encodeURIComponent(identifier));
+    
+    // 3. 組合連結 (自動處理斜線)
+    const separator = rawUrl.endsWith('/') ? '' : '/';
+    const finalLink = `${rawUrl}${separator}${userId}`;
+
+
+    // 4. 替換模板文字
+    let body = temp.body
+        .replace(/{nickname}/g, fan.nickname || fan.username || "親愛的")
+        .replace(/{link}/g, finalLink);
+
+
+    // 5. 塞回訊息框
+    const msgBody = document.getElementById('modalMsgBody');
+    if (msgBody) {
+        msgBody.value = body;
+    }
+}
 
 
         function saveData() { localStorage.setItem('fans', JSON.stringify(fans));
