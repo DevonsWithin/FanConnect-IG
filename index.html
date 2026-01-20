@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.12 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.14 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -114,7 +114,7 @@
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.1</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.14</span></span>
         </div>
 
         <div class="profile-section">
@@ -141,11 +141,7 @@
 
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
-            <div>
-                <a href="#" onclick="document.getElementById('restoreImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
-    <i class="fas fa-cloud-upload-alt w-6 text-center text-yellow-400"></i> <span class="menu-text">還原資料 (雲端)</span>
-</a>
-
+            
 <a href="#" onclick="showSection('decrypt')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-teal-500">
     <i class="fas fa-key w-6 text-center text-teal-400"></i> <span class="menu-text">連結解密 / 驗證</span>
 </a>
@@ -689,7 +685,6 @@
     existingFan.latestDate = manualDateStr;
 }
  // V5.2: Use manual date
-                existingFan.sent = false;
                 showToast(`已更新 @${username}`);
             } else {
                 fans.push({
@@ -864,7 +859,6 @@ if (parseDate(fileDate) >= parseDate(existingFan.latestDate)) {
     existingFan.latestType = rawTypes.join(' / ');
     existingFan.latestDate = fileDate;
 }
-existingFan.sent = false;
                             updateCount++;
                         } else {
                             fans.push({
@@ -1164,3 +1158,6 @@ function updateUsernameDatalist() {
     </script>
 </body>
 </html>
+
+
+
