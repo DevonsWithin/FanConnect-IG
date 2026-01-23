@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.17 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.20 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --indigo-primary: #4B0082; }
         body { background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%); color: #e0e0e0; height: 100vh; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
-        
+       
         .sidebar { background-color: rgba(75, 0, 130, 0.15); border-right: 1px solid rgba(75, 0, 130, 0.3); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 260px; display: flex; flex-direction: column; }
         .sidebar.collapsed { width: 70px; }
         .sidebar.collapsed .menu-text, .sidebar.collapsed .logo-text, .sidebar.collapsed .profile-section { display: none; }
-        
+       
         .profile-section { text-align: center; padding: 20px 10px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .profile-avatar-container { position: relative; width: 60px; height: 60px; margin: 0 auto 10px; cursor: pointer; }
         .profile-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #a78bfa; transition: all 0.3s; }
@@ -22,59 +22,59 @@
         .profile-avatar-container:hover .avatar-overlay { opacity: 1; }
         .profile-name-input { background: transparent; border: none; border-bottom: 1px solid transparent; color: white; text-align: center; font-weight: bold; font-size: 0.9rem; width: 100%; padding: 4px; transition: all 0.3s; }
         .profile-name-input:focus { outline: none; border-bottom: 1px solid #a78bfa; }
-
+ 
         .table-container { height: calc(100vh - 140px); overflow-y: auto; overflow-x: auto; position: relative; }
         .table-row:hover { background-color: rgba(75, 0, 130, 0.2); transition: background-color 0.2s; }
         table { border-collapse: separate; border-spacing: 0; width: 100%; }
-
+ 
         @media (max-width: 768px) { table { min-width: 900px; } }
-
+ 
         .sticky-col-1 { position: sticky; left: 0; z-index: 25; background-color: #151515; }
         .sticky-col-2 { position: sticky; left: 40px; z-index: 25; background-color: #151515; border-right: 1px solid #333; }
         .sticky-col-last { position: sticky; right: 0; z-index: 25; background-color: #151515; border-left: 1px solid #333; }
-
+ 
         th.sticky-col-1, th.sticky-col-2, th.sticky-col-last { z-index: 30; background-color: #202020; }
-        
+       
         .table-row:hover .sticky-col-1,
         .table-row:hover .sticky-col-2,
         .table-row:hover .sticky-col-last { background-color: #2a1b3d; }
-
+ 
         th { background-color: #202020; position: sticky; top: 0; z-index: 20; padding: 10px; text-align: left; font-size: 0.8rem; color: #aaa; letter-spacing: 1px; border-bottom: 2px solid #4B0082; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         td { padding: 8px 10px; border-bottom: 1px solid #333; vertical-align: middle; }
-        
+       
         .fan-badge-style { background-color: rgba(131, 24, 67, 0.4); color: #fbcfe8; border: 1px solid rgba(236, 72, 153, 0.3); box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
-
+ 
         .btn-indigo { background-color: var(--indigo-primary); transition: all 0.2s; }
         .btn-indigo:hover { background-color: #5a009d; box-shadow: 0 0 15px rgba(75, 0, 130, 0.5); transform: translateY(-1px); }
         .input-dark { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 4px; padding: 8px 12px; width: 100%; transition: border-color 0.3s; }
         .input-dark:focus { outline: none; border-color: #4B0082; }
         .input-error { border-color: #ef4444 !important; background-color: rgba(239, 68, 68, 0.1); }
-        
+       
         .visited-link { color: #047857 !important; text-decoration: none !important; font-weight: bold; transition: color 0.3s; }
         .star-btn { transition: transform 0.2s, color 0.2s; cursor: pointer; }
         .star-btn:hover { transform: scale(1.2); }
         .star-active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
         .star-inactive { color: #4b5563; }
-
+ 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #1a1a1a; }
         ::-webkit-scrollbar-thumb { background: #4B0082; border-radius: 4px; }
-
+ 
         .date-segment-container { display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 4px 8px; width: fit-content; }
         .date-segment-container input { background: transparent; border: none; color: white; text-align: center; padding: 4px 0; outline: none; width: 100%; }
         .date-segment-container input:focus { border-bottom: 1px solid #a78bfa; }
     </style>
 </head>
 <body class="flex">
-
+ 
     <aside id="sidebar" class="sidebar backdrop-blur-md">
         <div class="p-4 flex items-center gap-4 h-16 border-b border-white/10 shrink-0">
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.17</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.21</span></span>
         </div>
-
+ 
         <div class="profile-section">
             <input type="file" id="avatarUpload" class="hidden" accept="image/*" onchange="handleAvatarUpload(event)">
             <div class="profile-avatar-container" onclick="document.getElementById('avatarUpload').click()">
@@ -83,98 +83,105 @@
             </div>
             <input type="text" id="userName" value="Brand Name" class="profile-name-input" onchange="saveProfile()" title="點擊編輯品牌名稱">
         </div>
-        
+       
         <nav class="flex-1 overflow-y-auto custom-scrollbar flex flex-col pt-2">
             <div>
                 <a href="#" onclick="showSection('fans')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
-                      <i class="fas fa-users-cog w-6 text-center"></i> <span class="menu-text">粉絲管理列表</span>
+                    <i class="fas fa-users-cog w-6 text-center"></i> <span class="menu-text">粉絲管理列表</span>
                 </a>
                 <a href="#" onclick="showSection('manual')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
                     <i class="fas fa-keyboard w-6 text-center"></i> <span class="menu-text">手動新增紀錄</span>
-                  </a>
+                </a>
                 <a href="#" onclick="showSection('templates')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-indigo-500">
                     <i class="fas fa-pen-nib w-6 text-center"></i> <span class="menu-text">訊息模板設定</span>
                 </a>
             </div>
-
+ 
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
-
+ 
             <div>
                 <a href="#" onclick="showSection('igPosts')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-pink-500">
                     <i class="fab fa-instagram w-6 text-center text-pink-400"></i> <span class="menu-text">IG 貼文列表</span>
                 </a>
-                 <a href="#" onclick="showSection('giftPosts')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-purple-500">
+                <a href="#" onclick="showSection('giftPosts')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-purple-500">
                     <i class="fas fa-gift w-6 text-center text-purple-400"></i> <span class="menu-text">禮物貼文列表</span>
                 </a>
                 <a href="#" onclick="showSection('heartStats')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-red-500">
-                     <i class="fas fa-heart w-6 text-center text-red-400"></i> <span class="menu-text">粉絲暖心互動</span>
+                    <i class="fas fa-heart w-6 text-center text-red-400"></i> <span class="menu-text">粉絲暖心互動</span>
                 </a>
             </div>
-
+ 
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
-            
+           
             <div>
-                 <a href="#" onclick="showSection('decrypt')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-teal-500">
+                <a href="#" onclick="showSection('decrypt')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-teal-500">
                     <i class="fas fa-key w-6 text-center text-teal-400"></i> <span class="menu-text">連結解密 / 驗證</span>
                 </a>
             </div>
-
+ 
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
-             
+            
             <div>
                 <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
-                     <i class="fas fa-cloud-download-alt w-6 text-center text-yellow-400"></i> <span class="menu-text">備份資料 (雲端)</span>
+                    <i class="fas fa-save w-6 text-center text-yellow-400"></i> <span class="menu-text">備份資料</span>
                 </a>
                 <a href="#" onclick="document.getElementById('restoreImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
-                    <i class="fas fa-cloud-upload-alt w-6 text-center text-yellow-400"></i> <span class="menu-text">還原資料 (雲端)</span>
-                 </a>
+                    <i class="fas fa-folder-open w-6 text-center text-yellow-400"></i> <span class="menu-text">還原資料</span>
+                </a>
+                <a href="#" onclick="document.getElementById('excelImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-file-import w-6 text-center text-green-400"></i> <span class="menu-text">匯入 Excel</span>
+                </a>
+                <a href="#" onclick="exportExcel()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-file-export w-6 text-center text-green-400"></i> <span class="menu-text">匯出 Excel</span>
+                </a>
                 <a href="#" onclick="clearAllData()" class="flex items-center gap-4 p-4 hover:bg-red-900/10 text-red-900 hover:text-red-500 transition-colors">
-                     <i class="fas fa-trash-alt w-6 text-center"></i> <span class="menu-text font-bold text-[10px]">清空列表資料</span>
+                    <i class="fas fa-trash-alt w-6 text-center"></i> <span class="menu-text font-bold text-[10px]">清空列表資料</span>
                 </a>
             </div>
         </nav>
-
+ 
         <div class="p-4 border-t border-white/10 bg-black/20 shrink-0">
             <a href="https://www.instagram.com" target="_blank" class="flex items-center gap-4 text-sm text-gray-400 hover:text-white group">
-                <i class="fab fa-instagram w-6 text-center text-pink-500 group-hover:scale-110 transition-transform"></i> 
+                <i class="fab fa-instagram w-6 text-center text-pink-500 group-hover:scale-110 transition-transform"></i>
                 <span class="menu-text font-bold">開啟 Instagram</span>
             </a>
         </div>
     </aside>
-
+ 
     <main class="flex-1 flex flex-col overflow-hidden relative">
         <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)">
         <input type="file" id="restoreImport" class="hidden" accept=".json" onchange="handleRestore(event)">
-
+ 
         <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0">
             <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide">粉絲滿意度管理系統</h2>
+           
             <div class="flex gap-4 items-center">
-            
                 <div class="flex items-center gap-1 p-1">
                     <button onclick="undo()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-sm" title="復原 (Ctrl+Z)">
-                       <i class="fas fa-undo"></i>
+                        <i class="fas fa-undo"></i>
                     </button>
                     <div class="w-[1px] h-3 bg-white/10 my-auto"></div>
                     <button onclick="redo()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-sm" title="重作 (Ctrl+Y)">
-                       <i class="fas fa-redo"></i>
+                        <i class="fas fa-redo"></i>
                     </button>
                 </div>
-
+ 
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all">
                     粉絲人數: 0
                 </div>
-
+ 
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
-                    <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..." 
-                           class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-4 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
-                           onkeyup="renderTable()">
+                    <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
+       class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-4 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
+       onkeyup="handleGlobalSearch()">
+
                 </div>
             </div>
         </header>
-
+ 
          <div id="contentArea" class="flex-1 overflow-hidden p-0 bg-[#0a0a0a]">
-            
+           
             <div id="fansSection" class="h-full p-4 flex flex-col">
                 <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
                     <div class="table-container custom-scrollbar">
@@ -182,53 +189,45 @@
                             <thead>
                                 <tr>
                                     <th width="4%" class="text-center sticky-col-1"><i class="fas fa-star text-yellow-500"></i></th>
-                                    
                                     <th width="15%" class="sticky-col-2 cursor-pointer select-none"
-                                        onmousedown="startHeaderLongPress(event, 'username')" 
-                                        onmouseup="cancelHeaderLongPress()" 
+                                        onmousedown="startHeaderLongPress(event, 'username')"
+                                        onmouseup="cancelHeaderLongPress()"
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'username')"
                                         ontouchend="cancelHeaderLongPress()">
                                         帳號名稱
                                     </th>
-
-                                   <th width="8%">暱稱</th>
-                                    
+                                    <th width="8%">暱稱</th>
                                     <th width="15%" class="text-indigo-300 cursor-pointer select-none"
-                                        onmousedown="startHeaderLongPress(event, 'status')" 
-                                        onmouseup="cancelHeaderLongPress()" 
+                                        onmousedown="startHeaderLongPress(event, 'status')"
+                                        onmouseup="cancelHeaderLongPress()"
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'status')"
                                         ontouchend="cancelHeaderLongPress()">
                                         <i class="fas fa-history mr-1"></i>最新動態
                                     </th>
-
                                     <th width="20%" class="cursor-pointer select-none"
-                                        onmousedown="startHeaderLongPress(event, 'interactions')" 
-                                        onmouseup="cancelHeaderLongPress()" 
+                                        onmousedown="startHeaderLongPress(event, 'interactions')"
+                                        onmouseup="cancelHeaderLongPress()"
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'interactions')"
                                         ontouchend="cancelHeaderLongPress()">
                                         互動標籤
                                     </th>
-
-                                     <th width="23%">詳細內容</th>
-                                    
+                                    <th width="23%">詳細內容</th>
                                     <th width="8%" class="cursor-pointer select-none"
-                                        onmousedown="startHeaderLongPress(event, 'sent')" 
-                                        onmouseup="cancelHeaderLongPress()" 
+                                        onmousedown="startHeaderLongPress(event, 'sent')"
+                                        onmouseup="cancelHeaderLongPress()"
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'sent')"
                                         ontouchend="cancelHeaderLongPress()">
                                         訊息
                                     </th>
-
-                                     <th width="7%" class="text-center sticky-col-last">操作</th>
+                                    <th width="7%" class="text-center sticky-col-last">操作</th>
                                 </tr>
-                             </thead>
-                             <tbody id="fanTableBody"></tbody>
+                            </thead>
+                            <tbody id="fanTableBody"></tbody>
                         </table>
-            
                         <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-gray-500">
                             <i class="fas fa-file-csv text-4xl mb-4 opacity-50"></i>
                             <p>尚無資料，請匯入 Excel/CSV 或手動新增</p>
@@ -237,35 +236,41 @@
                     </div>
                 </div>
             </div>
-
+ 
             <div id="manualSection" class="hidden h-full p-8 overflow-y-auto">
                 <div class="max-w-3xl mx-auto bg-[#1a1a1a] rounded-2xl border border-indigo-500/20 shadow-2xl overflow-hidden">
                     <div class="flex border-b border-white/10 bg-[#222]">
                         <button onclick="switchManualTab('standard')" id="tabBtnStd" class="flex-1 py-4 text-center font-bold text-indigo-400 border-b-2 border-indigo-500 bg-[#1a1a1a]">
                             <i class="fas fa-keyboard mr-2"></i>手動新增互動紀錄
-                         </button>
+                        </button>
                         <button onclick="switchManualTab('heart')" id="tabBtnHeart" class="flex-1 py-4 text-center font-bold text-gray-500 hover:text-pink-400 hover:bg-[#2a1a1a] transition-all">
                             <i class="fas fa-heart mr-2"></i>暖心時刻
-                         </button>
+                        </button>
                     </div>
-
+ 
                     <div class="p-8">
                         <div id="manualStandardForm" class="space-y-6 block">
                             <div class="grid grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username) <span class="text-red-500">*</span></label>
-                                    <input type="text" id="manualUsername" list="usernameOptions" placeholder="輸入帳號" class="input-dark py-3" oninput="validateInput(this)">
+                                    <input type="text" id="manualUsername" list="usernameOptions" placeholder="輸入帳號" class="input-dark py-3" oninput="validateInput(this); autoFillManualNickname()">
                                     <datalist id="usernameOptions"></datalist>
                                     <p class="text-[10px] text-red-500 mt-1 hidden" id="manualUsernameErr">格式錯誤</p>
                                 </div>
                                 <div>
-                                    <label class="block text-gray-400 text-xs mb-2">暱稱 (選填)</label>
-                                    <input type="text" id="manualNickname" placeholder="粉絲怎麼稱呼？" class="input-dark py-3">
+                                    <label class="block text-gray-400 text-xs mb-2">暱稱 / 語言</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="manualNickname" placeholder="粉絲稱呼" class="input-dark py-3 w-[70%]">
+                                        <select id="manualLang" class="input-dark py-3 w-[30%] text-center">
+                                            <option value="中" selected>中</option>
+                                            <option value="英">英</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="bg-black/20 p-4 rounded-lg border border-white/5">
                                 <div class="mb-3 text-indigo-300 text-sm font-bold">互動類型 (可多選)</div>
-                                 <div class="grid grid-cols-4 gap-3 interaction-checkboxes">
+                                <div class="grid grid-cols-4 gap-3 interaction-checkboxes">
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 text-pink-400 font-bold border border-pink-900/30 bg-pink-900/10 p-2 rounded"><input type="checkbox" value="粉絲" class="accent-indigo-500"> 粉絲</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
@@ -274,7 +279,7 @@
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="回覆" class="accent-indigo-500"> 回覆</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="提及" class="accent-indigo-500"> 提及</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="轉發" class="accent-indigo-500"> 轉發</label>
-                                 </div>
+                                </div>
                             </div>
                             <div class="mt-4">
                                 <label class="block text-gray-400 text-xs mb-2">最新互動/活動日期</label>
@@ -292,7 +297,7 @@
                             </div>
                             <button onclick="addManualInteraction()" class="btn-indigo w-full py-3 rounded-lg font-bold text-white text-lg shadow-lg hover:shadow-indigo-500/50">新增並更新</button>
                         </div>
-
+ 
                         <div id="manualHeartForm" class="hidden space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -304,7 +309,6 @@
                                     <input type="text" id="heartNick" class="input-dark py-3" readonly>
                                 </div>
                             </div>
-                            
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">回應日期</label>
                                 <div class="date-segment-container">
@@ -315,7 +319,6 @@
                                     <input type="text" id="heartDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
                                 </div>
                             </div>
-
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">回應項目</label>
                                 <select id="heartResponseItem" class="input-dark py-3">
@@ -325,27 +328,27 @@
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">回應內容 (可換行)</label>
                                 <textarea id="heartContent" placeholder="輸入暖心回應內容..." class="input-dark h-32"></textarea>
-                             </div>
+                            </div>
                             <button onclick="addHeartData()" class="w-full py-3 rounded-lg font-bold text-white text-lg shadow-lg bg-pink-700 hover:bg-pink-600 transition-all">新增暖心紀錄</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div id="igPostsSection" class="hidden h-full p-8 overflow-y-auto">
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-[#1a1a1a] p-4 rounded-xl border border-white/10 mb-4">
+ 
+            <div id="igPostsSection" class="hidden h-full flex flex-col p-4">
+                <div class="w-full max-w-6xl mx-auto flex flex-col h-full">
+                    <div class="bg-[#1a1a1a] p-4 rounded-xl border border-white/10 mb-4 shrink-0 shadow-lg z-10">
                         <h3 class="text-lg font-bold mb-3 text-pink-400"><i class="fab fa-instagram mr-2"></i>IG 貼文管理</h3>
                         <div class="grid grid-cols-4 gap-3 mb-3">
                             <input type="text" id="igTopic" placeholder="主題" class="input-dark text-xs">
-                            <input type="text" id="igFile" placeholder="檔案名稱" class="input-dark text-xs">
-                            <input type="text" id="igContent" placeholder="內文" class="input-dark text-xs">
+                            <textarea id="igFile" placeholder="檔案名稱 (可 Enter 換行)" class="input-dark text-xs h-10 py-2 resize-none leading-normal"></textarea>
+                            <textarea id="igContent" placeholder="內文 (可 Enter 換行)" class="input-dark text-xs h-10 py-2 resize-none leading-normal"></textarea>
                             <input type="text" id="igHash" placeholder="#hashtag" class="input-dark text-xs">
                         </div>
                         <div class="flex items-center gap-4 mb-3">
-                             <div class="flex items-center gap-2">
-                                 <label class="text-gray-400 text-xs whitespace-nowrap">發布日期</label>
-                                 <div class="date-segment-container">
+                            <div class="flex items-center gap-2">
+                                <label class="text-gray-400 text-xs whitespace-nowrap">發布日期</label>
+                                <div class="date-segment-container">
                                     <input type="text" id="igDateYYYY" maxlength="4" placeholder="YYYY" style="width: 40px;">
                                     <span class="text-gray-500">/</span>
                                     <input type="text" id="igDateMM" maxlength="2" placeholder="MM" style="width: 24px;">
@@ -356,86 +359,93 @@
                             <button onclick="addIgPost()" class="btn-indigo flex-1 py-1.5 rounded font-bold text-white text-sm">新增貼文資料</button>
                         </div>
                     </div>
-                    <div class="bg-[#151515] rounded-lg border border-white/5 overflow-hidden shadow-xl">
-                         <table class="w-full text-left text-sm">
-                             <thead>
-                                <tr>
-                                    <th width="20%">主題</th>
-                                    <th width="30%">內文</th>
-                                    <th width="20%">檔案名稱</th>
-                                    <th width="20%">Hashtag</th>
-                                    <th width="10%">操作</th>
-                                </tr>
-                            </thead>
-                             <tbody id="igPostTableBody"></tbody>
-                        </table>
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
+                         <div class="h-full overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">主題</th>
+                                        <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
+                                        <th width="30%" class="sticky top-0 bg-[#202020] z-20 shadow-md">內文</th>
+                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">檔案名稱</th>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">Hashtag</th>
+                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="igPostTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div id="giftPostsSection" class="hidden h-full p-8 overflow-y-auto">
-                 <div class="max-w-4xl mx-auto">
-                    <div class="bg-[#1a1a1a] p-4 rounded-xl border border-white/10 mb-4">
+ 
+            <div id="giftPostsSection" class="hidden h-full flex flex-col p-4">
+                <div class="w-full max-w-6xl mx-auto flex flex-col h-full">
+                    <div class="bg-[#1a1a1a] p-4 rounded-xl border border-white/10 mb-4 shrink-0 shadow-lg z-10">
                         <h3 class="text-lg font-bold mb-3 text-purple-400"><i class="fas fa-gift mr-2"></i>禮物貼文管理</h3>
                         <div class="grid grid-cols-3 gap-3 mb-3">
                             <input type="text" id="giftId" placeholder="禮物 ID" class="input-dark text-xs">
-                            <input type="text" id="giftFile" placeholder="檔案名稱" class="input-dark text-xs">
-                            <input type="text" id="giftDesc" placeholder="描述" class="input-dark text-xs">
+                            <textarea id="giftFile" placeholder="檔案名稱 (可 Enter 換行)" class="input-dark text-xs h-10 py-2 resize-none leading-normal"></textarea>
+                            <textarea id="giftDesc" placeholder="描述 (可 Enter 換行)" class="input-dark text-xs h-10 py-2 resize-none leading-normal"></textarea>
                         </div>
                         <div class="flex items-center gap-4 mb-3">
                             <div class="flex items-center gap-2">
-                                 <label class="text-gray-400 text-xs whitespace-nowrap">發布日期</label>
-                                 <div class="date-segment-container">
+                                <label class="text-gray-400 text-xs whitespace-nowrap">發布日期</label>
+                                <div class="date-segment-container">
                                     <input type="text" id="giftDateYYYY" maxlength="4" placeholder="YYYY" style="width: 40px;">
                                     <span class="text-gray-500">/</span>
                                     <input type="text" id="giftDateMM" maxlength="2" placeholder="MM" style="width: 24px;">
                                     <span class="text-gray-500">/</span>
                                     <input type="text" id="giftDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
                                 </div>
-                             </div>
-                             <button onclick="addGiftPost()" class="btn-indigo flex-1 py-1.5 rounded font-bold text-white text-sm">新增禮物資料</button>
+                            </div>
+                            <button onclick="addGiftPost()" class="btn-indigo flex-1 py-1.5 rounded font-bold text-white text-sm">新增禮物資料</button>
                         </div>
                     </div>
-                    <div class="bg-[#151515] rounded-lg border border-white/5 overflow-hidden shadow-xl">
-                         <table class="w-full text-left text-sm">
-                            <thead>
-                                <tr>
-                                    <th width="15%">禮物 ID</th>
-                                    <th width="15%">日期</th>
-                                    <th width="20%">檔案名稱</th>
-                                    <th width="40%">描述</th>
-                                    <th width="10%">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="giftPostTableBody"></tbody>
-                        </table>
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
+                        <div class="h-full overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">禮物 ID</th>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
+                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">檔案名稱</th>
+                                        <th width="40%" class="sticky top-0 bg-[#202020] z-20 shadow-md">描述</th>
+                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="giftPostTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div id="heartStatsSection" class="hidden h-full p-8 overflow-y-auto">
-                <div class="max-w-5xl mx-auto bg-[#1a1a1a] p-8 rounded-2xl border border-red-500/20 shadow-2xl">
-                    <h3 class="text-2xl font-bold mb-6 text-red-400 border-b border-white/10 pb-4">
-                       <i class="fas fa-heart mr-2"></i>暖心互動紀錄表
+ 
+            <div id="heartStatsSection" class="hidden h-full flex flex-col p-8">
+                <div class="w-full max-w-5xl mx-auto flex flex-col h-full bg-[#1a1a1a] p-8 rounded-2xl border border-red-500/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-red-400 border-b border-white/10 pb-4 shrink-0">
+                        <i class="fas fa-heart mr-2"></i>暖心互動紀錄表
                     </h3>
-                    <div class="bg-[#151515] rounded-lg border border-white/5 overflow-hidden">
-                         <table class="w-full text-left text-sm">
-                             <thead>
-                                <tr>
-                                    <th width="15%">粉絲帳號</th>
-                                    <th width="15%">粉絲暱稱</th>
-                                    <th width="10%">回應日期</th>
-                                    <th width="10%">回應項目</th>
-                                    <th width="40%">回應內容</th>
-                                    <th width="10%">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="heartTableBody"></tbody>
-                        </table>
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative">
+                         <div class="h-full overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲帳號</th>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲暱稱</th>
+                                        <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應日期</th>
+                                        <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應項目</th>
+                                        <th width="40%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應內容</th>
+                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="heartTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
+ 
             <div id="templatesSection" class="hidden h-full p-8 overflow-y-auto">
                 <div class="max-w-3xl mx-auto">
                     <div class="bg-[#1a1a1a] p-6 rounded-xl border border-white/10 mb-8">
@@ -456,29 +466,29 @@
                     <div id="templateListDisplay" class="space-y-3"></div>
                 </div>
             </div>
-
+ 
             <div id="decryptSection" class="hidden h-full p-8 overflow-y-auto">
                 <div class="max-w-2xl mx-auto bg-[#1a1a1a] p-8 rounded-2xl border border-teal-500/30 shadow-2xl">
                     <h3 class="text-2xl font-bold mb-6 text-teal-400 border-b border-white/10 pb-4">連結解密與驗證</h3>
-                     <div class="space-y-6">
+                    <div class="space-y-6">
                         <div>
                             <label class="block text-gray-400 text-xs mb-2">貼上完整加密連結 或 Token 亂碼</label>
                             <textarea id="decryptInput" placeholder="例如: https://.../vault/secure/eyJ..." class="input-dark h-24 font-mono text-xs"></textarea>
-                         </div>
+                        </div>
                         <button onclick="runDecryption()" class="w-full py-3 rounded-lg font-bold text-black bg-teal-500 hover:bg-teal-400 shadow-lg transition-all">開始解密</button>
                         <div id="decryptResult" class="hidden bg-black/40 p-4 rounded border border-white/10 font-mono text-sm space-y-3">
                             <div class="flex justify-between border-b border-white/10 pb-2"><span class="text-gray-500">狀態</span><span id="resStatus" class="font-bold"></span></div>
                             <div class="flex justify-between"><span class="text-gray-500">貼文 ID (PID)</span><span id="resPid" class="text-yellow-400"></span></div>
                             <div class="flex justify-between"><span class="text-gray-500">目標粉絲 (User)</span><span id="resUser" class="text-pink-400"></span></div>
-                             <div class="flex justify-between"><span class="text-gray-500">生成時間</span><span id="resTime" class="text-blue-300"></span></div>
-                            <div class="flex justify-between"><span class="text-gray-500">有效期限 (24h)</span><span id="resExpire" class="text-gray-300"></span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">生成時間</span><span id="resTime" class="text-blue-300"></span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
+ 
     <div id="msgModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-indigo-500/50 w-[600px] rounded-xl shadow-2xl overflow-hidden">
             <div class="bg-indigo-900/20 p-4 border-b border-indigo-500/30 flex justify-between items-center">
@@ -492,12 +502,18 @@
                 </div>
                 <div class="bg-indigo-900/10 p-3 rounded border border-indigo-500/20">
                     <label class="text-[10px] uppercase tracking-wider text-indigo-400 font-bold mb-2 block flex justify-between">
-                         <span><i class="fas fa-shield-alt mr-1"></i>安全追蹤連結 (Next.js)</span>
-                        <span class="text-gray-500 font-normal normal-case">已啟用 24h 時效加密</span>
+                        <span><i class="fas fa-shield-alt mr-1"></i>安全追蹤連結 (Next.js)</span>
+                        <span class="text-gray-500 font-normal normal-case">請選擇時效</span>
                     </label>
-                    <div class="flex gap-2">
-                        <input type="text" id="targetLinkInput" placeholder="輸入禮物貼文 ID" class="input-dark text-xs h-9">
-                        <button onclick="generateHashLink()" id="genLinkBtn" class="btn-indigo px-4 py-1 rounded text-xs whitespace-nowrap font-bold h-9"><i class="fas fa-lock mr-1"></i>加密生成</button>
+                    <div class="flex gap-2 items-center">
+                        <select id="targetLinkInput" class="input-dark text-xs h-9 w-3/5">
+                            <option value="">-- 選擇禮物 --</option>
+                        </select>
+                        <div class="flex items-center gap-2 text-[10px] text-gray-400 whitespace-nowrap px-1">
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="24" checked class="accent-indigo-500"> 24h</label>
+                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="168" class="accent-indigo-500"> 7day</label>
+                        </div>
+                        <button onclick="generateHashLink()" id="genLinkBtn" class="btn-indigo px-3 py-1 rounded text-xs whitespace-nowrap font-bold h-9 flex-1"><i class="fas fa-lock mr-1"></i>生成</button>
                     </div>
                     <input type="hidden" id="finalGeneratedLink">
                     <p class="text-[10px] text-gray-500 mt-1 italic">* 系統將「粉絲帳號+目前時間」打包加密成亂碼參數，Next.js 端需解碼驗證。</p>
@@ -511,7 +527,7 @@
             </div>
         </div>
     </div>
-
+ 
     <div id="editFanModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-indigo-500/30 w-[650px] rounded-xl shadow-2xl overflow-hidden">
             <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
@@ -538,7 +554,7 @@
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="投票" class="accent-indigo-500"> 投票</label>
-                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="分享" class="accent-indigo-500"> 分享</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="分享" class="accent-indigo-500"> 分享</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="回覆" class="accent-indigo-500"> 回覆</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="提及" class="accent-indigo-500"> 提及</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="轉發" class="accent-indigo-500"> 轉發</label>
@@ -556,9 +572,86 @@
             </div>
         </div>
     </div>
-
+ 
+    <div id="editIgModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-pink-500/30 w-[600px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-pink-400 font-bold text-lg"><i class="fas fa-edit mr-2"></i>編輯 IG 貼文</h3>
+                <button onclick="document.getElementById('editIgModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="editIgIndex">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-gray-400 text-xs mb-2">主題</label><input type="text" id="editIgTopic" class="input-dark"></div>
+                    <div><label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label><input type="text" id="editIgDate" class="input-dark"></div>
+                </div>
+                <div><label class="block text-gray-400 text-xs mb-2">檔案名稱 (可換行)</label><textarea id="editIgFile" class="input-dark h-20"></textarea></div>
+                <div><label class="block text-gray-400 text-xs mb-2">內文 (可換行)</label><textarea id="editIgContent" class="input-dark h-24"></textarea></div>
+                <div><label class="block text-gray-400 text-xs mb-2">Hashtag</label><input type="text" id="editIgHash" class="input-dark"></div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="document.getElementById('editIgModal').classList.add('hidden')" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="saveIgPostEdit()" class="btn-indigo px-6 py-2 rounded text-white font-bold">儲存變更</button>
+            </div>
+        </div>
+    </div>
+ 
+    <div id="editGiftModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-purple-500/30 w-[600px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-purple-400 font-bold text-lg"><i class="fas fa-edit mr-2"></i>編輯禮物貼文</h3>
+                <button onclick="document.getElementById('editGiftModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="editGiftIndex">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-gray-400 text-xs mb-2">禮物 ID</label><input type="text" id="editGiftId" class="input-dark"></div>
+                    <div><label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label><input type="text" id="editGiftDate" class="input-dark"></div>
+                </div>
+                <div><label class="block text-gray-400 text-xs mb-2">檔案名稱 (可換行)</label><textarea id="editGiftFile" class="input-dark h-20"></textarea></div>
+                <div><label class="block text-gray-400 text-xs mb-2">描述 (可換行)</label><textarea id="editGiftDesc" class="input-dark h-24"></textarea></div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="document.getElementById('editGiftModal').classList.add('hidden')" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="saveGiftPostEdit()" class="btn-indigo px-6 py-2 rounded text-white font-bold">儲存變更</button>
+            </div>
+        </div>
+    </div>
+ 
+    <div id="editHeartModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-red-500/30 w-[600px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-red-400 font-bold text-lg"><i class="fas fa-edit mr-2"></i>編輯暖心紀錄</h3>
+                <button onclick="document.getElementById('editHeartModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="editHeartIndex">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-gray-400 text-xs mb-2">粉絲帳號</label><input type="text" id="editHeartUser" class="input-dark"></div>
+                    <div><label class="block text-gray-400 text-xs mb-2">粉絲暱稱</label><input type="text" id="editHeartNick" class="input-dark"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-gray-400 text-xs mb-2">回應日期</label><input type="text" id="editHeartDate" class="input-dark"></div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">回應項目</label>
+                        <select id="editHeartItem" class="input-dark py-2">
+                            <option value="DM">DM (私訊)</option>
+                             <optgroup label="IG 貼文" id="editHeartItemIg"></optgroup>
+                             <optgroup label="禮物 ID" id="editHeartItemGift"></optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div><label class="block text-gray-400 text-xs mb-2">回應內容 (可換行)</label><textarea id="editHeartContent" class="input-dark h-24"></textarea></div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="document.getElementById('editHeartModal').classList.add('hidden')" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="saveHeartEdit()" class="btn-indigo px-6 py-2 rounded text-white font-bold">儲存變更</button>
+            </div>
+        </div>
+    </div>
+ 
     <div id="toast" class="fixed bottom-8 right-8 bg-indigo-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">操作成功</div>
-
+ 
     <div id="filterMenu" class="fixed z-[600] hidden bg-[#1a1a1a] border border-indigo-500/50 rounded-lg shadow-2xl flex-col w-64 max-h-[450px]" onclick="event.stopPropagation()">
         <div class="p-3 border-b border-white/10 flex justify-between items-center bg-[#252525]">
             <span class="text-indigo-400 font-bold text-sm"><i class="fas fa-sort-amount-down mr-2"></i>欄位操作</span>
@@ -569,65 +662,63 @@
         </div>
         <div class="p-3 border-t border-white/10 flex justify-end bg-[#252525]"><p class="text-[10px] text-gray-500">提示：點擊 X 關閉視窗</p></div>
     </div>
-
+ 
     <script>
         let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
-        // V5.3 New Data Structures
         let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
         let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
         let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
-        
+       
         let activeFanId = null;
         let headerLongPressTimer;
         let currentFilterCol = null;
-        let activeSort = null;
-        let activeFilters = { pending: false, tags: [] };
-        // 歷史紀錄堆疊
+        let activeSort = { col: 'status', order: 'new' }; // 預設排序
+        let activeFilters = { pending: false, oldSent: false, tags: [] };
         let historyStack = [];
         let redoStack = [];
         const MAX_HISTORY = 50;
-        let isUndoRedoAction = false; 
-
-        // 紀錄狀態到歷史
-        function pushToHistory() {
-            if (isUndoRedoAction) return;
-            const currentState = JSON.stringify(fans);
-            historyStack.push(currentState);
-            if (historyStack.length > MAX_HISTORY) historyStack.shift();
-            redoStack = [];
+        let isUndoRedoAction = false;
+ 
+        // 紀錄狀態到歷史 (修正版：在變更前抓取舊資料)
+        function saveData(recordHistory = true) {
+            if (recordHistory) {
+                // 讀取當前 LocalStorage 的值作為「上一步」
+                const prevState = localStorage.getItem('fans') || '[]';
+                historyStack.push(prevState);
+                if (historyStack.length > MAX_HISTORY) historyStack.shift();
+                redoStack = [];
+            }
+            localStorage.setItem('fans', JSON.stringify(fans));
         }
-
+ 
         function undo() {
             if (historyStack.length === 0) return showToast("沒有可復原的動作");
             isUndoRedoAction = true;
+            // 復原前，將當前狀態推入 Redo
             redoStack.push(JSON.stringify(fans));
             const prevState = historyStack.pop();
             fans = JSON.parse(prevState);
-            saveData(false);
+            // 寫入 Storage 但不推入 History (避免無限循環)
+            localStorage.setItem('fans', JSON.stringify(fans));
             renderTable();
             showToast("已復原");
             isUndoRedoAction = false;
         }
-
+ 
         function redo() {
             if (redoStack.length === 0) return showToast("沒有可重作的動作");
             isUndoRedoAction = true;
+            // 重作前，將當前狀態推入 History
             historyStack.push(JSON.stringify(fans));
             const nextState = redoStack.pop();
             fans = JSON.parse(nextState);
-            saveData(false);
+            localStorage.setItem('fans', JSON.stringify(fans));
             renderTable();
             showToast("已重作");
             isUndoRedoAction = false;
         }
-
-        // 修改 saveData 以支援歷史紀錄旗標
-        function saveData(recordHistory = true) { 
-            if (recordHistory) pushToHistory();
-            localStorage.setItem('fans', JSON.stringify(fans)); 
-        }
-
+ 
         function loadProfile() {
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand Name', avatar: 'https://ui-avatars.com/api/?name=Brand&background=4B0082&color=fff' };
             document.getElementById('userName').value = profile.name;
@@ -646,7 +737,7 @@
             reader.onload = (e) => { document.getElementById('userAvatar').src = e.target.result; saveProfile(); };
             reader.readAsDataURL(file);
         }
-
+ 
         function validateInput(input) {
             const regex = /^[a-zA-Z0-9._]+$/;
             const errId = input.id + "Err";
@@ -659,12 +750,11 @@
                 if(errEl) errEl.classList.add('hidden'); return true;
             }
         }
-
+ 
         function parseDate(str) { if (!str) return 0;
             const d = new Date(str); return isNaN(d.getTime()) ? 0 : d.getTime();
         }
-        
-        // 輔助函式: 解析 MM/DD HH:mm
+       
         function parseDate2(str) {
             if (!str) return 0;
             const now = new Date();
@@ -675,7 +765,7 @@
             const date = new Date(now.getFullYear(), m - 1, d, h, min);
             return date.getTime();
         }
-
+ 
         function excelDateToJSDate(serial) {
            var utc_days  = Math.floor(serial - 25569);
            var utc_value = utc_days * 86400;
@@ -683,25 +773,40 @@
            return date_info.toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
         }
 
+         function handleGlobalSearch() {
+            // 判斷目前顯示哪個區塊，決定執行哪個渲染函式
+            if (!document.getElementById('fansSection').classList.contains('hidden')) {
+                renderTable();
+            } else if (!document.getElementById('heartStatsSection').classList.contains('hidden')) {
+                renderHeartData();
+            }
+        }
+
         function renderTable() {
             const tbody = document.getElementById('fanTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
             const emptyState = document.getElementById('emptyState');
             tbody.innerHTML = '';
-            
+           
             const totalFanCount = fans.filter(f => f.interactions && f.interactions.includes('粉絲')).length;
             const countBadge = document.getElementById('fanCountBadge');
             if(countBadge) countBadge.innerText = `粉絲人數: ${totalFanCount}`;
-
+ 
             let filteredFans = fans.filter(f => {
-                const matchesSearch = (f.username || '').toLowerCase().includes(searchTerm) || 
-                                      (f.nickname || '').toLowerCase().includes(searchTerm) || 
-                                      (f.interactions || []).join('').toLowerCase().includes(searchTerm) || 
+                const matchesSearch = (f.username || '').toLowerCase().includes(searchTerm) ||
+                                      (f.nickname || '').toLowerCase().includes(searchTerm) ||
+                                      (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
                                       (f.details || '').toLowerCase().includes(searchTerm);
                 if (!matchesSearch) return false;
                 if (activeFilters.pending && f.sent) return false;
-
-                // 互動標籤篩選：改為交集 (AND)
+ 
+                // 新增超過14天篩選 (針對已發送)
+                const DAYS_14_MS = 1209600000;
+                if (activeFilters.oldSent) {
+                    const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
+                    if (!isOld) return false;
+                }
+ 
                 if (activeFilters.tags.length > 0) {
                     const matchAll = activeFilters.tags.every(tag => {
                         if (tag === '非粉絲') return !f.interactions.includes('粉絲');
@@ -721,16 +826,13 @@
                             const dateB = parseDate(b.latestDate);
                             return order === 'new' ? dateB - dateA : dateA - dateB;
                         }
-                        // 訊息排序：待處理視為最新 (權重最大)
                         if (col === 'sent') {
                             const getSentValue = (fan) => {
                                 if (!fan.sent) return 9999999999999;
-                                // 待處理 = 無限大
-                                return fan.sentDate ? parseDate2(fan.sentDate) : 0; 
+                                return fan.sentDate ? parseDate2(fan.sentDate) : 0;
                             };
                             const valA = getSentValue(a);
                             const valB = getSentValue(b);
-                            // date_new (新到舊): 大(待處理) -> 小(舊訊息)
                             return order === 'date_new' ? valB - valA : valA - valB;
                         }
                     }
@@ -741,20 +843,32 @@
                 starredFans.sort(sorter); otherFans.sort(sorter);
                 filteredFans = [...starredFans, ...otherFans];
             }
-            
+           
             if (filteredFans.length === 0) {
                 emptyState.classList.remove('hidden');
             } else {
                 emptyState.classList.add('hidden');
+                const DAYS_14 = 1209600000; // 14 days in ms
+ 
                 filteredFans.forEach(fan => {
                     const row = document.createElement('tr'); row.className = 'table-row';
-                    const statusHtml = fan.sent 
-                        ? `<div class="flex flex-col"><span class="text-green-400 text-xs font-bold border border-green-400/30 px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${fan.sentDate || ''}</span></div>`
+                    
+                    const isOldSent = fan.sentDate && (Date.now() - parseDate2(fan.sentDate)) > DAYS_14;
+                    const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
+                    const statusHtml = fan.sent
+                        ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${fan.sentDate || ''}</span></div>`
                         : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
-                    const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="text-white font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || '未知日期'}</span></div>` : `<span class="text-gray-600 text-xs">-</span>`;
+                    
+                    const isOldActivity = (Date.now() - parseDate(fan.latestDate)) > DAYS_14;
+                    const actColor = isOldActivity ? 'text-[#4B0082]' : 'text-white';
+                    const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="${actColor} font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || '未知日期'}</span></div>` : `<span class="text-gray-600 text-xs">-</span>`;
+                    
                     const isValidAccount = /^[a-zA-Z0-9._]+$/.test(fan.username);
                     const nameClass = isValidAccount ? "text-indigo-300 hover:text-indigo-100 hover:underline" : "text-red-800 font-bold hover:text-red-600 hover:underline";
-                    const accountLink = `<span class="${nameClass} cursor-pointer select-none" onmousedown="startFanLongPress(event, '${fan.username}')" onmouseup="cancelFanLongPress(this, '${fan.username}')" ontouchstart="startFanLongPress(event, '${fan.username}')" ontouchend="cancelFanLongPress(this, '${fan.username}')">@${fan.username}</span>`;
+                    
+                    const langBadge = `<span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-[#4B0082] text-[#D8BFD8] text-[10px] font-bold rounded-[2px]">${fan.language || '中'}</span>`;
+                    const accountLink = `<span class="${nameClass} cursor-pointer select-none" onmousedown="startFanLongPress(event, '${fan.username}')" onmouseup="cancelFanLongPress(this, '${fan.username}')" ontouchstart="startFanLongPress(event, '${fan.username}')" ontouchend="cancelFanLongPress(this, '${fan.username}')">@${fan.username}</span>${langBadge}`;
+                    
                     const tagsHtml = fan.interactions.map(tag => {
                         const style = tag === '粉絲' ? 'bg-pink-900/40 text-pink-200 border-pink-500/30' : 'bg-white/5 text-gray-300 border-white/10';
                         return `<span class="px-2 py-0.5 rounded text-xs border whitespace-nowrap ${style}">${tag}</span>`;
@@ -779,146 +893,181 @@
                 });
             }
         }
-
+ 
         // --- New Render Functions ---
         function renderIgPosts() {
             const tbody = document.getElementById('igPostTableBody');
             tbody.innerHTML = igPosts.map((p, idx) => `
                 <tr class="table-row">
                     <td class="font-bold text-pink-200">${p.topic}</td>
-                    <td class="text-gray-400 text-xs">${p.content}</td>
-                    <td class="text-gray-400 text-xs">${p.fileName}</td>
+                    <td class="text-gray-500 text-xs">${p.date || '-'}</td>
+                    <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.content}</td>
+                    <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.fileName}</td>
                     <td class="text-blue-300 text-xs">${p.hashtag}</td>
-                    <td>
-                        <button onclick="editIgPost(${idx})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
+                    <td class="text-center">
+                        <button onclick="openEditIgPostModal(${idx})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteIgPost(${idx})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
-
+ 
         function renderGiftPosts() {
             const tbody = document.getElementById('giftPostTableBody');
             tbody.innerHTML = giftPosts.map((p, idx) => `
                 <tr class="table-row">
                     <td class="font-bold text-purple-200">${p.giftId}</td>
                     <td class="text-gray-400 text-xs">${p.date}</td>
-                    <td class="text-gray-400 text-xs">${p.fileName}</td>
-                    <td class="text-gray-300 text-xs">${p.desc}</td>
-                    <td>
-                        <button onclick="editGiftPost(${idx})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
+                    <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.fileName}</td>
+                    <td class="text-gray-300 text-xs whitespace-pre-wrap">${p.desc}</td>
+                    <td class="text-center">
+                        <button onclick="openEditGiftPostModal(${idx})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteGiftPost(${idx})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
-
+ 
+        
         function renderHeartData() {
             const tbody = document.getElementById('heartTableBody');
-            tbody.innerHTML = heartData.map((d, idx) => `
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+
+            // 1. 先將原始索引 (originalIndex) 綁定到物件上，避免排序後索引錯亂
+            let displayData = heartData.map((d, index) => ({ ...d, originalIndex: index }));
+
+            // 2. 處理搜尋過濾
+            if (searchTerm) {
+                displayData = displayData.filter(d => 
+                    (d.username || '').toLowerCase().includes(searchTerm) ||
+                    (d.nickname || '').toLowerCase().includes(searchTerm) ||
+                    (d.content || '').toLowerCase().includes(searchTerm) ||
+                    (d.responseItem || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // 3. 自動以回應日期(新-舊)排序
+            displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
+            tbody.innerHTML = displayData.map((d) => `
                 <tr class="table-row">
                     <td class="font-bold text-indigo-300">@${d.username}</td>
                     <td class="text-gray-400">${d.nickname}</td>
                     <td class="text-gray-400 text-xs">${d.date}</td>
                     <td class="text-pink-300 text-xs border border-pink-900/50 bg-pink-900/20 px-2 rounded w-fit">${d.responseItem}</td>
-                    <td class="text-gray-300 text-xs whitespace-pre-line">${d.content}</td>
-                    <td>
-                        <button onclick="editHeartData(${idx})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteHeartData(${idx})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors"><i class="fas fa-trash-alt"></i></button>
+                    <td class="text-gray-300 text-xs whitespace-pre-wrap">${d.content}</td>
+                    <td class="text-center">
+                        <button onclick="openEditHeartModal(${d.originalIndex})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteHeartData(${d.originalIndex})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
-
-        // --- New Add/Delete Logic ---
-        
-        function editIgPost(idx) {
+ 
+        // --- Add/Delete/Edit Logic ---
+ 
+        function openEditIgPostModal(idx) {
             const p = igPosts[idx];
-            document.getElementById('igTopic').value = p.topic;
-            document.getElementById('igContent').value = p.content;
-            document.getElementById('igFile').value = p.fileName;
-            document.getElementById('igHash').value = p.hashtag;
-            if(p.date) {
-                const [y, m, d] = p.date.split('/');
-                document.getElementById('igDateYYYY').value = y;
-                document.getElementById('igDateMM').value = m;
-                document.getElementById('igDateDD').value = d;
-            }
-            igPosts.splice(idx, 1);
-            renderIgPosts();
-            showToast('已載入資料至上方編輯區');
+            document.getElementById('editIgIndex').value = idx;
+            document.getElementById('editIgTopic').value = p.topic;
+            document.getElementById('editIgDate').value = p.date || '';
+            document.getElementById('editIgFile').value = p.fileName;
+            document.getElementById('editIgContent').value = p.content;
+            document.getElementById('editIgHash').value = p.hashtag;
+            document.getElementById('editIgModal').classList.remove('hidden');
         }
-
+        function saveIgPostEdit() {
+            const idx = document.getElementById('editIgIndex').value;
+            igPosts[idx] = {
+                topic: document.getElementById('editIgTopic').value,
+                date: document.getElementById('editIgDate').value,
+                fileName: document.getElementById('editIgFile').value,
+                content: document.getElementById('editIgContent').value,
+                hashtag: document.getElementById('editIgHash').value
+            };
+            localStorage.setItem('igPosts', JSON.stringify(igPosts));
+            renderIgPosts();
+            updateResponseOptions();
+            document.getElementById('editIgModal').classList.add('hidden');
+        }
+ 
         function addIgPost() {
             const topic = document.getElementById('igTopic').value.trim();
             const content = document.getElementById('igContent').value.trim();
             const fileName = document.getElementById('igFile').value.trim();
             const hashtag = document.getElementById('igHash').value.trim();
             const dateStr = `${document.getElementById('igDateYYYY').value}/${document.getElementById('igDateMM').value}/${document.getElementById('igDateDD').value}`;
-            
+           
             if(!topic) return alert("請輸入主題");
             igPosts.push({ topic, content, fileName, hashtag, date: dateStr });
             localStorage.setItem('igPosts', JSON.stringify(igPosts));
             renderIgPosts();
-            
+           
             document.getElementById('igTopic').value = '';
             document.getElementById('igContent').value = '';
             document.getElementById('igFile').value = '';
             document.getElementById('igHash').value = '';
             showToast('IG 貼文已新增');
-            updateResponseOptions(); 
+            updateResponseOptions();
         }
-        function deleteIgPost(idx) { 
-            if(confirm("確定刪除?")) { 
+        function deleteIgPost(idx) {
+            if(confirm("確定刪除?")) {
                 igPosts.splice(idx, 1);
                 localStorage.setItem('igPosts', JSON.stringify(igPosts));
                 renderIgPosts();
                 updateResponseOptions();
-            } 
-        }
-
-        function editGiftPost(idx) {
-            const p = giftPosts[idx];
-            document.getElementById('giftId').value = p.giftId;
-            document.getElementById('giftFile').value = p.fileName;
-            document.getElementById('giftDesc').value = p.desc;
-            if(p.date) {
-                const [y, m, d] = p.date.split('/');
-                document.getElementById('giftDateYYYY').value = y;
-                document.getElementById('giftDateMM').value = m;
-                document.getElementById('giftDateDD').value = d;
             }
-            giftPosts.splice(idx, 1);
-            renderGiftPosts();
-            showToast('已載入資料至上方編輯區');
         }
-
+ 
+        function openEditGiftPostModal(idx) {
+            const p = giftPosts[idx];
+            document.getElementById('editGiftIndex').value = idx;
+            document.getElementById('editGiftId').value = p.giftId;
+            document.getElementById('editGiftDate').value = p.date;
+            document.getElementById('editGiftFile').value = p.fileName;
+            document.getElementById('editGiftDesc').value = p.desc;
+            document.getElementById('editGiftModal').classList.remove('hidden');
+        }
+        function saveGiftPostEdit() {
+            const idx = document.getElementById('editGiftIndex').value;
+            giftPosts[idx] = {
+                giftId: document.getElementById('editGiftId').value,
+                date: document.getElementById('editGiftDate').value,
+                fileName: document.getElementById('editGiftFile').value,
+                desc: document.getElementById('editGiftDesc').value
+            };
+            localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
+            renderGiftPosts();
+            updateResponseOptions();
+            document.getElementById('editGiftModal').classList.add('hidden');
+        }
+ 
         function addGiftPost() {
             const giftId = document.getElementById('giftId').value.trim();
             const fileName = document.getElementById('giftFile').value.trim();
             const desc = document.getElementById('giftDesc').value.trim();
             const dateStr = `${document.getElementById('giftDateYYYY').value}/${document.getElementById('giftDateMM').value}/${document.getElementById('giftDateDD').value}`;
-            
+           
             if(!giftId) return alert("請輸入禮物 ID");
             giftPosts.push({ giftId, date: dateStr, fileName, desc });
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             renderGiftPosts();
-            
+           
             document.getElementById('giftId').value = '';
             document.getElementById('giftFile').value = '';
             document.getElementById('giftDesc').value = '';
             showToast('禮物貼文已新增');
             updateResponseOptions();
         }
-        function deleteGiftPost(idx) { 
-            if(confirm("確定刪除?")) { 
+        function deleteGiftPost(idx) {
+            if(confirm("確定刪除?")) {
                 giftPosts.splice(idx, 1);
                 localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
                 renderGiftPosts();
                 updateResponseOptions();
-            } 
+            }
         }
-
+ 
         function switchManualTab(tab) {
             const stdForm = document.getElementById('manualStandardForm');
             const heartForm = document.getElementById('manualHeartForm');
@@ -937,22 +1086,38 @@
                 updateResponseOptions();
             }
         }
-
+ 
         function autoFillHeartNickname() {
             const user = document.getElementById('heartUser').value.trim();
             const fan = fans.find(f => f.username === user);
             if(fan) document.getElementById('heartNick').value = fan.nickname || '';
         }
 
+        // 新增：手動紀錄自動帶入暱稱
+        function autoFillManualNickname() {
+            const user = document.getElementById('manualUsername').value.trim();
+            const fan = fans.find(f => f.username === user);
+            if(fan && fan.nickname) document.getElementById('manualNickname').value = fan.nickname;
+        }
+ 
         function updateResponseOptions() {
             const select = document.getElementById('heartResponseItem');
-            select.innerHTML = '<option value="DM">DM (私訊)</option>';
+            const editSelect = document.getElementById('editHeartItem');
+            const editGroupIg = document.getElementById('editHeartItemIg');
+            const editGroupGift = document.getElementById('editHeartItemGift');
             
+            // Basic options
+            select.innerHTML = '<option value="DM">DM (私訊)</option>';
+            editGroupIg.innerHTML = '';
+            editGroupGift.innerHTML = '';
+           
             if(igPosts.length > 0) {
                 const group = document.createElement('optgroup');
                 group.label = "IG 貼文留言";
                 igPosts.forEach(p => {
-                    group.innerHTML += `<option value="貼文: ${p.topic}">${p.topic}</option>`;
+                    const opt = `<option value="貼文: ${p.topic}">${p.topic}</option>`;
+                    group.innerHTML += opt;
+                    editGroupIg.innerHTML += opt;
                 });
                 select.appendChild(group);
             }
@@ -960,20 +1125,21 @@
                 const group = document.createElement('optgroup');
                 group.label = "禮物 ID";
                 giftPosts.forEach(g => {
-                    group.innerHTML += `<option value="禮物: ${g.giftId}">${g.giftId}</option>`;
+                    const opt = `<option value="禮物: ${g.giftId}">${g.giftId}</option>`;
+                    group.innerHTML += opt;
+                    editGroupGift.innerHTML += opt;
                 });
                 select.appendChild(group);
             }
         }
-
+ 
         function startHeaderLongPress(e, key) {
             if(e.button !== 0 && e.type !== 'touchstart') return;
             if(!['username', 'status', 'sent', 'interactions'].includes(key)) return;
             headerLongPressTimer = setTimeout(() => { openFilterMenu(e, key); }, 600);
         }
-        function cancelHeaderLongPress() { clearTimeout(headerLongPressTimer);
-        }
-
+        function cancelHeaderLongPress() { clearTimeout(headerLongPressTimer); }
+ 
         function openFilterMenu(e, key) {
             const menu = document.getElementById('filterMenu');
             currentFilterCol = key;
@@ -987,10 +1153,8 @@
                     const selected = (activeSort && activeSort.col === key && activeSort.order === val) ? 'selected' : '';
                     sortSelect.innerHTML += `<option value="${val}" ${selected}>${txt}</option>`;
                 };
-                if (key === 'username') { addOpt('az', '字母順序 (A-Z)'); addOpt('za', '字母順序 (Z-A)');
-                } 
-                else if (key === 'status') { addOpt('new', '活動日期 (新-舊)');
-                addOpt('old', '活動日期 (舊-新)'); }
+                if (key === 'username') { addOpt('az', '字母順序 (A-Z)'); addOpt('za', '字母順序 (Z-A)'); }
+                else if (key === 'status') { addOpt('new', '活動日期 (新-舊)'); addOpt('old', '活動日期 (舊-新)'); }
             } else if (key === 'interactions') {
                 container.innerHTML = `<div class="text-xs text-gray-400 mb-2 font-bold">篩選標籤 (需同時滿足/AND)：</div>`;
                 ['粉絲', '非粉絲', '留言', '轉發', '分享'].forEach(tag => {
@@ -999,7 +1163,10 @@
                 });
             } else if (key === 'sent') {
                 const pendingChecked = activeFilters.pending ? 'checked' : '';
-                let html = `<label class="flex items-center gap-2 text-sm text-amber-400 font-bold cursor-pointer border-b border-white/10 pb-2 mb-2"><input type="checkbox" ${pendingChecked} onchange="toggleFilter('pending')" class="accent-amber-500"> 顯示「待處理」</label>`;
+                // 新增超過14天篩選
+                const oldSentChecked = activeFilters.oldSent ? 'checked' : '';
+                let html = `<label class="flex items-center gap-2 text-sm text-amber-400 font-bold cursor-pointer mb-2"><input type="checkbox" ${pendingChecked} onchange="toggleFilter('pending')" class="accent-amber-500"> 顯示「待處理」</label>`;
+                html += `<label class="flex items-center gap-2 text-sm text-[#4B0082] font-bold cursor-pointer border-b border-white/10 pb-2 mb-2"><input type="checkbox" ${oldSentChecked} onchange="toggleFilter('oldSent')" class="accent-indigo-900"> 超過14天</label>`;
                 html += `<label class="text-xs text-gray-400 block mb-2">排序方式：</label><select onchange="applySort(this.value)" class="bg-black/40 border border-gray-600 text-gray-300 text-xs rounded w-full p-2 focus:border-indigo-500 outline-none"><option value="">(預設)</option>`;
                 const opts = [{val: 'date_new', txt: '發送日期 (新-舊)'}, {val: 'date_old', txt: '發送日期 (舊-新)'}];
                 opts.forEach(o => {
@@ -1015,28 +1182,27 @@
             menu.style.top = Math.min(posY, window.innerHeight - 200) + 'px';
             menu.classList.remove('hidden'); menu.classList.add('flex');
         }
-
+ 
         function toggleFilter(type, value) {
-            if (type === 'pending') { activeFilters.pending = !activeFilters.pending;
-            } 
+            if (type === 'pending') { activeFilters.pending = !activeFilters.pending; }
+            else if (type === 'oldSent') { activeFilters.oldSent = !activeFilters.oldSent; }
             else if (type === 'tag') {
                 if (activeFilters.tags.includes(value)) activeFilters.tags = activeFilters.tags.filter(t => t !== value);
                 else activeFilters.tags.push(value);
             }
             renderTable();
         }
-
-        function closeFilterMenu() { document.getElementById('filterMenu').classList.add('hidden'); document.getElementById('filterMenu').classList.remove('flex'); currentFilterCol = null;
-        }
+ 
+        function closeFilterMenu() { document.getElementById('filterMenu').classList.add('hidden'); document.getElementById('filterMenu').classList.remove('flex'); currentFilterCol = null; }
         function applySort(order) { activeSort = order ? { col: currentFilterCol, order: order } : null; renderTable(); }
-
+ 
         function addHeartData() {
             const username = document.getElementById('heartUser').value.trim();
             const nickname = document.getElementById('heartNick').value.trim();
             const responseItem = document.getElementById('heartResponseItem').value;
             const content = document.getElementById('heartContent').value.trim();
             const dateStr = `${document.getElementById('heartDateYYYY').value}/${document.getElementById('heartDateMM').value}/${document.getElementById('heartDateDD').value}`;
-            
+           
             if(!username) return alert("請輸入粉絲帳號");
             heartData.push({ username, nickname, responseItem, content, date: dateStr });
             localStorage.setItem('heartData', JSON.stringify(heartData));
@@ -1046,36 +1212,42 @@
             document.getElementById('heartContent').value = '';
             showToast('暖心紀錄已儲存');
         }
-
-        function editHeartData(idx) {
+ 
+        function openEditHeartModal(idx) {
             const d = heartData[idx];
-            document.getElementById('heartUser').value = d.username;
-            document.getElementById('heartNick').value = d.nickname;
-            document.getElementById('heartResponseItem').value = d.responseItem;
-            document.getElementById('heartContent').value = d.content;
-            if(d.date) {
-                const [y, m, d_val] = d.date.split('/');
-                document.getElementById('heartDateYYYY').value = y;
-                document.getElementById('heartDateMM').value = m;
-                document.getElementById('heartDateDD').value = d_val;
-            }
-            heartData.splice(idx, 1);
-            renderHeartData();
-            switchManualTab('heart');
-            showToast('已載入資料至編輯區');
+            document.getElementById('editHeartIndex').value = idx;
+            document.getElementById('editHeartUser').value = d.username;
+            document.getElementById('editHeartNick').value = d.nickname;
+            document.getElementById('editHeartDate').value = d.date;
+            document.getElementById('editHeartItem').value = d.responseItem;
+            document.getElementById('editHeartContent').value = d.content;
+            document.getElementById('editHeartModal').classList.remove('hidden');
         }
-
-        function deleteHeartData(idx) { 
-            if(confirm("確定刪除?")) { 
+        function saveHeartEdit() {
+            const idx = document.getElementById('editHeartIndex').value;
+            heartData[idx] = {
+                username: document.getElementById('editHeartUser').value,
+                nickname: document.getElementById('editHeartNick').value,
+                date: document.getElementById('editHeartDate').value,
+                responseItem: document.getElementById('editHeartItem').value,
+                content: document.getElementById('editHeartContent').value
+            };
+            localStorage.setItem('heartData', JSON.stringify(heartData));
+            renderHeartData();
+            document.getElementById('editHeartModal').classList.add('hidden');
+        }
+ 
+        function deleteHeartData(idx) {
+            if(confirm("確定刪除?")) {
                 heartData.splice(idx, 1);
                 localStorage.setItem('heartData', JSON.stringify(heartData));
                 renderHeartData();
-            } 
+            }
         }
-
+ 
         let fanLongPressTimer;
         let isLongPress = false;
-
+ 
         function startFanLongPress(e, username) {
             if(e.button !== 0 && e.type !== 'touchstart') return;
             isLongPress = false;
@@ -1085,7 +1257,7 @@
                 if(navigator.vibrate) navigator.vibrate(50); // Optional feedback
             }, 600);
         }
-
+ 
         function cancelFanLongPress(element, username) {
             clearTimeout(fanLongPressTimer);
             if (!isLongPress) {
@@ -1094,10 +1266,10 @@
                 element.classList.add('visited-link');
             }
         }
-
+ 
         function toggleStar(id) { const fan = fans.find(f => f.id === id);
             if(fan) { fan.isCloseFriend = !fan.isCloseFriend; saveData(); renderTable(); } }
-        
+       
         function initDateInput() {
             const today = new Date();
             const setup = (prefix) => {
@@ -1106,15 +1278,15 @@
                     { id: prefix + 'MM', val: String(today.getMonth()+1).padStart(2,'0'), max: 2 },
                     { id: prefix + 'DD', val: String(today.getDate()).padStart(2,'0'), max: 2 }
                 ];
-                els.forEach((c, i) => { 
-                    const el = document.getElementById(c.id); 
+                els.forEach((c, i) => {
+                    const el = document.getElementById(c.id);
                     if(!el) return;
-                    el.value = c.val; 
-                    el.addEventListener('focus', function() { this.select(); }); 
-                    el.addEventListener('input', function() { 
-                        this.value = this.value.replace(/[^0-9]/g, ''); 
-                        if(this.value.length >= c.max && i < els.length - 1) setTimeout(() => document.getElementById(els[i+1].id).focus(), 0); 
-                    }); 
+                    el.value = c.val;
+                    el.addEventListener('focus', function() { this.select(); });
+                    el.addEventListener('input', function() {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                        if(this.value.length >= c.max && i < els.length - 1) setTimeout(() => document.getElementById(els[i+1].id).focus(), 0);
+                    });
                 });
             };
             setup('date'); // 手動記錄
@@ -1122,34 +1294,35 @@
             setup('giftDate'); // Gift
             setup('heartDate'); // Heart
         }
-
+ 
         function addManualInteraction() {
             const usernameInput = document.getElementById('manualUsername');
             if (!validateInput(usernameInput)) return alert("帳號格式錯誤");
             const username = usernameInput.value.trim(); if (!username) return alert("請輸入帳號");
             const nickname = document.getElementById('manualNickname').value.trim();
+            const language = document.getElementById('manualLang').value;
             const checkedBoxes = document.querySelector('#manualSection .interaction-checkboxes').querySelectorAll('input:checked');
             let tags = Array.from(checkedBoxes).map(cb => (cb.value === '新粉絲' ? '粉絲' : cb.value));
             const details = document.getElementById('manualDetails').value.trim();
             const manualDateStr = `${document.getElementById('dateYYYY').value}/${document.getElementById('dateMM').value.padStart(2, '0')}/${document.getElementById('dateDD').value.padStart(2, '0')}`;
-            
+           
             const existingFan = fans.find(f => f.username === username);
             if (existingFan) {
                 existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...tags]));
                 if (details) existingFan.details = existingFan.details ? existingFan.details + " / " + details : details;
                 if (nickname) existingFan.nickname = nickname;
-                if (parseDate(manualDateStr) >= parseDate(existingFan.latestDate)) { existingFan.latestType = tags.join(' / '); existingFan.latestDate = manualDateStr;
-                }
+                existingFan.language = language; // Update language
+                if (parseDate(manualDateStr) >= parseDate(existingFan.latestDate)) { existingFan.latestType = tags.join(' / '); existingFan.latestDate = manualDateStr; }
                 showToast(`已更新 @${username}`);
             } else {
-                fans.push({ id: Date.now(), username, nickname, interactions: tags, latestType: tags.join(' / '), latestDate: manualDateStr, details, sent: false, sentDate: '', isCloseFriend: false });
+                fans.push({ id: Date.now(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: manualDateStr, details, sent: false, sentDate: '', isCloseFriend: false });
                 showToast(`已新增 @${username}`);
             }
             usernameInput.value = ''; document.getElementById('manualNickname').value = '';
             document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
             saveData(); renderTable();
         }
-
+ 
         function openEditFanModal(id) {
             const fan = fans.find(f => f.id === id);
             if(!fan) return;
@@ -1166,13 +1339,12 @@
             '其它標籤: ' + extraTags.map(t => `<span onclick="removeExtraTag(${id}, '${t}')" class="cursor-pointer hover:bg-red-900 border border-white/20 px-1 rounded ml-1 bg-white/5">${t} <i class="fas fa-times text-[10px]"></i></span>`).join('') : '';
             document.getElementById('editFanModal').classList.remove('hidden');
         }
-
+ 
         function removeExtraTag(fanId, tag) {
             const fan = fans.find(f => f.id === fanId);
-            if(fan) { fan.interactions = fan.interactions.filter(t => t !== tag); saveData(); openEditFanModal(fanId);
-            }
+            if(fan) { fan.interactions = fan.interactions.filter(t => t !== tag); saveData(); openEditFanModal(fanId); }
         }
-
+ 
         function saveFanEdit() {
             const id = parseFloat(document.getElementById('editFanId').value);
             const fan = fans.find(f => f.id === id);
@@ -1189,8 +1361,7 @@
                 saveData(); renderTable(); closeEditFanModal(); showToast('資料已更新');
             }
         }
-        function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden');
-        }
+        function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden'); }
         function clearAllData() {
             const currentBrandName = document.getElementById('userName').value.trim();
             if (confirm("⚠️ 警告：這將永久刪除所有資料！")) {
@@ -1199,6 +1370,44 @@
                     saveData(); renderTable(); showToast("所有資料已清空");
                 }
             }
+        }
+        
+        // --- Excel Import/Export Logic ---
+        function exportExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // Sheet 1: 互動紀錄
+            const wsData1 = fans.map(f => ({
+                "帳號": f.username,
+                "暱稱": f.nickname,
+                "語言": f.language || '中',
+                "互動類型": f.interactions.join(' / '),
+                "最近互動/活動日期": f.latestDate,
+                "詳細內容": f.details,
+                // 新增訊息狀態欄位
+                "訊息": f.sent ? `已發送 ${f.sentDate}` : "待處理"
+            }));
+            const ws1 = XLSX.utils.json_to_sheet(wsData1);
+            XLSX.utils.book_append_sheet(wb, ws1, "互動紀錄");
+
+            // Sheet 2: 暖心時刻
+            const wsData2 = heartData.map(h => ({
+                "粉絲帳號": h.username,
+                "粉絲暱稱": h.nickname,
+                "回應日期": h.date,
+                "回應項目": h.responseItem,
+                "回應內容": h.content
+            }));
+            const ws2 = XLSX.utils.json_to_sheet(wsData2);
+            XLSX.utils.book_append_sheet(wb, ws2, "暖心時刻");
+
+            // 檔名改為 FanConnect_"Brand Name"_Export_YYYYMMDD
+            const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
+            const brandName = (profile.name || 'Brand').replace(/\s+/g, '_');
+            const now = new Date();
+            const ymd = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+            
+            XLSX.writeFile(wb, `FanConnect_${brandName}_Export_${ymd}.xlsx`);
         }
 
         function handleExcelImport(e) {
@@ -1209,42 +1418,78 @@
                 try {
                     const data = new Uint8Array(event.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
                     let updateCount = 0, newCount = 0;
                     const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                    json.forEach(row => {
+
+                    // 1. 處理 {互動紀錄}
+                    const sheet1Name = workbook.SheetNames.find(n => n.includes('互動')) || workbook.SheetNames[0];
+                    const json1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1Name], { defval: "" });
+                    
+                    json1.forEach(row => {
                         const getVal = (kws) => { const k = Object.keys(row).find(key => kws.some(kw => key.toLowerCase().includes(kw))); return k ? row[k] : ''; };
-                        const username = getVal(['帳號','user','username']).toString().trim();
+                        const username = getVal(['帳號','user']).toString().trim();
                         if (!username) return;
  
                         const nickname = getVal(['暱稱','name','profile']).toString().trim();
                         let dateVal = getVal(['日期','date','time']);
                         let fileDate = (typeof dateVal === 'number') ? excelDateToJSDate(dateVal) : dateVal.toString().trim() || todayStr;
-           
-                        let tags = getVal(['互動','type']).toString().split(/[\/,，]/).map(s=>s.trim()).filter(s=>s).map(t=>(t==='新粉絲'||t==='New Fan')?'粉絲':t);
-                        const details = getVal(['詳細','details']).toString().trim();
+                        // 處理多選互動
+                        let typeRaw = getVal(['互動','type']).toString();
+                        let tags = typeRaw.split(/[\/，,]/).map(s=>s.trim()).filter(s=>s).map(t=>(t==='新粉絲'||t==='New Fan')?'粉絲':t);
                         
+                        const details = getVal(['詳細','details']).toString().trim();
+                        const language = getVal(['語言']).toString().trim() || '中';
+                        
+                        // 解析訊息欄位
+                        const msgVal = getVal(['訊息', 'message', 'status']).toString().trim();
+                        let isSent = false, sentDate = '';
+                        if (msgVal.includes('已發送')) {
+                            isSent = true;
+                            sentDate = msgVal.replace('已發送', '').trim();
+                        }
+
                         const existing = fans.find(f => f.username === username);
  
                         if (existing) {
-                            existing.interactions = Array.from(new Set([...existing.interactions, ...tags]));
+                             existing.interactions = Array.from(new Set([...existing.interactions, ...tags]));
                             if (details && !existing.details.includes(details)) existing.details += " / " + details;
                             if (nickname && !existing.nickname) existing.nickname = nickname;
-                            if (parseDate(fileDate) >= parseDate(existing.latestDate)) { existing.latestType = tags.join(' / '); existing.latestDate = fileDate;
-                            }
+                            existing.language = language;
+                            if (msgVal) { existing.sent = isSent; existing.sentDate = sentDate; }
+                            if (parseDate(fileDate) >= parseDate(existing.latestDate)) { existing.latestType = tags.join(' / '); existing.latestDate = fileDate; }
                             updateCount++;
                         } else {
-                            fans.push({ id: Date.now()+Math.random(), username, nickname, interactions: tags, latestType: tags.join(' / '), latestDate: fileDate, details, sent: false, sentDate: '', isCloseFriend: false });
+                            fans.push({ id: Date.now()+Math.random(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: fileDate, details, sent: isSent, sentDate: sentDate, isCloseFriend: false });
                             newCount++;
                         }
                     });
-                    saveData(); renderTable(); showToast(`匯入成功：新 ${newCount} / 更 ${updateCount}`); e.target.value = '';
-                } catch (err) { alert("匯入失敗：" + err.message);
-                }
+
+                    // 2. 處理 {暖心時刻}
+                    const sheet2Name = workbook.SheetNames.find(n => n.includes('暖心'));
+                    if (sheet2Name) {
+                        const json2 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet2Name], { defval: "" });
+                        json2.forEach(row => {
+                           const username = row['粉絲帳號'] || row['username'];
+                           if(username) {
+                               heartData.push({
+                                   username: username.toString().trim(),
+                                   nickname: (row['粉絲暱稱'] || '').toString().trim(),
+                                   date: (row['回應日期'] || todayStr).toString().trim(),
+                                   responseItem: (row['回應項目'] || 'DM').toString().trim(),
+                                   content: (row['回應內容'] || '').toString().trim()
+                               });
+                           }
+                        });
+                        localStorage.setItem('heartData', JSON.stringify(heartData));
+                    }
+
+                    saveData(); renderTable(); renderHeartData();
+                    showToast(`匯入完成：新 ${newCount} / 更 ${updateCount}`); e.target.value = '';
+                } catch (err) { alert("匯入失敗：" + err.message); }
             };
             reader.readAsArrayBuffer(file);
         }
-
+ 
         function deleteFan(id) { if(confirm('刪除資料？')) { fans = fans.filter(f => f.id !== id);
             saveData(); renderTable(); showToast('已刪除'); } }
         function openModal(id) {
@@ -1254,11 +1499,19 @@
             document.getElementById('targetNickname').innerText = fan.nickname || fan.username;
             document.getElementById('modalText').value = "";
             document.getElementById('modalTempSelect').innerHTML = '<option value="">-- 選擇模板 --</option>' + templates.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
-            document.getElementById('targetLinkInput').value = ''; document.getElementById('finalGeneratedLink').value = '';
-            const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-lock mr-1"></i>加密生成'; btn.classList.remove('bg-green-600');
+            
+            // Populate Dropdown for Gifts
+            const giftSelect = document.getElementById('targetLinkInput');
+            giftSelect.innerHTML = '<option value="">-- 選擇禮物 --</option>';
+            giftPosts.forEach(p => {
+                giftSelect.innerHTML += `<option value="${p.giftId}">${p.giftId} (${p.fileName})</option>`;
+            });
+
+            document.getElementById('finalGeneratedLink').value = '';
+            const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-lock mr-1"></i>生成'; btn.classList.remove('bg-green-600');
             document.getElementById('msgModal').classList.remove('hidden');
         }
-
+ 
         function confirmSend() {
             const fan = fans.find(f => f.id === activeFanId);
             const text = document.getElementById('modalText').value;
@@ -1268,18 +1521,24 @@
                 saveData(); renderTable(); closeModal(); window.open(`https://ig.me/m/${fan.username}`, '_blank');
             });
         }
-
+ 
         function generateHashLink() {
             const fan = fans.find(f => f.id === activeFanId);
             const postInput = document.getElementById('targetLinkInput').value.trim();
-            if (!fan || !postInput) return alert("資料不完整");
+            const expiryHours = document.querySelector('input[name="linkExpiry"]:checked').value;
+            
+            if (!fan || !postInput) return alert("請選擇禮物 ID");
             let postId = postInput.includes('/') ? postInput.split('/').pop().split('?')[0] : postInput;
-            const token = btoa(encodeURIComponent(JSON.stringify({ pid: postId, u: fan.username, ts: Date.now() }))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+            
+            // Include expiry hours in token payload
+            const payload = { pid: postId, u: fan.username, ts: Date.now(), exp: parseInt(expiryHours) };
+            
+            const token = btoa(encodeURIComponent(JSON.stringify(payload))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
             document.getElementById('finalGeneratedLink').value = `https://our-vault-iota.vercel.app/vault/secure/${token}`;
             const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-check"></i> 完成'; btn.classList.add('bg-green-600');
             if(document.getElementById('modalTempSelect').value) applyTemplate();
         }
-
+ 
         function applyTemplate() {
             const tId = document.getElementById('modalTempSelect').value;
             const fan = fans.find(f => f.id === activeFanId);
@@ -1292,27 +1551,30 @@
                 msgBox.dispatchEvent(new Event('input', { bubbles: true }));
             }
         }
-
+ 
         function runDecryption() {
             const input = document.getElementById('decryptInput').value.trim();
             const resultDiv = document.getElementById('decryptResult');
             if(!input) return alert("請輸入內容");
             try {
-                let token = input.includes('/vault/') ?
-                input.split('/').pop() : input;
+                let token = input.includes('/vault/') ? input.split('/').pop() : input;
                 token = token.replace(/-/g, '+').replace(/_/g, '/'); while (token.length % 4) token += '=';
                 const data = JSON.parse(decodeURIComponent(atob(token)));
-                const isExpired = new Date() > new Date(data.ts + 86400000);
+                
+                // Use token's exp if available, otherwise default to 24
+                const expiryHours = data.exp || 24;
+                const expiryMs = expiryHours * 60 * 60 * 1000;
+                
+                const isExpired = new Date() > new Date(data.ts + expiryMs);
                 resultDiv.classList.remove('hidden');
                 document.getElementById('resPid').innerText = data.pid; document.getElementById('resUser').innerText = data.u;
                 document.getElementById('resTime').innerText = new Date(data.ts).toLocaleString('zh-TW');
-                document.getElementById('resExpire').innerText = new Date(data.ts + 86400000).toLocaleString('zh-TW');
+                document.getElementById('resExpire').innerText = new Date(data.ts + expiryMs).toLocaleString('zh-TW');
                 document.getElementById('resStatus').innerHTML = isExpired ?
                 '<span class="text-red-500">❌ 已過期</span>' : '<span class="text-green-400">✅ 有效連結</span>';
-            } catch (e) { alert("解密失敗"); resultDiv.classList.add('hidden');
-            }
+            } catch (e) { alert("解密失敗"); resultDiv.classList.add('hidden'); }
         }
-
+ 
         function showSection(s) {
             ['fans', 'manual', 'templates', 'decrypt', 'igPosts', 'giftPosts', 'heartStats'].forEach(x => {
                 const el = document.getElementById(x+'Section');
@@ -1320,19 +1582,17 @@
             });
             const target = document.getElementById(s+'Section');
             if(target) target.classList.remove('hidden');
-            
+           
             if(s==='templates') renderTemplateList();
             if(s==='igPosts') renderIgPosts();
             if(s==='giftPosts') renderGiftPosts();
             if(s==='heartStats') renderHeartData();
-            // V5.2.17 Fix: 恢復自動完成清單更新
             if(s==='manual' || s==='heartStats') updateUsernameDatalist();
         }
-        function closeModal() { document.getElementById('msgModal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('msgModal').classList.add('hidden'); }
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('translate-y-20', 'opacity-0');
-        setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
-
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
+ 
         function addTemplate() {
             const id = document.getElementById('tmpId').value;
             const title = document.getElementById('tmpTitle').value; const body = document.getElementById('tmpBody').value;
@@ -1351,63 +1611,58 @@
             localStorage.setItem('templates', JSON.stringify(templates)); renderTemplateList(); } }
         function renderTemplateList() { document.getElementById('templateListDisplay').innerHTML = templates.map(t => `<div class="flex justify-between items-center bg-black/30 p-3 rounded border border-white/5"><div><div class="font-bold text-indigo-200 text-sm">${t.title}</div><div class="text-xs text-gray-500 truncate w-64">${t.body}</div></div><div><button onclick="editTemplate(${t.id})" class="text-gray-400 hover:text-white px-2"><i class="fas fa-edit"></i></button><button onclick="deleteTemplate(${t.id})" class="text-gray-600 hover:text-red-500 px-2"><i class="fas fa-trash"></i></button></div></div>`).join('');
         }
-        
+       
         function backupData() {
+            const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
+            const brandName = (profile.name || 'Brand').replace(/\s+/g, '');
             const now = new Date();
-            const filename = `FanConnect_Backup_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`;
-            const profile = JSON.parse(localStorage.getItem('userProfile')) || {};
+            const ymd = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+            const filename = `FanConnect_${brandName}_${ymd}.json`;
             const link = document.createElement('a');
-            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData })); 
+            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData }));
             link.download = filename; link.click();
         }
-        
+       
         function handleRestore(e) {
             const r = new FileReader();
-            r.onload = (ev) => { 
-                try { 
+            r.onload = (ev) => {
+                try {
                     const o = JSON.parse(ev.target.result);
-                    if(confirm(`確認還原備份？\n包含 ${o.fans.length} 筆粉絲資料與設定`)) { 
+                    if(confirm(`確認還原備份？\n包含 ${o.fans.length} 筆粉絲資料與設定`)) {
                         fans = o.fans;
                         templates = o.templates || templates;
                         igPosts = o.igPosts || [];
                         giftPosts = o.giftPosts || [];
                         heartData = o.heartData || [];
                         if (o.userProfile) { localStorage.setItem('userProfile', JSON.stringify(o.userProfile)); loadProfile(); }
-                        // 一次性儲存所有資料
                         saveData();
                         localStorage.setItem('igPosts', JSON.stringify(igPosts));
                         localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
                         localStorage.setItem('heartData', JSON.stringify(heartData));
                         localStorage.setItem('templates', JSON.stringify(templates));
-                        
-                        renderTable(); renderTemplateList(); 
+                        renderTable(); renderTemplateList();
                         renderIgPosts(); renderGiftPosts(); renderHeartData();
-                    } 
-                } catch(e){alert("格式錯誤");} 
+                    }
+                } catch(e){alert("格式錯誤");}
             };
             r.readAsText(e.target.files[0]);
         }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed');
-        }
-        // V5.2.17 Fix: 恢復從 V5.2.14 移植的自動完成功能
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
         function updateUsernameDatalist() {
             const datalist = document.getElementById('usernameOptions');
             if (!datalist) return;
-
-            // 提取不重複的 username
             const uniqueUsers = [...new Set(fans.map(f => f.username))];
-            
             datalist.innerHTML = uniqueUsers.sort().map(u => {
                 const fan = fans.find(f => f.username === u);
-                const nick = fan && fan.nickname ? ` (${fan.nickname})` : '';
-                return `<option value="${u}">${u}${nick}</option>`;
+                const nick = fan && fan.nickname ? `(${fan.nickname})` : '';
+                return `<option value="${u}">${nick}</option>`;
             }).join('');
         }
-
-        window.onload = () => { 
+ 
+        window.onload = () => {
             loadProfile();
-            renderTable(); 
-            renderTemplateList(); 
+            renderTable();
+            renderTemplateList();
             initDateInput();
             renderIgPosts();
             renderGiftPosts();
