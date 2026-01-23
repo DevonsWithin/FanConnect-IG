@@ -1364,10 +1364,30 @@
         function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden'); }
         function clearAllData() {
             const currentBrandName = document.getElementById('userName').value.trim();
-            if (confirm("⚠️ 警告：這將永久刪除所有資料！")) {
+            if (confirm("⚠️ 警告：這將永久刪除所有資料！(包含粉絲列表、IG貼文、禮物貼文、暖心互動)")) {
                 if (prompt(`請輸入品牌名稱「${currentBrandName}」確認刪除：`) === currentBrandName) {
+                    // 1. 清空所有資料陣列
                     fans = [];
-                    saveData(); renderTable(); showToast("所有資料已清空");
+                    igPosts = [];
+                    giftPosts = [];
+                    heartData = [];
+
+                    // 2. 更新 LocalStorage
+                    saveData(); // 儲存 fans
+                    localStorage.setItem('igPosts', '[]');
+                    localStorage.setItem('giftPosts', '[]');
+                    localStorage.setItem('heartData', '[]');
+
+                    // 3. 重新渲染所有列表介面
+                    renderTable();
+                    renderIgPosts();
+                    renderGiftPosts();
+                    renderHeartData();
+                    
+                    // 4. 更新下拉選單選項 (移除已刪除的貼文/禮物選項)
+                    updateResponseOptions();
+
+                    showToast("所有資料已清空");
                 }
             }
         }
