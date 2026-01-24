@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -113,16 +113,50 @@
  
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
            
-            <div>
+
+
+
+
+
+
+            
+
+
+<div>
                 <a href="#" onclick="showSection('decrypt')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-teal-500">
                     <i class="fas fa-key w-6 text-center text-teal-400"></i> <span class="menu-text">連結解密 / 驗證</span>
                 </a>
             </div>
  
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
+
+
+            <div>
+                <a href="#" onclick="showSection('history')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-cyan-500">
+                    <i class="fas fa-history w-6 text-center text-cyan-400"></i> <span class="menu-text">動態紀錄</span>
+                </a>
+                <a href="#" onclick="showSection('compare')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-orange-500">
+                    <i class="fas fa-exchange-alt w-6 text-center text-orange-400"></i> <span class="menu-text">官方資料比對</span>
+                </a>
+            </div>
+
+
+            <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
             <div>
                 <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+
+
+
+
+
+
+
+
+
+
+
+
                     <i class="fas fa-save w-6 text-center text-yellow-400"></i> <span class="menu-text">備份資料</span>
                 </a>
                 <a href="#" onclick="document.getElementById('restoreImport').click()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
@@ -175,6 +209,7 @@
                     <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
        class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-4 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
        onkeyup="handleGlobalSearch()">
+
 
                 </div>
             </div>
@@ -481,13 +516,124 @@
                             <div class="flex justify-between"><span class="text-gray-500">貼文 ID (PID)</span><span id="resPid" class="text-yellow-400"></span></div>
                             <div class="flex justify-between"><span class="text-gray-500">目標粉絲 (User)</span><span id="resUser" class="text-pink-400"></span></div>
                             <div class="flex justify-between"><span class="text-gray-500">生成時間</span><span id="resTime" class="text-blue-300"></span></div>
-                            <div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
+                            
+
+
+
+
+
+
+<div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="historySection" class="hidden h-full flex flex-col p-8">
+                <div class="w-full max-w-5xl mx-auto flex flex-col h-full bg-[#1a1a1a] p-8 rounded-2xl border border-cyan-500/20 shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-6 text-cyan-400 border-b border-white/10 pb-4 flex justify-between items-center">
+                        <span><i class="fas fa-history mr-2"></i>動態紀錄</span>
+                        <button onclick="addHistoryLogManual()" class="text-sm bg-cyan-900/30 hover:bg-cyan-700 px-3 py-1 rounded text-cyan-200 border border-cyan-500/30">
+                            <i class="fas fa-plus mr-1"></i>手動新增
+                        </button>
+                    </h3>
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative">
+                        <div class="h-full overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">帳號</th>
+                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">類型</th>
+                                        <th width="45%" class="sticky top-0 bg-[#202020] z-20 shadow-md">詳細內容</th>
+                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="compareSection" class="hidden h-full flex flex-col p-8 overflow-y-auto">
+                <div class="w-full max-w-6xl mx-auto space-y-6">
+                    <div class="bg-[#1a1a1a] p-6 rounded-xl border border-orange-500/30 shadow-lg">
+                        <h3 class="text-xl font-bold mb-4 text-orange-400"><i class="fab fa-instagram mr-2"></i>官方資料比對 (JSON)</h3>
+                        <div class="flex items-center gap-4">
+                            <input type="file" id="igJsonFile" accept=".json" class="hidden" onchange="handleIGJsonImport(event)">
+                            <button onclick="document.getElementById('igJsonFile').click()" class="btn-indigo bg-orange-700 hover:bg-orange-600 text-white px-6 py-2 rounded font-bold">
+                                <i class="fas fa-file-upload mr-2"></i>匯入 followers.json
+                            </button>
+                            <div class="text-xs text-gray-400">
+                                請匯入 IG 官方下載資料中的 <code class="bg-black/30 px-1 rounded">followers_1.json</code>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="newFansResult" class="hidden bg-[#1a1a1a] p-6 rounded-xl border border-green-500/30 shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold text-green-400">發現新粉絲 (<span id="newFansCount">0</span>)</h4>
+                            <button onclick="confirmNewFans()" class="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded text-sm font-bold shadow-lg">
+                                <i class="fas fa-check mr-1"></i>確認加入列表
+                            </button>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto custom-scrollbar bg-[#151515] rounded border border-white/5">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="sticky top-0 bg-[#202020] z-20">帳號名稱</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">設定暱稱</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">語系</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">狀態</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="newFansBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div id="unfollowedResult" class="hidden bg-[#1a1a1a] p-6 rounded-xl border border-red-500/30 shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-bold text-red-400">疑似退追粉絲 (<span id="unfollowedCount">0</span>)</h4>
+                            <button onclick="confirmUnfollowed()" class="bg-red-900/50 hover:bg-red-700 text-red-200 px-4 py-1.5 rounded text-sm font-bold shadow-lg">
+                                <i class="fas fa-user-minus mr-1"></i>確認更新狀態
+                            </button>
+                        </div>
+                        <div class="max-h-64 overflow-y-auto custom-scrollbar bg-[#151515] rounded border border-white/5">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="sticky top-0 bg-[#202020] z-20">帳號名稱</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">目前暱稱</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">最後互動</th>
+                                        <th class="sticky top-0 bg-[#202020] z-20">處理方式</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unfollowedBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+
+
+
+
+
+
+
+
+
+
+
  
     <div id="msgModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-indigo-500/50 w-[600px] rounded-xl shadow-2xl overflow-hidden">
@@ -664,13 +810,55 @@
     </div>
  
     <script>
-        let fans = JSON.parse(localStorage.getItem('fans')) || [];
+
+
+
+
+
+
+
+
+
+
+
+
+let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
         let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
         let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
         let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
-       
+        let historyData = JSON.parse(localStorage.getItem('historyData')) || []; // 新增動態紀錄
+
+
+        // 自動為舊資料補上 ID
+        heartData = heartData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
+        historyData = historyData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
+
+
         let activeFanId = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         let headerLongPressTimer;
         let currentFilterCol = null;
         let activeSort = { col: 'status', order: 'new' }; // 預設排序
@@ -773,6 +961,7 @@
            return date_info.toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
         }
 
+
          function handleGlobalSearch() {
             // 判斷目前顯示哪個區塊，決定執行哪個渲染函式
             if (!document.getElementById('fansSection').classList.contains('hidden')) {
@@ -781,6 +970,7 @@
                 renderHeartData();
             }
         }
+
 
         function renderTable() {
             const tbody = document.getElementById('fanTableBody');
@@ -933,8 +1123,10 @@
             const tbody = document.getElementById('heartTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
 
+
             // 1. 先將原始索引 (originalIndex) 綁定到物件上，避免排序後索引錯亂
             let displayData = heartData.map((d, index) => ({ ...d, originalIndex: index }));
+
 
             // 2. 處理搜尋過濾
             if (searchTerm) {
@@ -946,8 +1138,10 @@
                 );
             }
 
+
             // 3. 自動以回應日期(新-舊)排序
             displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+
 
             tbody.innerHTML = displayData.map((d) => `
                 <tr class="table-row">
@@ -1092,6 +1286,7 @@
             const fan = fans.find(f => f.username === user);
             if(fan) document.getElementById('heartNick').value = fan.nickname || '';
         }
+
 
         // 新增：手動紀錄自動帶入暱稱
         function autoFillManualNickname() {
@@ -1372,11 +1567,13 @@
                     giftPosts = [];
                     heartData = [];
 
+
                     // 2. 更新 LocalStorage
                     saveData(); // 儲存 fans
                     localStorage.setItem('igPosts', '[]');
                     localStorage.setItem('giftPosts', '[]');
                     localStorage.setItem('heartData', '[]');
+
 
                     // 3. 重新渲染所有列表介面
                     renderTable();
@@ -1386,6 +1583,7 @@
                     
                     // 4. 更新下拉選單選項 (移除已刪除的貼文/禮物選項)
                     updateResponseOptions();
+
 
                     showToast("所有資料已清空");
                 }
@@ -1410,6 +1608,7 @@
             const ws1 = XLSX.utils.json_to_sheet(wsData1);
             XLSX.utils.book_append_sheet(wb, ws1, "互動紀錄");
 
+
             // Sheet 2: 暖心時刻
             const wsData2 = heartData.map(h => ({
                 "粉絲帳號": h.username,
@@ -1421,6 +1620,7 @@
             const ws2 = XLSX.utils.json_to_sheet(wsData2);
             XLSX.utils.book_append_sheet(wb, ws2, "暖心時刻");
 
+
             // 檔名改為 FanConnect_"Brand Name"_Export_YYYYMMDD
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
             const brandName = (profile.name || 'Brand').replace(/\s+/g, '_');
@@ -1429,6 +1629,7 @@
             
             XLSX.writeFile(wb, `FanConnect_${brandName}_Export_${ymd}.xlsx`);
         }
+
 
         function handleExcelImport(e) {
             const file = e.target.files[0];
@@ -1440,6 +1641,7 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     let updateCount = 0, newCount = 0;
                     const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
 
                     // 1. 處理 {互動紀錄}
                     const sheet1Name = workbook.SheetNames.find(n => n.includes('互動')) || workbook.SheetNames[0];
@@ -1468,6 +1670,7 @@
                             sentDate = msgVal.replace('已發送', '').trim();
                         }
 
+
                         const existing = fans.find(f => f.username === username);
  
                         if (existing) {
@@ -1483,6 +1686,7 @@
                             newCount++;
                         }
                     });
+
 
                     // 2. 處理 {暖心時刻}
                     const sheet2Name = workbook.SheetNames.find(n => n.includes('暖心'));
@@ -1502,6 +1706,7 @@
                         });
                         localStorage.setItem('heartData', JSON.stringify(heartData));
                     }
+
 
                     saveData(); renderTable(); renderHeartData();
                     showToast(`匯入完成：新 ${newCount} / 更 ${updateCount}`); e.target.value = '';
@@ -1526,6 +1731,7 @@
             giftPosts.forEach(p => {
                 giftSelect.innerHTML += `<option value="${p.giftId}">${p.giftId} (${p.fileName})</option>`;
             });
+
 
             document.getElementById('finalGeneratedLink').value = '';
             const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-lock mr-1"></i>生成'; btn.classList.remove('bg-green-600');
@@ -1595,8 +1801,27 @@
             } catch (e) { alert("解密失敗"); resultDiv.classList.add('hidden'); }
         }
  
-        function showSection(s) {
-            ['fans', 'manual', 'templates', 'decrypt', 'igPosts', 'giftPosts', 'heartStats'].forEach(x => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function showSection(s) {
+            // 加入 'history', 'compare' 到隱藏列表
+            ['fans', 'manual', 'templates', 'decrypt', 'igPosts', 'giftPosts', 'heartStats', 'history', 'compare'].forEach(x => {
                 const el = document.getElementById(x+'Section');
                 if(el) el.classList.add('hidden');
             });
@@ -1607,11 +1832,13 @@
             if(s==='igPosts') renderIgPosts();
             if(s==='giftPosts') renderGiftPosts();
             if(s==='heartStats') renderHeartData();
+            if(s==='history') renderHistory(); // 渲染動態紀錄
             if(s==='manual' || s==='heartStats') updateUsernameDatalist();
         }
-        function closeModal() { document.getElementById('msgModal').classList.add('hidden'); }
+        function closeModal() { document.getElementById('msgModal').classList.add('hidden');
+        }
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
+        setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000); }
  
         function addTemplate() {
             const id = document.getElementById('tmpId').value;
@@ -1633,13 +1860,15 @@
         }
        
         function backupData() {
-            const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
+            const profile = JSON.parse(localStorage.getItem('userProfile')) ||
+            { name: 'Brand' };
             const brandName = (profile.name || 'Brand').replace(/\s+/g, '');
             const now = new Date();
             const ymd = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
             const filename = `FanConnect_${brandName}_${ymd}.json`;
             const link = document.createElement('a');
-            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData }));
+            // 備份加入 historyData
+            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData, historyData }));
             link.download = filename; link.click();
         }
        
@@ -1654,11 +1883,13 @@
                         igPosts = o.igPosts || [];
                         giftPosts = o.giftPosts || [];
                         heartData = o.heartData || [];
+                        historyData = o.historyData || []; // 還原歷史紀錄
                         if (o.userProfile) { localStorage.setItem('userProfile', JSON.stringify(o.userProfile)); loadProfile(); }
                         saveData();
                         localStorage.setItem('igPosts', JSON.stringify(igPosts));
                         localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
                         localStorage.setItem('heartData', JSON.stringify(heartData));
+                        localStorage.setItem('historyData', JSON.stringify(historyData));
                         localStorage.setItem('templates', JSON.stringify(templates));
                         renderTable(); renderTemplateList();
                         renderIgPosts(); renderGiftPosts(); renderHeartData();
@@ -1667,6 +1898,49 @@
             };
             r.readAsText(e.target.files[0]);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
         function updateUsernameDatalist() {
             const datalist = document.getElementById('usernameOptions');
@@ -1679,6 +1953,239 @@
             }).join('');
         }
  
+
+
+
+
+
+
+
+
+
+
+        // --- 新增：官方資料比對與動態紀錄邏輯 ---
+        
+        let pendingNewFans = [];
+        let pendingUnfollowed = [];
+
+
+        // 1. 動態紀錄功能
+        function renderHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            const sorted = [...historyData].sort((a, b) => parseDate2(b.date) - parseDate2(a.date));
+            
+            tbody.innerHTML = sorted.map(h => {
+                let typeClass = 'text-gray-400';
+                if(h.type === '新粉絲') typeClass = 'text-green-400 font-bold';
+                if(h.type === '退追') typeClass = 'text-red-400 font-bold';
+                if(h.type === '更新') typeClass = 'text-blue-400';
+
+
+                return `<tr class="table-row">
+                    <td class="text-xs text-gray-500">${h.date}</td>
+                    <td class="font-bold text-indigo-300">${h.username}</td>
+                    <td class="${typeClass}">${h.type}</td>
+                    <td class="text-xs text-gray-300">${h.details}</td>
+                    <td class="text-center">
+                        <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+
+        function addHistoryLog(type, username, details) {
+            const now = new Date();
+            const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            historyData.push({
+                id: Date.now() + Math.random(),
+                date: dateStr,
+                username: username,
+                type: type,
+                details: details
+            });
+            localStorage.setItem('historyData', JSON.stringify(historyData));
+        }
+
+
+        function addHistoryLogManual() {
+            const username = prompt("請輸入帳號：");
+            if(!username) return;
+            const type = prompt("請輸入類型 (新粉絲/退追/更新)：", "更新");
+            const details = prompt("請輸入詳細內容：");
+            addHistoryLog(type, username, details);
+            renderHistory();
+        }
+
+
+        function deleteHistory(id) {
+            if(confirm("刪除此條紀錄？")) {
+                historyData = historyData.filter(h => h.id != id);
+                localStorage.setItem('historyData', JSON.stringify(historyData));
+                renderHistory();
+            }
+        }
+
+
+        // 2. 官方資料比對功能
+        function handleIGJsonImport(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const json = JSON.parse(ev.target.result);
+                    let officialUsers = [];
+                    
+                    const findValues = (obj) => {
+                        if(Array.isArray(obj)) {
+                            obj.forEach(item => findValues(item));
+                        } else if (typeof obj === 'object' && obj !== null) {
+                            if(obj.hasOwnProperty('string_list_data')) {
+                                obj.string_list_data.forEach(d => {
+                                    if(d.value) officialUsers.push(d.value);
+                                });
+                            } else {
+                                Object.values(obj).forEach(val => findValues(val));
+                            }
+                        }
+                    };
+                    findValues(json);
+                    
+                    officialUsers = [...new Set(officialUsers)];
+                    if(officialUsers.length === 0) throw new Error("找不到粉絲資料，請確認檔案格式");
+
+
+                    compareData(officialUsers);
+                    e.target.value = ''; 
+                } catch(err) {
+                    alert("解析失敗：" + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+
+        function compareData(officialUsers) {
+            const currentUsers = fans.map(f => f.username);
+            const newUsers = officialUsers.filter(u => !currentUsers.includes(u));
+            
+            pendingNewFans = newUsers.map(u => ({ username: u, nickname: '', lang: '中' }));
+            
+            const unfollowedUsers = fans.filter(f => {
+                const isMarkedFan = f.interactions.includes('粉絲');
+                return isMarkedFan && !officialUsers.includes(f.username);
+            });
+            
+            pendingUnfollowed = unfollowedUsers;
+            renderCompareResults();
+        }
+
+
+        function renderCompareResults() {
+            document.getElementById('newFansCount').innerText = pendingNewFans.length;
+            const newBody = document.getElementById('newFansBody');
+            if(pendingNewFans.length > 0) {
+                document.getElementById('newFansResult').classList.remove('hidden');
+                newBody.innerHTML = pendingNewFans.map((u, idx) => `
+                    <tr class="border-b border-white/5 hover:bg-white/5">
+                        <td class="py-2 font-bold text-green-300">${u.username}</td>
+                        <td><input type="text" onchange="updatePendingNewFan(${idx}, 'nickname', this.value)" placeholder="暱稱" class="bg-black/30 border border-gray-600 rounded px-2 py-1 text-xs w-24"></td>
+                        <td>
+                            <select onchange="updatePendingNewFan(${idx}, 'lang', this.value)" class="bg-black/30 border border-gray-600 rounded px-1 py-1 text-xs">
+                                <option value="中">中</option>
+                                <option value="英">英</option>
+                            </select>
+                        </td>
+                        <td class="text-xs text-gray-400">待加入</td>
+                    </tr>
+                `).join('');
+            } else {
+                document.getElementById('newFansResult').classList.add('hidden');
+            }
+
+
+            document.getElementById('unfollowedCount').innerText = pendingUnfollowed.length;
+            const unfBody = document.getElementById('unfollowedBody');
+            if(pendingUnfollowed.length > 0) {
+                document.getElementById('unfollowedResult').classList.remove('hidden');
+                unfBody.innerHTML = pendingUnfollowed.map(f => `
+                    <tr class="border-b border-white/5 hover:bg-white/5">
+                        <td class="py-2 font-bold text-red-300">${f.username}</td>
+                        <td class="text-gray-400 text-xs">${f.nickname || '-'}</td>
+                        <td class="text-gray-500 text-xs">${f.latestDate || '-'}</td>
+                        <td><span class="text-xs bg-red-900/50 text-red-300 px-2 py-1 rounded border border-red-500/30">將移除「粉絲」標籤</span></td>
+                    </tr>
+                `).join('');
+            } else {
+                document.getElementById('unfollowedResult').classList.add('hidden');
+            }
+        }
+
+
+        function updatePendingNewFan(idx, field, value) {
+            pendingNewFans[idx][field] = value;
+        }
+
+
+        function confirmNewFans() {
+            if(!confirm(`確定加入 ${pendingNewFans.length} 位新粉絲？`)) return;
+            const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
+            
+            pendingNewFans.forEach(u => {
+                fans.push({
+                    id: Date.now() + Math.random(),
+                    username: u.username,
+                    nickname: u.nickname,
+                    language: u.lang,
+                    interactions: ['粉絲'],
+                    latestType: '新粉絲',
+                    latestDate: nowStr,
+                    details: '官方比對匯入',
+                    sent: false,
+                    isCloseFriend: false
+                });
+                addHistoryLog('新粉絲', u.username, '官方資料比對加入');
+            });
+            
+            saveData();
+            pendingNewFans = [];
+            renderCompareResults();
+            showToast('已加入新粉絲');
+        }
+
+
+        function confirmUnfollowed() {
+            if(!confirm(`確定更新 ${pendingUnfollowed.length} 位退追狀態？\n(將移除「粉絲」標籤)`)) return;
+            
+            pendingUnfollowed.forEach(u => {
+                const fan = fans.find(f => f.id === u.id);
+                if(fan) {
+                    fan.interactions = fan.interactions.filter(t => t !== '粉絲');
+                    addHistoryLog('退追', fan.username, '官方資料比對移除粉絲標籤');
+                }
+            });
+            
+            saveData();
+            pendingUnfollowed = [];
+            renderCompareResults();
+            showToast('已更新退追狀態');
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         window.onload = () => {
             loadProfile();
             renderTable();
