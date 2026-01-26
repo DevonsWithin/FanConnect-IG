@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.20 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.2.23 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -42,6 +42,7 @@
         th { background-color: #202020; position: sticky; top: 0; z-index: 20; padding: 10px; text-align: left; font-size: 0.8rem; color: #aaa; letter-spacing: 1px; border-bottom: 2px solid #4B0082; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         td { padding: 8px 10px; border-bottom: 1px solid #333; vertical-align: middle; }
        
+        .thread-badge { background-color: #000; color: #fff; border: 1px solid #4b5563; }
         .fan-badge-style { background-color: rgba(131, 24, 67, 0.4); color: #fbcfe8; border: 1px solid rgba(236, 72, 153, 0.3); box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
  
         .btn-indigo { background-color: var(--indigo-primary); transition: all 0.2s; }
@@ -72,7 +73,7 @@
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.21</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.23</span></span>
         </div>
  
         <div class="profile-section">
@@ -204,14 +205,17 @@
                     粉絲人數: 0
                 </div>
  
-                <div class="relative">
+                <div class="relative group">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
                     <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
-       class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-4 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
-       onkeyup="handleGlobalSearch()">
-
-
+                           class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-8 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
+                           onkeyup="handleGlobalSearch(); document.getElementById('clearSearchBtn').classList.toggle('hidden', this.value.length === 0)">
+                
+     <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white" title="清除搜尋">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
                 </div>
+
             </div>
         </header>
  
@@ -307,6 +311,11 @@
                                 <div class="mb-3 text-indigo-300 text-sm font-bold">互動類型 (可多選)</div>
                                 <div class="grid grid-cols-4 gap-3 interaction-checkboxes">
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 text-pink-400 font-bold border border-pink-900/30 bg-pink-900/10 p-2 rounded"><input type="checkbox" value="粉絲" class="accent-indigo-500"> 粉絲</label>
+  
+                                  <label class="flex items-center gap-2 cursor-pointer hover:text-[#763BE3] p-2 text-[#763BE3] font-bold"><input type="checkbox" value="前帳粉" class="accent-[#763BE3]"> 前帳粉</label>
+                                    <label class="flex items-center gap-2 cursor-pointer hover:text-amber-400 p-2 text-amber-500 font-bold"><input type="checkbox" value="高互動" class="accent-amber-500"> 高互動</label>
+                                    <label class="flex items-center gap-2 cursor-pointer hover:text-white p-2 text-gray-300 font-bold bg-black/40 rounded border border-gray-600"><input type="checkbox" value="Thread粉" class="accent-gray-500"> Thread粉</label>
+                               
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="投票" class="accent-indigo-500"> 投票</label>
@@ -466,12 +475,16 @@
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
+                        
                                         <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲帳號</th>
-                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲暱稱</th>
+                                        <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲暱稱</th>
+                                
                                         <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應日期</th>
                                         <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應項目</th>
-                                        <th width="40%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應內容</th>
-                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                        
+                                        <th width="30%" class="sticky top-0 bg-[#202020] z-20 shadow-md">回應內容</th>
+                                        <th width="8%" class="sticky top-0 bg-[#202020] z-20 shadow-md">訊息</th>
+                                        <th width="7%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody id="heartTableBody"></tbody>
@@ -534,7 +547,7 @@
                 <div class="w-full max-w-5xl mx-auto flex flex-col h-full bg-[#1a1a1a] p-8 rounded-2xl border border-cyan-500/20 shadow-2xl">
                     <h3 class="text-2xl font-bold mb-6 text-cyan-400 border-b border-white/10 pb-4 flex justify-between items-center">
                         <span><i class="fas fa-history mr-2"></i>動態紀錄</span>
-                        <button onclick="addHistoryLogManual()" class="text-sm bg-cyan-900/30 hover:bg-cyan-700 px-3 py-1 rounded text-cyan-200 border border-cyan-500/30">
+                        <button onclick="openHistoryModal()" class="text-sm bg-cyan-900/30 hover:bg-cyan-700 px-3 py-1 rounded text-cyan-200 border border-cyan-500/30">
                             <i class="fas fa-plus mr-1"></i>手動新增
                         </button>
                     </h3>
@@ -543,11 +556,12 @@
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
-                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
+                                        <th width="12%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
                                         <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">帳號</th>
-                                        <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">類型</th>
-                                        <th width="45%" class="sticky top-0 bg-[#202020] z-20 shadow-md">詳細內容</th>
-                                        <th width="10%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
+                                        <th width="12%" class="sticky top-0 bg-[#202020] z-20 shadow-md">暱稱</th>
+                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">類型</th>
+                                        <th width="30%" class="sticky top-0 bg-[#202020] z-20 shadow-md">詳細內容</th>
+                                        <th width="11%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody id="historyTableBody"></tbody>
@@ -624,7 +638,66 @@
     </main>
 
 
+        <div id="historyModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-cyan-500/30 w-[700px] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center shrink-0">
+                <h3 class="text-cyan-400 font-bold text-lg"><i class="fas fa-history mr-2"></i><span id="historyModalTitle">新增動態紀錄</span></h3>
+                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
+                <input type="hidden" id="historyId">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">帳號名稱 (@Username)</label>
+                        <input type="text" id="histUsername" list="usernameOptions" class="input-dark" placeholder="輸入帳號">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">暱稱</label>
+                        <input type="text" id="histNickname" class="input-dark" placeholder="粉絲暱稱">
+                    </div>
+                </div>
+                
+                <div class="bg-black/20 p-4 rounded border border-white/5">
+                    <label class="block text-gray-400 text-xs mb-2">互動類型 (可多選)</label>
+                    <div class="grid grid-cols-4 gap-3" id="histCheckboxes">
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300 text-pink-400 font-bold"><input type="checkbox" value="粉絲" class="accent-cyan-500"> 粉絲</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-[#763BE3] font-bold text-[#763BE3]"><input type="checkbox" value="前帳粉" class="accent-[#763BE3]"> 前帳粉</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-amber-300 
+ font-bold text-amber-500"><input type="checkbox" value="高互動" class="accent-amber-500"> 高互動</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-white text-gray-300 font-bold bg-black/40 rounded px-1"><input type="checkbox" value="Thread粉" class="accent-gray-500"> Thread粉</label>
+                        
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="留言" class="accent-cyan-500"> 留言</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="讚" class="accent-cyan-500"> 讚</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="投票" class="accent-cyan-500"> 投票</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="分享" class="accent-cyan-500"> 分享</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="回覆" class="accent-cyan-500"> 回覆</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="提及" class="accent-cyan-500"> 提及</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-cyan-300"><input type="checkbox" value="轉發" class="accent-cyan-500"> 轉發</label>
+                    </div>
+                </div>
 
+                <div>
+                    <label class="block text-gray-400 text-xs mb-2">活動日期 (YYYY/MM/DD)</label>
+                    <div class="date-segment-container w-full bg-black/40">
+                        <input type="text" id="histDateYYYY" maxlength="4" placeholder="YYYY" style="width: 60px;" class="text-center bg-transparent text-white outline-none">
+                        <span class="text-gray-500">/</span>
+                        <input type="text" id="histDateMM" maxlength="2" placeholder="MM" style="width: 40px;" class="text-center bg-transparent text-white outline-none">
+                        <span class="text-gray-500">/</span>
+                        <input type="text" id="histDateDD" maxlength="2" placeholder="DD" style="width: 40px;" class="text-center bg-transparent text-white outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
+                    <textarea id="histDetails" class="input-dark h-24" placeholder="詳細內容..."></textarea>
+                </div>
+            </div>
+            <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                <button onclick="closeHistoryModal()" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                <button onclick="saveHistoryData()" class="btn-indigo bg-cyan-700 hover:bg-cyan-600 px-6 py-2 rounded text-white font-bold">儲存紀錄</button>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -697,6 +770,11 @@
                     <label class="block text-gray-400 text-xs mb-2">編輯互動標籤</label>
                     <div class="grid grid-cols-4 gap-3" id="editFanCheckboxes">
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 text-pink-400 font-bold"><input type="checkbox" value="粉絲" class="accent-indigo-500"> 粉絲</label>
+                        <label class="flex items-center gap-2 
+ cursor-pointer hover:text-[#763BE3] text-[#763BE3] font-bold"><input type="checkbox" value="前帳粉" class="accent-[#763BE3]"> 前帳粉</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-amber-300 text-amber-500 font-bold"><input type="checkbox" value="高互動" class="accent-amber-500"> 高互動</label>
+                        <label class="flex items-center gap-2 cursor-pointer hover:text-white text-gray-300 font-bold bg-black/40 rounded px-1"><input type="checkbox" value="Thread粉" class="accent-gray-500"> Thread粉</label>
+
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="投票" class="accent-indigo-500"> 投票</label>
@@ -860,6 +938,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
 
         
         let headerLongPressTimer;
+        let activeSourceType = 'fan'; // 用於區分來源: 'fan' 或 'heart'
         let currentFilterCol = null;
         let activeSort = { col: 'status', order: 'new' }; // 預設排序
         let activeFilters = { pending: false, oldSent: false, tags: [] };
@@ -868,28 +947,45 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         const MAX_HISTORY = 50;
         let isUndoRedoAction = false;
  
-        // 紀錄狀態到歷史 (修正版：在變更前抓取舊資料)
+        // 紀錄狀態到歷史 (全面升級：紀錄所有資料表狀態)
         function saveData(recordHistory = true) {
             if (recordHistory) {
-                // 讀取當前 LocalStorage 的值作為「上一步」
-                const prevState = localStorage.getItem('fans') || '[]';
-                historyStack.push(prevState);
+                const snapshot = {
+                    fans: localStorage.getItem('fans') || '[]',
+                    igPosts: localStorage.getItem('igPosts') || '[]',
+                    giftPosts: localStorage.getItem('giftPosts') || '[]',
+                    heartData: localStorage.getItem('heartData') || '[]',
+                    historyData: localStorage.getItem('historyData') || '[]'
+                };
+                historyStack.push(snapshot);
                 if (historyStack.length > MAX_HISTORY) historyStack.shift();
                 redoStack = [];
             }
+            // 同步寫入 LocalStorage
             localStorage.setItem('fans', JSON.stringify(fans));
+            localStorage.setItem('igPosts', JSON.stringify(igPosts));
+            localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
+            localStorage.setItem('heartData', JSON.stringify(heartData));
+            localStorage.setItem('historyData', JSON.stringify(historyData));
         }
  
         function undo() {
             if (historyStack.length === 0) return showToast("沒有可復原的動作");
             isUndoRedoAction = true;
-            // 復原前，將當前狀態推入 Redo
-            redoStack.push(JSON.stringify(fans));
-            const prevState = historyStack.pop();
-            fans = JSON.parse(prevState);
-            // 寫入 Storage 但不推入 History (避免無限循環)
-            localStorage.setItem('fans', JSON.stringify(fans));
-            renderTable();
+            
+            // 復原前，將當前狀態 Snapshot 推入 Redo
+            const currentSnapshot = {
+                fans: JSON.stringify(fans),
+                igPosts: JSON.stringify(igPosts),
+                giftPosts: JSON.stringify(giftPosts),
+                heartData: JSON.stringify(heartData),
+                historyData: JSON.stringify(historyData)
+            };
+            redoStack.push(currentSnapshot);
+
+            const prevSnapshot = historyStack.pop();
+            applySnapshot(prevSnapshot);
+            
             showToast("已復原");
             isUndoRedoAction = false;
         }
@@ -897,14 +993,39 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         function redo() {
             if (redoStack.length === 0) return showToast("沒有可重作的動作");
             isUndoRedoAction = true;
-            // 重作前，將當前狀態推入 History
-            historyStack.push(JSON.stringify(fans));
-            const nextState = redoStack.pop();
-            fans = JSON.parse(nextState);
-            localStorage.setItem('fans', JSON.stringify(fans));
-            renderTable();
+            
+            // 重作前，將當前狀態 Snapshot 推入 History
+            const currentSnapshot = {
+                fans: JSON.stringify(fans),
+                igPosts: JSON.stringify(igPosts),
+                giftPosts: JSON.stringify(giftPosts),
+                heartData: JSON.stringify(heartData),
+                historyData: JSON.stringify(historyData)
+            };
+            historyStack.push(currentSnapshot);
+
+            const nextSnapshot = redoStack.pop();
+            applySnapshot(nextSnapshot);
+
             showToast("已重作");
             isUndoRedoAction = false;
+        }
+
+        function applySnapshot(snap) {
+            fans = JSON.parse(snap.fans);
+            igPosts = JSON.parse(snap.igPosts);
+            giftPosts = JSON.parse(snap.giftPosts);
+            heartData = JSON.parse(snap.heartData);
+            historyData = JSON.parse(snap.historyData);
+
+            saveData(false); // 僅存檔，不重複推入歷史
+            
+            // 重新渲染所有畫面
+            renderTable();
+            renderIgPosts();
+            renderGiftPosts();
+            renderHeartData();
+            if(document.getElementById('historySection')) renderHistory();
         }
  
         function loadProfile() {
@@ -963,12 +1084,29 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
 
 
          function handleGlobalSearch() {
-            // 判斷目前顯示哪個區塊，決定執行哪個渲染函式
+            const input = document.getElementById('globalSearch');
+            const clearBtn = document.getElementById('clearSearchBtn');
+            
+            if (input.value.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+
             if (!document.getElementById('fansSection').classList.contains('hidden')) {
                 renderTable();
             } else if (!document.getElementById('heartStatsSection').classList.contains('hidden')) {
                 renderHeartData();
+            } else if (!document.getElementById('historySection').classList.contains('hidden')) {
+                // [更新] 讓動態紀錄支援搜尋
+                renderHistory();
             }
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('globalSearch');
+            input.value = '';
+            handleGlobalSearch(); // 觸發重繪與隱藏按鈕
         }
 
 
@@ -1005,7 +1143,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     if (!matchAll) return false;
                 }
                 return true;
-             });
+            });
+
             if (filteredFans.length > 0) {
                 const sorter = (a, b) => {
                     if (activeSort) {
@@ -1043,26 +1182,53 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 filteredFans.forEach(fan => {
                     const row = document.createElement('tr'); row.className = 'table-row';
                     
-                    const isOldSent = fan.sentDate && (Date.now() - parseDate2(fan.sentDate)) > DAYS_14;
+                    // [修正邏輯] 跨表比對：找出該粉絲在所有紀錄中「最新」的發送狀態
+                    let finalSent = fan.sent;
+                    let finalSentDate = fan.sentDate;
+                    let finalTimestamp = parseDate2(fan.sentDate);
+
+                    // 掃描 HeartData 中是否有該粉絲的已發送紀錄，並比對時間
+                    const userHearts = heartData.filter(h => h.username === fan.username);
+                    userHearts.forEach(h => {
+                        if (h.sent) {
+                            finalSent = true; // 只要有任何一筆是 Sent，就視為已發送
+                            const hTime = parseDate2(h.sentDate);
+                            if (hTime > finalTimestamp) {
+                                finalTimestamp = hTime;
+                                finalSentDate = h.sentDate; // 更新為最新的日期
+                            }
+                        }
+                    });
+
+                    // 使用計算後的 finalSentDate 進行判斷
+                    const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
                     const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
-                    const statusHtml = fan.sent
-                        ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${fan.sentDate || ''}</span></div>`
+                    const statusHtml = finalSent
+                        ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${finalSentDate || ''}</span></div>`
                         : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
                     
                     const isOldActivity = (Date.now() - parseDate(fan.latestDate)) > DAYS_14;
                     const actColor = isOldActivity ? 'text-[#4B0082]' : 'text-white';
-                    const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="${actColor} font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || '未知日期'}</span></div>` : `<span class="text-gray-600 text-xs">-</span>`;
+                    const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="${actColor} font-bold text-xs">${fan.latestType ||
+                        '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || '未知日期'}</span></div>` : `<span class="text-gray-600 text-xs">-</span>`;
                     
                     const isValidAccount = /^[a-zA-Z0-9._]+$/.test(fan.username);
-                    const nameClass = isValidAccount ? "text-indigo-300 hover:text-indigo-100 hover:underline" : "text-red-800 font-bold hover:text-red-600 hover:underline";
+                    const nameClass = isValidAccount ?
+                        "text-indigo-300 hover:text-indigo-100 hover:underline" : "text-red-800 font-bold hover:text-red-600 hover:underline";
                     
-                    const langBadge = `<span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-[#4B0082] text-[#D8BFD8] text-[10px] font-bold rounded-[2px]">${fan.language || '中'}</span>`;
+                    const langBadge = `<span class="ml-2 inline-flex items-center justify-center w-5 h-5 bg-[#4B0082] text-[#D8BFD8] text-[10px] font-bold rounded-[2px]">${fan.language ||
+                        '中'}</span>`;
                     const accountLink = `<span class="${nameClass} cursor-pointer select-none" onmousedown="startFanLongPress(event, '${fan.username}')" onmouseup="cancelFanLongPress(this, '${fan.username}')" ontouchstart="startFanLongPress(event, '${fan.username}')" ontouchend="cancelFanLongPress(this, '${fan.username}')">@${fan.username}</span>${langBadge}`;
                     
                     const tagsHtml = fan.interactions.map(tag => {
-                        const style = tag === '粉絲' ? 'bg-pink-900/40 text-pink-200 border-pink-500/30' : 'bg-white/5 text-gray-300 border-white/10';
+                        let style = 'bg-white/5 text-gray-300 border-white/10'; 
+                        if (tag === '粉絲') style = 'bg-pink-900/40 text-pink-200 border-pink-500/30';
+                        else if (tag === '前帳粉') style = 'bg-[#763BE3]/20 text-[#763BE3] border-[#763BE3]/30';
+                        else if (tag === '高互動') style = 'bg-amber-900/20 text-amber-500 border-amber-500/30';
+                        else if (tag === 'Thread粉') style = 'thread-badge';
                         return `<span class="px-2 py-0.5 rounded text-xs border whitespace-nowrap ${style}">${tag}</span>`;
                     }).join('');
+                    
                     const starClass = fan.isCloseFriend ? 'star-active' : 'star-inactive';
                     row.innerHTML = `
                         <td class="text-center sticky-col-1"><i class="fas fa-star ${starClass} star-btn" onclick="toggleStar(${fan.id})"></i></td>
@@ -1074,7 +1240,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         <td>${statusHtml}</td>
                         <td class="text-center sticky-col-last">
                             <div class="flex justify-center gap-1">
-                                <button onclick="openModal(${fan.id})" class="group btn-indigo px-2 py-1.5 rounded text-xs text-white font-bold" title="發訊息"><i class="fas fa-paper-plane"></i></button>
+                                <button 
+                                    onmousedown="startMsgBtnPress(event, '${fan.username}', ${fan.id})" 
+                                    ontouchstart="startMsgBtnPress(event, '${fan.username}', ${fan.id})" 
+                                    onmouseup="endMsgBtnPress(event, ${fan.id})" 
+                                    ontouchend="endMsgBtnPress(event, ${fan.id})" 
+                                    class="group btn-indigo px-2 py-1.5 rounded text-xs text-white font-bold select-none" 
+                                    title="點擊:發送訊息 / 長按:開啟Threads">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
                                 <button onclick="openEditFanModal(${fan.id})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors" title="編輯資料"><i class="fas fa-edit"></i></button>
                                 <button onclick="deleteFan(${fan.id})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors" title="刪除"><i class="fas fa-trash-alt"></i></button>
                             </div>
@@ -1122,13 +1296,9 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         function renderHeartData() {
             const tbody = document.getElementById('heartTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            const DAYS_14 = 1209600000; // 14 days
 
-
-            // 1. 先將原始索引 (originalIndex) 綁定到物件上，避免排序後索引錯亂
-            let displayData = heartData.map((d, index) => ({ ...d, originalIndex: index }));
-
-
-            // 2. 處理搜尋過濾
+            let displayData = [...heartData];
             if (searchTerm) {
                 displayData = displayData.filter(d => 
                     (d.username || '').toLowerCase().includes(searchTerm) ||
@@ -1138,24 +1308,83 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 );
             }
 
-
-            // 3. 自動以回應日期(新-舊)排序
             displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            
+            tbody.innerHTML = displayData.map((d) => {
+                // --- [關鍵修正] 讀取時強制同步狀態 ---
+                const targetUser = (d.username || '').trim().toLowerCase();
+                
+                // 1. 預設使用該筆紀錄的狀態
+                let finalSent = d.sent;
+                let finalSentDate = d.sentDate;
+                let maxTimestamp = parseDate2(d.sentDate);
 
+                // 2. 檢查 [粉絲管理列表] 主檔 (Master) 是否已發送且時間更新
+                const masterFan = fans.find(f => f.username.trim().toLowerCase() === targetUser);
+                if (masterFan && masterFan.sent) {
+                    const fanTime = parseDate2(masterFan.sentDate);
+                    // 如果主檔有發送，且 (目前沒發送 OR 主檔時間比較新)，就採用主檔狀態
+                    if (!finalSent || fanTime > maxTimestamp) {
+                        finalSent = true;
+                        finalSentDate = masterFan.sentDate;
+                        maxTimestamp = fanTime;
+                    }
+                }
 
-            tbody.innerHTML = displayData.map((d) => `
+                // 3. 檢查 [其他暖心紀錄] 是否有更新的發送時間 (Siblings)
+                heartData.forEach(h => {
+                    if (h.username.trim().toLowerCase() === targetUser && h.sent) {
+                        const hTime = parseDate2(h.sentDate);
+                        if (hTime > maxTimestamp) {
+                            finalSent = true;
+                            finalSentDate = h.sentDate;
+                            maxTimestamp = hTime;
+                        }
+                    }
+                });
+                // ------------------------------------
+
+                const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
+                const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
+                
+                // 使用計算後的 finalSent 與 finalSentDate 顯示
+                const statusHtml = finalSent
+                    ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${finalSentDate || ''}</span></div>`
+                    : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
+
+                return `
                 <tr class="table-row">
-                    <td class="font-bold text-indigo-300">@${d.username}</td>
+                    <td class="font-bold">
+                        <span class="text-indigo-300 cursor-pointer hover:text-indigo-100 hover:underline select-none" 
+                              onmousedown="startFanLongPress(event, '${d.username}')" 
+                              onmouseup="cancelFanLongPress(this, '${d.username}')" 
+                              ontouchstart="startFanLongPress(event, '${d.username}')" 
+                              ontouchend="cancelFanLongPress(this, '${d.username}')">
+                            @${d.username}
+                        </span>
+                    </td>
                     <td class="text-gray-400">${d.nickname}</td>
                     <td class="text-gray-400 text-xs">${d.date}</td>
                     <td class="text-pink-300 text-xs border border-pink-900/50 bg-pink-900/20 px-2 rounded w-fit">${d.responseItem}</td>
                     <td class="text-gray-300 text-xs whitespace-pre-wrap">${d.content}</td>
+                    <td>${statusHtml}</td>
                     <td class="text-center">
-                        <button onclick="openEditHeartModal(${d.originalIndex})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors mr-2"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteHeartData(${d.originalIndex})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors"><i class="fas fa-trash-alt"></i></button>
+                        <div class="flex items-center justify-center gap-1">
+                            <button 
+                                 onmousedown="startMsgBtnPress(event, '${d.username}', ${d.id}, 'heart')" 
+                                 ontouchstart="startMsgBtnPress(event, '${d.username}', ${d.id}, 'heart')" 
+                                 onmouseup="endMsgBtnPress(event, ${d.id})" 
+                                 ontouchend="endMsgBtnPress(event, ${d.id})" 
+                                 class="group btn-indigo px-2 py-1.5 rounded text-xs text-white font-bold select-none" 
+                                 title="點擊:發送訊息 / 長按:開啟Threads">
+                                 <i class="fas fa-paper-plane"></i>
+                            </button>
+                            <button onclick="openEditHeartModal(${d.id})" class="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1.5 rounded text-xs transition-colors" title="編輯"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteHeartData(${d.id})" class="bg-red-900/30 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1.5 rounded text-xs transition-colors" title="刪除"><i class="fas fa-trash-alt"></i></button>
+                        </div>
                     </td>
-                </tr>
-            `).join('');
+                </tr>`;
+            }).join('');
         }
  
         // --- Add/Delete/Edit Logic ---
@@ -1352,10 +1581,19 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 else if (key === 'status') { addOpt('new', '活動日期 (新-舊)'); addOpt('old', '活動日期 (舊-新)'); }
             } else if (key === 'interactions') {
                 container.innerHTML = `<div class="text-xs text-gray-400 mb-2 font-bold">篩選標籤 (需同時滿足/AND)：</div>`;
-                ['粉絲', '非粉絲', '留言', '轉發', '分享'].forEach(tag => {
+                // 新增 '前帳粉' 與 '高互動', 'Thread粉'
+                ['粉絲', '非粉絲', '前帳粉', 'Thread粉', '高互動', '留言', '轉發', '分享'].forEach(tag => {
                     const checked = activeFilters.tags.includes(tag) ? 'checked' : '';
-                    container.innerHTML += `<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag}" ${checked} onchange="toggleFilter('tag', this.value)" class="accent-indigo-500"> ${tag}</label>`;
-                });
+                    let colorClass = "text-gray-300";
+                    
+                    if(tag==='粉絲') colorClass = "text-pink-200"; // 粉絲改為粉紅色
+                    if(tag==='前帳粉') colorClass = "text-[#763BE3]"; // 移除粗體
+                    if(tag==='Thread粉') colorClass = "text-white"; // 移除粗體
+                    if(tag==='高互動') colorClass = "text-amber-400"; // 移除粗體
+                    
+                    container.innerHTML += `<label class="flex items-center gap-2 text-sm ${colorClass} 
+cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag}" ${checked} onchange="toggleFilter('tag', this.value)" class="accent-indigo-500"> ${tag}</label>`;
+        });
             } else if (key === 'sent') {
                 const pendingChecked = activeFilters.pending ? 'checked' : '';
                 // 新增超過14天篩選
@@ -1455,11 +1693,43 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
  
         function cancelFanLongPress(element, username) {
             clearTimeout(fanLongPressTimer);
-            if (!isLongPress) {
+if (!isLongPress) {
                 window.open(`https://www.instagram.com/${username}`, '_blank');
-                element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
+element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                 element.classList.add('visited-link');
             }
+        }
+
+        // [新增] 訊息按鈕專用邏輯 (短按Modal / 長按Threads)
+        let msgBtnTimer;
+        let isMsgBtnLong = false;
+        let currentMsgPlatform = 'ig'; // 新增：追蹤目前要發送的平台
+
+        function startMsgBtnPress(e, username, id, type = 'fan') {
+            // 只接受左鍵(0)或觸控
+            if(e.button !== 0 && e.type !== 'touchstart') return;
+            activeSourceType = type; // 設定操作來源
+            isMsgBtnLong = false;
+            msgBtnTimer = setTimeout(() => {
+                isMsgBtnLong = true;
+                if(navigator.vibrate) navigator.vibrate(50);
+                // 長按：設定為 Threads 模式並開啟 Modal
+                currentMsgPlatform = 'threads';
+                openModal(id); 
+   
+             }, 600);
+        }
+
+        function endMsgBtnPress(e, id) {
+            clearTimeout(msgBtnTimer);
+            // 如果不是長按，代表是點擊，執行原本的開啟視窗 (IG模式)
+            if (!isMsgBtnLong) {
+                currentMsgPlatform = 'ig';
+                openModal(id);
+            }
+            isMsgBtnLong = false;
+            // 阻止預設行為避免重複觸發
+            // if(e.cancelable && e.type !== 'mouseup') e.preventDefault();
         }
  
         function toggleStar(id) { const fan = fans.find(f => f.id === id);
@@ -1513,6 +1783,10 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 fans.push({ id: Date.now(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: manualDateStr, details, sent: false, sentDate: '', isCloseFriend: false });
                 showToast(`已新增 @${username}`);
             }
+
+            // 連動：寫入動態紀錄
+            addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
+
             usernameInput.value = ''; document.getElementById('manualNickname').value = '';
             document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
             saveData(); renderTable();
@@ -1566,13 +1840,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     igPosts = [];
                     giftPosts = [];
                     heartData = [];
-
+                    historyData = [];
 
                     // 2. 更新 LocalStorage
-                    saveData(); // 儲存 fans
+                    saveData();
+// 儲存 fans
                     localStorage.setItem('igPosts', '[]');
-                    localStorage.setItem('giftPosts', '[]');
+localStorage.setItem('giftPosts', '[]');
                     localStorage.setItem('heartData', '[]');
+                    localStorage.setItem('historyData', '[]');
 
 
                     // 3. 重新渲染所有列表介面
@@ -1634,17 +1910,19 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         function handleExcelImport(e) {
             const file = e.target.files[0];
             if (!file) return;
+            // [新增] 匯入前先存檔，確保可復原
+            saveData();
+            
             const reader = new FileReader();
             reader.onload = (event) => {
                 try {
                     const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
+const workbook = XLSX.read(data, { type: 'array' });
                     let updateCount = 0, newCount = 0;
-                    const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
-
-
-                    // 1. 處理 {互動紀錄}
-                    const sheet1Name = workbook.SheetNames.find(n => n.includes('互動')) || workbook.SheetNames[0];
+const todayStr = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+// 1. 處理 {互動紀錄}
+                    const sheet1Name = workbook.SheetNames.find(n => n.includes('互動')) ||
+workbook.SheetNames[0];
                     const json1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1Name], { defval: "" });
                     
                     json1.forEach(row => {
@@ -1671,19 +1949,43 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         }
 
 
+                        // [更新後的程式碼]
                         const existing = fans.find(f => f.username === username);
- 
                         if (existing) {
-                             existing.interactions = Array.from(new Set([...existing.interactions, ...tags]));
+                            // [修正] 標籤處理：直接合併，不再因為「前帳粉」而移除「粉絲」
+                            let mergedTags = new Set([...existing.interactions, ...tags]);
+                            // (已移除) if (tags.includes('前帳粉')) { mergedTags.delete('粉絲'); }
+                            existing.interactions = Array.from(mergedTags);
+
                             if (details && !existing.details.includes(details)) existing.details += " / " + details;
                             if (nickname && !existing.nickname) existing.nickname = nickname;
                             existing.language = language;
-                            if (msgVal) { existing.sent = isSent; existing.sentDate = sentDate; }
-                            if (parseDate(fileDate) >= parseDate(existing.latestDate)) { existing.latestType = tags.join(' / '); existing.latestDate = fileDate; }
+                            if (msgVal) { existing.sent = isSent; existing.sentDate = sentDate;
+                            }
+                            if (parseDate(fileDate) >= parseDate(existing.latestDate)) { existing.latestType = tags.join(' / ');
+                            existing.latestDate = fileDate; }
                             updateCount++;
                         } else {
                             fans.push({ id: Date.now()+Math.random(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: fileDate, details, sent: isSent, sentDate: sentDate, isCloseFriend: false });
                             newCount++;
+                        }
+                        
+                        // [更新] 連動動態紀錄 (防止重複)
+                        // 檢查是否已存在相同的紀錄 (帳號 + 日期 + 詳細內容)
+                        const existHistIdx = historyData.findIndex(h => 
+                            h.username === username && 
+                            h.date === fileDate && 
+                            h.details === details
+                        );
+                        if (existHistIdx === -1) {
+                             // [修正] 傳入 false 禁止單筆存檔，避免歷史紀錄被洗版
+                             addHistoryLog(username, nickname, tags.join(' / '), fileDate, details, false);
+                        } else {
+                            // [更新] 若重複但新資料為「前帳粉」，則更新原有的「粉絲」標籤
+                            const oldLog = historyData[existHistIdx];
+                            if (tags.includes('前帳粉') && oldLog.type.includes('粉絲') && !oldLog.type.includes('前帳粉')) {
+                                historyData[existHistIdx].type = tags.join(' / ');
+                            }
                         }
                     });
 
@@ -1695,20 +1997,36 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         json2.forEach(row => {
                            const username = row['粉絲帳號'] || row['username'];
                            if(username) {
-                               heartData.push({
+                               // 修正日期格式：判斷是否為 Excel 序列號
+    
+                           let rawDate = row['回應日期'];
+                               let finalDate = rawDate;
+                               if (typeof rawDate === 'number') {
+                                    finalDate = excelDateToJSDate(rawDate);
+                               } else {
+                                    finalDate = (rawDate || todayStr).toString().trim();
+                               }
+
+                           
+    heartData.push({
+                                   id: Date.now() + Math.random(),
                                    username: username.toString().trim(),
-                                   nickname: (row['粉絲暱稱'] || '').toString().trim(),
-                                   date: (row['回應日期'] || todayStr).toString().trim(),
+                      
+             nickname: (row['粉絲暱稱'] || '').toString().trim(),
+                                   date: finalDate,
                                    responseItem: (row['回應項目'] || 'DM').toString().trim(),
-                                   content: (row['回應內容'] || '').toString().trim()
+          
+                         content: (row['回應內容'] || '').toString().trim()
                                });
                            }
                         });
-                        localStorage.setItem('heartData', JSON.stringify(heartData));
-                    }
+                        // 已於開頭執行 saveData() 紀錄 Undo 狀態
+                        // 此處僅更新 LocalStorage
+}
 
-
-                    saveData(); renderTable(); renderHeartData();
+                    localStorage.setItem('heartData', JSON.stringify(heartData));
+                    localStorage.setItem('fans', JSON.stringify(fans));
+                    localStorage.setItem('historyData', JSON.stringify(historyData)); renderTable(); renderHeartData();
                     showToast(`匯入完成：新 ${newCount} / 更 ${updateCount}`); e.target.value = '';
                 } catch (err) { alert("匯入失敗：" + err.message); }
             };
@@ -1719,58 +2037,98 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             saveData(); renderTable(); showToast('已刪除'); } }
         function openModal(id) {
             activeFanId = id;
-            const fan = fans.find(f => f.id === id); if(!fan) return;
-            document.getElementById('targetUser').innerText = "@" + fan.username;
-            document.getElementById('targetNickname').innerText = fan.nickname || fan.username;
+            // 根據來源查找資料
+            const data = activeSourceType === 'heart' ? heartData.find(h => h.id === id) : fans.find(f => f.id === id);
+            if(!data) return;
+            document.getElementById('targetUser').innerText = "@" + data.username;
+            document.getElementById('targetNickname').innerText = data.nickname || data.username;
             document.getElementById('modalText').value = "";
             document.getElementById('modalTempSelect').innerHTML = '<option value="">-- 選擇模板 --</option>' + templates.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
-            
             // Populate Dropdown for Gifts
             const giftSelect = document.getElementById('targetLinkInput');
             giftSelect.innerHTML = '<option value="">-- 選擇禮物 --</option>';
             giftPosts.forEach(p => {
                 giftSelect.innerHTML += `<option value="${p.giftId}">${p.giftId} (${p.fileName})</option>`;
             });
-
-
             document.getElementById('finalGeneratedLink').value = '';
             const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-lock mr-1"></i>生成'; btn.classList.remove('bg-green-600');
             document.getElementById('msgModal').classList.remove('hidden');
         }
  
         function confirmSend() {
-            const fan = fans.find(f => f.id === activeFanId);
+            // 取得目前操作的資料物件
+            const currentData = activeSourceType === 'heart' ?
+                heartData.find(h => h.id === activeFanId) : fans.find(f => f.id === activeFanId);
+            
             const text = document.getElementById('modalText').value;
+            
             navigator.clipboard.writeText(text).then(() => {
-                fan.sent = true; const now = new Date();
-                fan.sentDate = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-                saveData(); renderTable(); closeModal(); window.open(`https://ig.me/m/${fan.username}`, '_blank');
+                if(currentData) {
+                    // 1. 準備統一的時間戳記與目標帳號
+                    const now = new Date();
+                    const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                    const targetUserLower = currentData.username.trim().toLowerCase(); // 轉小寫以確保比對無誤
+
+                    // 2. [強力同步] 掃描 FANS 列表：更新該粉絲的主檔狀態
+                    fans.forEach(f => {
+                        if (f.username.trim().toLowerCase() === targetUserLower) {
+                            f.sent = true;
+                            f.sentDate = timeStr;
+                        }
+                    });
+
+                    // 3. [強力同步] 掃描 HEART 列表：更新該粉絲所有待處理的紀錄
+                    heartData.forEach(h => {
+                        if (h.username.trim().toLowerCase() === targetUserLower) {
+                            // 無論之前狀態為何，統一更新為已發送 (因為已執行發送動作)
+                            h.sent = true;
+                            h.sentDate = timeStr;
+                        }
+                    });
+                }
+
+                // 4. 存檔並刷新所有介面
+                saveData(); 
+                renderTable();     // 刷新粉絲列表
+                renderHeartData(); // 刷新暖心紀錄表
+                
+                closeModal(); 
+                
+                // 5. 根據平台開啟連結
+                if (currentData) {
+                    if (currentMsgPlatform === 'threads') {
+                        window.open(`https://www.threads.net/@${currentData.username}`, '_blank');
+                    } else {
+                        window.open(`https://ig.me/m/${currentData.username}`, '_blank');
+                    }
+                }
             });
         }
  
         function generateHashLink() {
-            const fan = fans.find(f => f.id === activeFanId);
+            const data = activeSourceType === 'heart' ? heartData.find(h => h.id === activeFanId) : fans.find(f => f.id === activeFanId);
             const postInput = document.getElementById('targetLinkInput').value.trim();
             const expiryHours = document.querySelector('input[name="linkExpiry"]:checked').value;
             
-            if (!fan || !postInput) return alert("請選擇禮物 ID");
-            let postId = postInput.includes('/') ? postInput.split('/').pop().split('?')[0] : postInput;
+            if (!data || !postInput) return alert("請選擇禮物 ID");
+            let postId = postInput.includes('/') ?
+                postInput.split('/').pop().split('?')[0] : postInput;
             
             // Include expiry hours in token payload
-            const payload = { pid: postId, u: fan.username, ts: Date.now(), exp: parseInt(expiryHours) };
-            
+            const payload = { pid: postId, u: data.username, ts: Date.now(), exp: parseInt(expiryHours) };
             const token = btoa(encodeURIComponent(JSON.stringify(payload))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
             document.getElementById('finalGeneratedLink').value = `https://our-vault-iota.vercel.app/vault/secure/${token}`;
-            const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-check"></i> 完成'; btn.classList.add('bg-green-600');
+            const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-check"></i> 完成';
+            btn.classList.add('bg-green-600');
             if(document.getElementById('modalTempSelect').value) applyTemplate();
         }
  
         function applyTemplate() {
             const tId = document.getElementById('modalTempSelect').value;
-            const fan = fans.find(f => f.id === activeFanId);
+            const data = activeSourceType === 'heart' ? heartData.find(h => h.id === activeFanId) : fans.find(f => f.id === activeFanId);
             const template = templates.find(t => t.id == tId);
-            if(template && fan) {
-                let content = template.body.replace(/{nickname}/g, fan.nickname || fan.username);
+            if(template && data) {
+                let content = template.body.replace(/{nickname}/g, data.nickname || data.username);
                 const link = document.getElementById('finalGeneratedLink').value;
                 if(link) content = content.replace(/{link}|{url}/g, link);
                 const msgBox = document.getElementById('modalText'); msgBox.value = content;
@@ -1972,49 +2330,252 @@ function showSection(s) {
         // 1. 動態紀錄功能
         function renderHistory() {
             const tbody = document.getElementById('historyTableBody');
-            const sorted = [...historyData].sort((a, b) => parseDate2(b.date) - parseDate2(a.date));
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+
+            // [更新] 1. 搜尋過濾
+            let displayData = [...historyData];
+if (searchTerm) {
+                displayData = displayData.filter(h => 
+                    (h.username || '').toLowerCase().includes(searchTerm) ||
+                    (h.nickname || '').toLowerCase().includes(searchTerm) ||
+                    (h.type || '').toLowerCase().includes(searchTerm) ||
+         
+           (h.details || '').toLowerCase().includes(searchTerm)
+                );
+}
+
+            // 2. 排序 (強制新到舊)
+            const sorted = displayData.sort((a, b) => {
+                const dateA = parseDate(a.date);
+                const dateB = parseDate(b.date);
+                return dateB - dateA;
+     
+       });
             
             tbody.innerHTML = sorted.map(h => {
                 let typeClass = 'text-gray-400';
-                if(h.type === '新粉絲') typeClass = 'text-green-400 font-bold';
-                if(h.type === '退追') typeClass = 'text-red-400 font-bold';
-                if(h.type === '更新') typeClass = 'text-blue-400';
+                const t = (h.type || '').toString();
+                
+                // [更新] 樣式判斷
+              
+  if(t.includes('新粉絲')) typeClass = 'text-green-400 font-bold';
+                else if(t.includes('退追')) typeClass = 'text-red-400 font-bold';
+                else if(t.includes('前帳粉')) typeClass = 'text-[#763BE3] font-bold';
+                else if(t.includes('粉絲')) typeClass = 'text-pink-300';
+                else if(h.type === '更新') typeClass = 'text-blue-400';
 
-
-                return `<tr class="table-row">
+        
+        return `<tr class="table-row">
                     <td class="text-xs text-gray-500">${h.date}</td>
-                    <td class="font-bold text-indigo-300">${h.username}</td>
-                    <td class="${typeClass}">${h.type}</td>
-                    <td class="text-xs text-gray-300">${h.details}</td>
+                    <td class="font-bold">
+                        <span class="text-indigo-300 cursor-pointer hover:text-indigo-100 hover:underline select-none" 
+                 
+             onmousedown="startFanLongPress(event, '${h.username}')" 
+                              onmouseup="cancelFanLongPress(this, '${h.username}')" 
+                              ontouchstart="startFanLongPress(event, '${h.username}')" 
+                     
+         ontouchend="cancelFanLongPress(this, '${h.username}')">
+                            ${h.username}
+                        </span>
+                    </td>
+                  
+  <td class="text-xs text-gray-400">${h.nickname || '-'}</td>
+                    <td class="text-xs ${typeClass}">${h.type}</td>
+                    <td class="text-xs text-gray-300 whitespace-pre-wrap">${h.details ||
+''}</td>
                     <td class="text-center">
-                        <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white"><i class="fas fa-trash-alt"></i></button>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="openHistoryModal('${h.id}')" class="text-gray-400 hover:text-white" title="編輯"><i class="fas fa-edit"></i></button>
+                   
+         <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white" title="刪除"><i class="fas fa-trash-alt"></i></button>
+                        </div>
                     </td>
                 </tr>`;
             }).join('');
         }
 
 
-        function addHistoryLog(type, username, details) {
-            const now = new Date();
-            const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        // [更新後的程式碼]
+        // 增加 save 參數，預設為 true。批次匯入時可設為 false 以避免重複寫入歷史
+        function addHistoryLog(username, nickname, type, dateStr, details, save = true) {
             historyData.push({
                 id: Date.now() + Math.random(),
                 date: dateStr,
                 username: username,
+                nickname: nickname,
                 type: type,
                 details: details
             });
-            localStorage.setItem('historyData', JSON.stringify(historyData));
+            // 只有當 save 為 true 時才觸發存檔
+            if (save) saveData();
         }
 
+        // --- History Modal Logic ---
+        // --- History Modal Logic ---
+        function openHistoryModal(id = null) {
+            const modal = document.getElementById('historyModal');
+            const title = document.getElementById('historyModalTitle');
+            const inputs = {
+                id: document.getElementById('historyId'),
+                user: document.getElementById('histUsername'),
+                nick: document.getElementById('histNickname'),
+                y: document.getElementById('histDateYYYY'),
+                m: document.getElementById('histDateMM'),
+                d: document.getElementById('histDateDD'),
+                detail: document.getElementById('histDetails')
+            };
+            
+            document.querySelectorAll('#histCheckboxes input').forEach(cb => cb.checked = false);
 
-        function addHistoryLogManual() {
-            const username = prompt("請輸入帳號：");
-            if(!username) return;
-            const type = prompt("請輸入類型 (新粉絲/退追/更新)：", "更新");
-            const details = prompt("請輸入詳細內容：");
-            addHistoryLog(type, username, details);
+            if (id) {
+                const h = historyData.find(d => d.id == id);
+                if (!h) return;
+                title.innerText = "編輯動態紀錄";
+                inputs.id.value = h.id;
+                inputs.user.value = h.username || '';
+                inputs.nick.value = h.nickname || '';
+                inputs.detail.value = h.details || '';
+                
+                if(h.date) {
+                    const parts = h.date.split(' ')[0].split('/'); 
+                    if(parts.length >= 3) {
+                        inputs.y.value = parts[0]; inputs.m.value = parts[1]; inputs.d.value = parts[2];
+                    }
+                }
+                const types = (h.type || '').split(' / ');
+                document.querySelectorAll('#histCheckboxes input').forEach(cb => {
+                    if(types.includes(cb.value)) cb.checked = true;
+                });
+            } else {
+                title.innerText = "新增動態紀錄";
+                inputs.id.value = '';
+                inputs.user.value = '';
+                inputs.nick.value = '';
+                inputs.detail.value = '';
+                const now = new Date();
+                inputs.y.value = now.getFullYear();
+                inputs.m.value = String(now.getMonth()+1).padStart(2,'0');
+                inputs.d.value = String(now.getDate()).padStart(2,'0');
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.add('hidden');
+        }
+
+        function saveHistoryData() {
+            const id = document.getElementById('historyId').value;
+            const user = document.getElementById('histUsername').value.trim();
+            const nick = document.getElementById('histNickname').value.trim();
+            const dateStr = `${document.getElementById('histDateYYYY').value}/${document.getElementById('histDateMM').value}/${document.getElementById('histDateDD').value}`;
+            const details = document.getElementById('histDetails').value.trim();
+            const checked = Array.from(document.querySelectorAll('#histCheckboxes input:checked')).map(cb => cb.value);
+            const typeStr = checked.join(' / ');
+
+            if (!user) return alert("請輸入帳號");
+
+            if (id) {
+                const idx = historyData.findIndex(h => h.id == id);
+                if (idx !== -1) {
+                    historyData[idx] = { ...historyData[idx], username: user, nickname: nick, date: dateStr, type: typeStr, details: details };
+                }
+            } else {
+                addHistoryLog(user, nick, typeStr, dateStr, details);
+                closeHistoryModal();
+                return;
+            }
+            saveData(); // 使用全局存檔以支援 Undo
             renderHistory();
+            closeHistoryModal();
+        }
+
+        function addManualInteraction() {
+            const usernameInput = document.getElementById('manualUsername');
+            if (!validateInput(usernameInput)) return alert("帳號格式錯誤");
+            const username = usernameInput.value.trim(); if (!username) return alert("請輸入帳號");
+            const nickname = document.getElementById('manualNickname').value.trim();
+            const language = document.getElementById('manualLang').value;
+            const checkedBoxes = document.querySelector('#manualSection .interaction-checkboxes').querySelectorAll('input:checked');
+            let tags = Array.from(checkedBoxes).map(cb => (cb.value === '新粉絲' ? '粉絲' : cb.value));
+            const details = document.getElementById('manualDetails').value.trim();
+            const manualDateStr = `${document.getElementById('dateYYYY').value}/${document.getElementById('dateMM').value.padStart(2, '0')}/${document.getElementById('dateDD').value.padStart(2, '0')}`;
+           
+            const existingFan = fans.find(f => f.username === username);
+            if (existingFan) {
+                existingFan.interactions = Array.from(new Set([...existingFan.interactions, ...tags]));
+                if (details) existingFan.details = existingFan.details ? existingFan.details + " / " + details : details;
+                if (nickname) existingFan.nickname = nickname;
+                existingFan.language = language; 
+                if (parseDate(manualDateStr) >= parseDate(existingFan.latestDate)) { existingFan.latestType = tags.join(' / '); existingFan.latestDate = manualDateStr; }
+                showToast(`已更新 @${username}`);
+            } else {
+                fans.push({ id: Date.now(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: manualDateStr, details, sent: false, sentDate: '', isCloseFriend: false });
+                showToast(`已新增 @${username}`);
+            }
+
+            addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
+
+            usernameInput.value = ''; document.getElementById('manualNickname').value = '';
+            document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
+            saveData(); // 使用全局存檔
+            renderTable();
+        }
+
+        function addHeartData() {
+            const username = document.getElementById('heartUser').value.trim();
+            const nickname = document.getElementById('heartNick').value.trim();
+            const responseItem = document.getElementById('heartResponseItem').value;
+            const content = document.getElementById('heartContent').value.trim();
+            const dateStr = `${document.getElementById('heartDateYYYY').value}/${document.getElementById('heartDateMM').value}/${document.getElementById('heartDateDD').value}`;
+           
+            if(!username) return alert("請輸入粉絲帳號");
+            heartData.push({ id: Date.now(), username, nickname, responseItem, content, date: dateStr });
+            
+            saveData(); // 使用全局存檔
+            renderHeartData();
+            document.getElementById('heartUser').value = '';
+            document.getElementById('heartNick').value = '';
+            document.getElementById('heartContent').value = '';
+            showToast('暖心紀錄已儲存');
+        }
+
+        function openEditHeartModal(id) {
+            const d = heartData.find(h => h.id === id); // Fix: use find by id
+            if(!d) return;
+            document.getElementById('editHeartIndex').value = id; // Actually storing ID
+            document.getElementById('editHeartUser').value = d.username;
+            document.getElementById('editHeartNick').value = d.nickname;
+            document.getElementById('editHeartDate').value = d.date;
+            document.getElementById('editHeartItem').value = d.responseItem;
+            document.getElementById('editHeartContent').value = d.content;
+            document.getElementById('editHeartModal').classList.remove('hidden');
+        }
+
+        function saveHeartEdit() {
+            const id = parseFloat(document.getElementById('editHeartIndex').value);
+            const idx = heartData.findIndex(h => h.id === id);
+            if(idx !== -1) {
+                heartData[idx] = {
+                    id: id,
+                    username: document.getElementById('editHeartUser').value,
+                    nickname: document.getElementById('editHeartNick').value,
+                    date: document.getElementById('editHeartDate').value,
+                    responseItem: document.getElementById('editHeartItem').value,
+                    content: document.getElementById('editHeartContent').value
+                };
+                saveData(); // 使用全局存檔
+                renderHeartData();
+                document.getElementById('editHeartModal').classList.add('hidden');
+            }
+        }
+ 
+        function deleteHeartData(id) {
+            if(confirm("確定刪除?")) {
+                heartData = heartData.filter(h => h.id !== id);
+                saveData(); // 使用全局存檔
+                renderHeartData();
+            }
         }
 
 
@@ -2146,7 +2707,8 @@ function showSection(s) {
                     sent: false,
                     isCloseFriend: false
                 });
-                addHistoryLog('新粉絲', u.username, '官方資料比對加入');
+                // 更新參數順序：user, nick, type, date, detail
+                addHistoryLog(u.username, u.nickname, '新粉絲', nowStr, '官方資料比對加入');
             });
             
             saveData();
@@ -2159,11 +2721,13 @@ function showSection(s) {
         function confirmUnfollowed() {
             if(!confirm(`確定更新 ${pendingUnfollowed.length} 位退追狀態？\n(將移除「粉絲」標籤)`)) return;
             
+            const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
             pendingUnfollowed.forEach(u => {
                 const fan = fans.find(f => f.id === u.id);
                 if(fan) {
                     fan.interactions = fan.interactions.filter(t => t !== '粉絲');
-                    addHistoryLog('退追', fan.username, '官方資料比對移除粉絲標籤');
+                    // 更新參數順序
+                    addHistoryLog(fan.username, fan.nickname, '退追', nowStr, '官方資料比對移除粉絲標籤');
                 }
             });
             
@@ -2198,3 +2762,4 @@ function showSection(s) {
     </script>
 </body>
 </html>
+
