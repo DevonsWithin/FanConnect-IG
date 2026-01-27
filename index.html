@@ -120,7 +120,15 @@
 
 
 
+
+
+
+
+
+
             
+
+
 
 
 <div>
@@ -130,6 +138,8 @@
             </div>
  
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
+
+
 
 
             <div>
@@ -142,10 +152,24 @@
             </div>
 
 
+
+
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
             <div>
                 <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -215,6 +239,7 @@
                         <i class="fas fa-times text-xs"></i>
                     </button>
                 </div>
+
 
             </div>
         </header>
@@ -536,11 +561,19 @@
 
 
 
+
+
+
+
+
+
 <div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
 
 
             <div id="historySection" class="hidden h-full flex flex-col p-8">
@@ -572,6 +605,8 @@
             </div>
 
 
+
+
             <div id="compareSection" class="hidden h-full flex flex-col p-8 overflow-y-auto">
                 <div class="w-full max-w-6xl mx-auto space-y-6">
                     <div class="bg-[#1a1a1a] p-6 rounded-xl border border-orange-500/30 shadow-lg">
@@ -586,6 +621,8 @@
                             </div>
                         </div>
                     </div>
+
+
 
 
                     <div id="newFansResult" class="hidden bg-[#1a1a1a] p-6 rounded-xl border border-green-500/30 shadow-lg">
@@ -609,6 +646,8 @@
                             </table>
                         </div>
                     </div>
+
+
 
 
                     <div id="unfollowedResult" class="hidden bg-[#1a1a1a] p-6 rounded-xl border border-red-500/30 shadow-lg">
@@ -636,6 +675,8 @@
             </div>
         </div>
     </main>
+
+
 
 
         <div id="historyModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[110] backdrop-blur-sm">
@@ -676,6 +717,7 @@
                     </div>
                 </div>
 
+
                 <div>
                     <label class="block text-gray-400 text-xs mb-2">活動日期 (YYYY/MM/DD)</label>
                     <div class="date-segment-container w-full bg-black/40">
@@ -686,6 +728,7 @@
                         <input type="text" id="histDateDD" maxlength="2" placeholder="DD" style="width: 40px;" class="text-center bg-transparent text-white outline-none">
                     </div>
                 </div>
+
 
                 <div>
                     <label class="block text-gray-400 text-xs mb-2">詳細內容</label>
@@ -698,6 +741,15 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -728,10 +780,13 @@
                         <select id="targetLinkInput" class="input-dark text-xs h-9 w-3/5">
                             <option value="">-- 選擇禮物 --</option>
                         </select>
-                        <div class="flex items-center gap-2 text-[10px] text-gray-400 whitespace-nowrap px-1">
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="24" checked class="accent-indigo-500"> 24h</label>
-                            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="168" class="accent-indigo-500"> 7day</label>
-                        </div>
+                                           <div class="flex items-center gap-2 text-[10px] text-gray-400 whitespace-nowrap px-1">
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="24" checked class="accent-indigo-500"> 24h</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="168" class="accent-indigo-500"> 7day</label>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="0" class="accent-red-500"> 永久</label>
+                    </div>
+
+
                         <button onclick="generateHashLink()" id="genLinkBtn" class="btn-indigo px-3 py-1 rounded text-xs whitespace-nowrap font-bold h-9 flex-1"><i class="fas fa-lock mr-1"></i>生成</button>
                     </div>
                     <input type="hidden" id="finalGeneratedLink">
@@ -774,6 +829,7 @@
  cursor-pointer hover:text-[#763BE3] text-[#763BE3] font-bold"><input type="checkbox" value="前帳粉" class="accent-[#763BE3]"> 前帳粉</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-amber-300 text-amber-500 font-bold"><input type="checkbox" value="高互動" class="accent-amber-500"> 高互動</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-white text-gray-300 font-bold bg-black/40 rounded px-1"><input type="checkbox" value="Thread粉" class="accent-gray-500"> Thread粉</label>
+
 
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="留言" class="accent-indigo-500"> 留言</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300"><input type="checkbox" value="讚" class="accent-indigo-500"> 讚</label>
@@ -900,6 +956,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
         let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
@@ -908,12 +976,38 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let historyData = JSON.parse(localStorage.getItem('historyData')) || []; // 新增動態紀錄
 
 
+
+
         // 自動為舊資料補上 ID
         heartData = heartData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
         historyData = historyData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
 
 
+
+
         let activeFanId = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -983,6 +1077,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             };
             redoStack.push(currentSnapshot);
 
+
             const prevSnapshot = historyStack.pop();
             applySnapshot(prevSnapshot);
             
@@ -1004,12 +1099,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             };
             historyStack.push(currentSnapshot);
 
+
             const nextSnapshot = redoStack.pop();
             applySnapshot(nextSnapshot);
+
 
             showToast("已重作");
             isUndoRedoAction = false;
         }
+
 
         function applySnapshot(snap) {
             fans = JSON.parse(snap.fans);
@@ -1017,6 +1115,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             giftPosts = JSON.parse(snap.giftPosts);
             heartData = JSON.parse(snap.heartData);
             historyData = JSON.parse(snap.historyData);
+
 
             saveData(false); // 僅存檔，不重複推入歷史
             
@@ -1083,6 +1182,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         }
 
 
+
+
          function handleGlobalSearch() {
             const input = document.getElementById('globalSearch');
             const clearBtn = document.getElementById('clearSearchBtn');
@@ -1092,6 +1193,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             } else {
                 clearBtn.classList.add('hidden');
             }
+
 
             if (!document.getElementById('fansSection').classList.contains('hidden')) {
                 renderTable();
@@ -1103,11 +1205,14 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             }
         }
 
+
         function clearSearch() {
             const input = document.getElementById('globalSearch');
             input.value = '';
             handleGlobalSearch(); // 觸發重繪與隱藏按鈕
         }
+
+
 
 
         function renderTable() {
@@ -1144,6 +1249,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 }
                 return true;
             });
+
 
             if (filteredFans.length > 0) {
                 const sorter = (a, b) => {
@@ -1187,6 +1293,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     let finalSentDate = fan.sentDate;
                     let finalTimestamp = parseDate2(fan.sentDate);
 
+
                     // 掃描 HeartData 中是否有該粉絲的已發送紀錄，並比對時間
                     const userHearts = heartData.filter(h => h.username === fan.username);
                     userHearts.forEach(h => {
@@ -1199,6 +1306,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                             }
                         }
                     });
+
 
                     // 使用計算後的 finalSentDate 進行判斷
                     const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
@@ -1298,6 +1406,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
             const DAYS_14 = 1209600000; // 14 days
 
+
             let displayData = [...heartData];
             if (searchTerm) {
                 displayData = displayData.filter(d => 
@@ -1307,6 +1416,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     (d.responseItem || '').toLowerCase().includes(searchTerm)
                 );
             }
+
 
             displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
             
@@ -1319,6 +1429,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 let finalSentDate = d.sentDate;
                 let maxTimestamp = parseDate2(d.sentDate);
 
+
                 // 2. 檢查 [粉絲管理列表] 主檔 (Master) 是否已發送且時間更新
                 const masterFan = fans.find(f => f.username.trim().toLowerCase() === targetUser);
                 if (masterFan && masterFan.sent) {
@@ -1330,6 +1441,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         maxTimestamp = fanTime;
                     }
                 }
+
 
                 // 3. 檢查 [其他暖心紀錄] 是否有更新的發送時間 (Siblings)
                 heartData.forEach(h => {
@@ -1344,6 +1456,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 });
                 // ------------------------------------
 
+
                 const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
                 const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
                 
@@ -1351,6 +1464,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 const statusHtml = finalSent
                     ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${finalSentDate || ''}</span></div>`
                     : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
+
 
                 return `
                 <tr class="table-row">
@@ -1515,6 +1629,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const fan = fans.find(f => f.username === user);
             if(fan) document.getElementById('heartNick').value = fan.nickname || '';
         }
+
+
 
 
         // 新增：手動紀錄自動帶入暱稱
@@ -1700,10 +1816,12 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
             }
         }
 
+
         // [新增] 訊息按鈕專用邏輯 (短按Modal / 長按Threads)
         let msgBtnTimer;
         let isMsgBtnLong = false;
         let currentMsgPlatform = 'ig'; // 新增：追蹤目前要發送的平台
+
 
         function startMsgBtnPress(e, username, id, type = 'fan') {
             // 只接受左鍵(0)或觸控
@@ -1719,6 +1837,7 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
    
              }, 600);
         }
+
 
         function endMsgBtnPress(e, id) {
             clearTimeout(msgBtnTimer);
@@ -1784,8 +1903,10 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                 showToast(`已新增 @${username}`);
             }
 
+
             // 連動：寫入動態紀錄
             addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
+
 
             usernameInput.value = ''; document.getElementById('manualNickname').value = '';
             document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
@@ -1842,6 +1963,7 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                     heartData = [];
                     historyData = [];
 
+
                     // 2. 更新 LocalStorage
                     saveData();
 // 儲存 fans
@@ -1849,6 +1971,8 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
 localStorage.setItem('giftPosts', '[]');
                     localStorage.setItem('heartData', '[]');
                     localStorage.setItem('historyData', '[]');
+
+
 
 
                     // 3. 重新渲染所有列表介面
@@ -1859,6 +1983,8 @@ localStorage.setItem('giftPosts', '[]');
                     
                     // 4. 更新下拉選單選項 (移除已刪除的貼文/禮物選項)
                     updateResponseOptions();
+
+
 
 
                     showToast("所有資料已清空");
@@ -1885,6 +2011,8 @@ localStorage.setItem('giftPosts', '[]');
             XLSX.utils.book_append_sheet(wb, ws1, "互動紀錄");
 
 
+
+
             // Sheet 2: 暖心時刻
             const wsData2 = heartData.map(h => ({
                 "粉絲帳號": h.username,
@@ -1897,6 +2025,8 @@ localStorage.setItem('giftPosts', '[]');
             XLSX.utils.book_append_sheet(wb, ws2, "暖心時刻");
 
 
+
+
             // 檔名改為 FanConnect_"Brand Name"_Export_YYYYMMDD
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
             const brandName = (profile.name || 'Brand').replace(/\s+/g, '_');
@@ -1905,6 +2035,8 @@ localStorage.setItem('giftPosts', '[]');
             
             XLSX.writeFile(wb, `FanConnect_${brandName}_Export_${ymd}.xlsx`);
         }
+
+
 
 
         function handleExcelImport(e) {
@@ -1949,6 +2081,8 @@ workbook.SheetNames[0];
                         }
 
 
+
+
                         // [更新後的程式碼]
                         const existing = fans.find(f => f.username === username);
                         if (existing) {
@@ -1956,6 +2090,7 @@ workbook.SheetNames[0];
                             let mergedTags = new Set([...existing.interactions, ...tags]);
                             // (已移除) if (tags.includes('前帳粉')) { mergedTags.delete('粉絲'); }
                             existing.interactions = Array.from(mergedTags);
+
 
                             if (details && !existing.details.includes(details)) existing.details += " / " + details;
                             if (nickname && !existing.nickname) existing.nickname = nickname;
@@ -1990,6 +2125,8 @@ workbook.SheetNames[0];
                     });
 
 
+
+
                     // 2. 處理 {暖心時刻}
                     const sheet2Name = workbook.SheetNames.find(n => n.includes('暖心'));
                     if (sheet2Name) {
@@ -2007,6 +2144,7 @@ workbook.SheetNames[0];
                                     finalDate = (rawDate || todayStr).toString().trim();
                                }
 
+
                            
     heartData.push({
                                    id: Date.now() + Math.random(),
@@ -2023,6 +2161,7 @@ workbook.SheetNames[0];
                         // 已於開頭執行 saveData() 紀錄 Undo 狀態
                         // 此處僅更新 LocalStorage
 }
+
 
                     localStorage.setItem('heartData', JSON.stringify(heartData));
                     localStorage.setItem('fans', JSON.stringify(fans));
@@ -2069,6 +2208,7 @@ workbook.SheetNames[0];
                     const timeStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
                     const targetUserLower = currentData.username.trim().toLowerCase(); // 轉小寫以確保比對無誤
 
+
                     // 2. [強力同步] 掃描 FANS 列表：更新該粉絲的主檔狀態
                     fans.forEach(f => {
                         if (f.username.trim().toLowerCase() === targetUserLower) {
@@ -2076,6 +2216,7 @@ workbook.SheetNames[0];
                             f.sentDate = timeStr;
                         }
                     });
+
 
                     // 3. [強力同步] 掃描 HEART 列表：更新該粉絲所有待處理的紀錄
                     heartData.forEach(h => {
@@ -2086,6 +2227,7 @@ workbook.SheetNames[0];
                         }
                     });
                 }
+
 
                 // 4. 存檔並刷新所有介面
                 saveData(); 
@@ -2159,6 +2301,24 @@ workbook.SheetNames[0];
             } catch (e) { alert("解密失敗"); resultDiv.classList.add('hidden'); }
         }
  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2298,6 +2458,48 @@ function showSection(s) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
         function updateUsernameDatalist() {
@@ -2321,16 +2523,29 @@ function showSection(s) {
 
 
 
+
+
+
+
+
+
+
+
+
+
         // --- 新增：官方資料比對與動態紀錄邏輯 ---
         
         let pendingNewFans = [];
         let pendingUnfollowed = [];
 
 
+
+
         // 1. 動態紀錄功能
         function renderHistory() {
             const tbody = document.getElementById('historyTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+
 
             // [更新] 1. 搜尋過濾
             let displayData = [...historyData];
@@ -2343,6 +2558,7 @@ if (searchTerm) {
            (h.details || '').toLowerCase().includes(searchTerm)
                 );
 }
+
 
             // 2. 排序 (強制新到舊)
             const sorted = displayData.sort((a, b) => {
@@ -2363,6 +2579,7 @@ if (searchTerm) {
                 else if(t.includes('前帳粉')) typeClass = 'text-[#763BE3] font-bold';
                 else if(t.includes('粉絲')) typeClass = 'text-pink-300';
                 else if(h.type === '更新') typeClass = 'text-blue-400';
+
 
         
         return `<tr class="table-row">
@@ -2395,6 +2612,8 @@ if (searchTerm) {
         }
 
 
+
+
         // [更新後的程式碼]
         // 增加 save 參數，預設為 true。批次匯入時可設為 false 以避免重複寫入歷史
         function addHistoryLog(username, nickname, type, dateStr, details, save = true) {
@@ -2409,6 +2628,7 @@ if (searchTerm) {
             // 只有當 save 為 true 時才觸發存檔
             if (save) saveData();
         }
+
 
         // --- History Modal Logic ---
         // --- History Modal Logic ---
@@ -2426,6 +2646,7 @@ if (searchTerm) {
             };
             
             document.querySelectorAll('#histCheckboxes input').forEach(cb => cb.checked = false);
+
 
             if (id) {
                 const h = historyData.find(d => d.id == id);
@@ -2460,9 +2681,11 @@ if (searchTerm) {
             modal.classList.remove('hidden');
         }
 
+
         function closeHistoryModal() {
             document.getElementById('historyModal').classList.add('hidden');
         }
+
 
         function saveHistoryData() {
             const id = document.getElementById('historyId').value;
@@ -2473,7 +2696,9 @@ if (searchTerm) {
             const checked = Array.from(document.querySelectorAll('#histCheckboxes input:checked')).map(cb => cb.value);
             const typeStr = checked.join(' / ');
 
+
             if (!user) return alert("請輸入帳號");
+
 
             if (id) {
                 const idx = historyData.findIndex(h => h.id == id);
@@ -2489,6 +2714,7 @@ if (searchTerm) {
             renderHistory();
             closeHistoryModal();
         }
+
 
         function addManualInteraction() {
             const usernameInput = document.getElementById('manualUsername');
@@ -2514,13 +2740,16 @@ if (searchTerm) {
                 showToast(`已新增 @${username}`);
             }
 
+
             addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
+
 
             usernameInput.value = ''; document.getElementById('manualNickname').value = '';
             document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
             saveData(); // 使用全局存檔
             renderTable();
         }
+
 
         function addHeartData() {
             const username = document.getElementById('heartUser').value.trim();
@@ -2540,6 +2769,7 @@ if (searchTerm) {
             showToast('暖心紀錄已儲存');
         }
 
+
         function openEditHeartModal(id) {
             const d = heartData.find(h => h.id === id); // Fix: use find by id
             if(!d) return;
@@ -2551,6 +2781,7 @@ if (searchTerm) {
             document.getElementById('editHeartContent').value = d.content;
             document.getElementById('editHeartModal').classList.remove('hidden');
         }
+
 
         function saveHeartEdit() {
             const id = parseFloat(document.getElementById('editHeartIndex').value);
@@ -2579,6 +2810,8 @@ if (searchTerm) {
         }
 
 
+
+
         function deleteHistory(id) {
             if(confirm("刪除此條紀錄？")) {
                 historyData = historyData.filter(h => h.id != id);
@@ -2586,6 +2819,8 @@ if (searchTerm) {
                 renderHistory();
             }
         }
+
+
 
 
         // 2. 官方資料比對功能
@@ -2618,6 +2853,8 @@ if (searchTerm) {
                     if(officialUsers.length === 0) throw new Error("找不到粉絲資料，請確認檔案格式");
 
 
+
+
                     compareData(officialUsers);
                     e.target.value = ''; 
                 } catch(err) {
@@ -2626,6 +2863,8 @@ if (searchTerm) {
             };
             reader.readAsText(file);
         }
+
+
 
 
         function compareData(officialUsers) {
@@ -2642,6 +2881,8 @@ if (searchTerm) {
             pendingUnfollowed = unfollowedUsers;
             renderCompareResults();
         }
+
+
 
 
         function renderCompareResults() {
@@ -2667,6 +2908,8 @@ if (searchTerm) {
             }
 
 
+
+
             document.getElementById('unfollowedCount').innerText = pendingUnfollowed.length;
             const unfBody = document.getElementById('unfollowedBody');
             if(pendingUnfollowed.length > 0) {
@@ -2685,9 +2928,13 @@ if (searchTerm) {
         }
 
 
+
+
         function updatePendingNewFan(idx, field, value) {
             pendingNewFans[idx][field] = value;
         }
+
+
 
 
         function confirmNewFans() {
@@ -2716,6 +2963,8 @@ if (searchTerm) {
             renderCompareResults();
             showToast('已加入新粉絲');
         }
+
+
 
 
         function confirmUnfollowed() {
@@ -2750,6 +2999,20 @@ if (searchTerm) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         window.onload = () => {
             loadProfile();
             renderTable();
@@ -2762,4 +3025,3 @@ if (searchTerm) {
     </script>
 </body>
 </html>
-
