@@ -783,12 +783,17 @@
                                            <div class="flex items-center gap-2 text-[10px] text-gray-400 whitespace-nowrap px-1">
                         <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="24" checked class="accent-indigo-500"> 24h</label>
                         <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="168" class="accent-indigo-500"> 7day</label>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="0" class="accent-red-500"> 永久</label>
+                                               <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="linkExpiry" value="0" class="accent-red-500"> 永久</label>
                     </div>
+                    <div class="flex items-center px-1">
+                        <label class="flex items-center gap-1 text-[10px] text-indigo-300 font-bold cursor-pointer bg-indigo-900/30 px-2 py-1 rounded border border-indigo-500/30 hover:bg-indigo-900/50 transition-all" title="透過 TinyURL 生成短網址">
+                            <input type="checkbox" id="useShortUrl" class="accent-indigo-500" checked> 轉短網址
+                        </label>
+                    </div>
+                    <button onclick="generateHashLink()" id="genLinkBtn" class="btn-indigo px-3 py-1 rounded text-xs whitespace-nowrap font-bold h-9 flex-1"><i class="fas fa-lock mr-1"></i>生成</button>
+                </div>
 
 
-                        <button onclick="generateHashLink()" id="genLinkBtn" class="btn-indigo px-3 py-1 rounded text-xs whitespace-nowrap font-bold h-9 flex-1"><i class="fas fa-lock mr-1"></i>生成</button>
-                    </div>
                     <input type="hidden" id="finalGeneratedLink">
                     <p class="text-[10px] text-gray-500 mt-1 italic">* 系統將「粉絲帳號+目前時間」打包加密成亂碼參數，Next.js 端需解碼驗證。</p>
                 </div>
@@ -2247,23 +2252,69 @@ workbook.SheetNames[0];
             });
         }
  
-        function generateHashLink() {
-            const data = activeSourceType === 'heart' ? heartData.find(h => h.id === activeFanId) : fans.find(f => f.id === activeFanId);
+                // 修改為 async 以支援等待 API 回應
+        async function generateHashLink() {
+            const data = activeSourceType === 'heart' ?
+                heartData.find(h => h.id === activeFanId) : fans.find(f => f.id === activeFanId);
             const postInput = document.getElementById('targetLinkInput').value.trim();
             const expiryHours = document.querySelector('input[name="linkExpiry"]:checked').value;
             
             if (!data || !postInput) return alert("請選擇禮物 ID");
-            let postId = postInput.includes('/') ?
-                postInput.split('/').pop().split('?')[0] : postInput;
             
-            // Include expiry hours in token payload
+            let postId = postInput.includes('/') ? postInput.split('/').pop().split('?')[0] : postInput;
+            
+            // 1. 生成原始長連結
             const payload = { pid: postId, u: data.username, ts: Date.now(), exp: parseInt(expiryHours) };
             const token = btoa(encodeURIComponent(JSON.stringify(payload))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-            document.getElementById('finalGeneratedLink').value = `https://our-vault-iota.vercel.app/vault/secure/${token}`;
-            const btn = document.getElementById('genLinkBtn'); btn.innerHTML = '<i class="fas fa-check"></i> 完成';
+            let finalUrl = `https://our-vault-iota.vercel.app/vault/secure/${token}`;
+            
+            const btn = document.getElementById('genLinkBtn');
+            const originalBtnText = btn.innerHTML;
+            const useShort = document.getElementById('useShortUrl').checked;
+
+
+            // 2. 如果勾選縮網址，呼叫 TinyURL
+            if (useShort) {
+                try {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 縮短中...';
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    
+                    // 使用 allorigins 作為 CORS Proxy 繞過瀏覽器限制
+                    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://tinyurl.com/api-create.php?url=' + finalUrl)}`;
+                    const response = await fetch(proxyUrl);
+                    const result = await response.json();
+                    
+                    if (result.contents && result.contents.startsWith('http')) {
+                        finalUrl = result.contents; // 成功取得短網址
+                    } else {
+                        throw new Error('Shorten failed');
+                    }
+                } catch (e) {
+                    console.error("縮網址失敗", e);
+                    // 失敗時安靜地退回長網址，或用 Toast 提示
+                    showToast("縮網址連線逾時，已保留原始連結");
+                } finally {
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+
+            // 3. 更新介面
+            document.getElementById('finalGeneratedLink').value = finalUrl;
+            btn.innerHTML = '<i class="fas fa-check"></i> 完成';
             btn.classList.add('bg-green-600');
+            
+            // 延遲一下讓綠色勾勾顯示，再變回原樣 (可選)
+            setTimeout(() => {
+                btn.classList.remove('bg-green-600');
+                btn.innerHTML = originalBtnText;
+            }, 3000);
+
+
             if(document.getElementById('modalTempSelect').value) applyTemplate();
         }
+
+
  
         function applyTemplate() {
             const tId = document.getElementById('modalTempSelect').value;
