@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.2.23 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.3 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -73,7 +73,7 @@
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.2.23</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.3</span></span>
         </div>
  
         <div class="profile-section">
@@ -424,6 +424,9 @@
                                     <span class="text-gray-500">/</span>
                                     <input type="text" id="igDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
                                 </div>
+                                <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer ml-2 select-none">
+                                    <input type="checkbox" id="igIsPlanned" class="accent-indigo-500"> 規劃發文
+                                </label>
                             </div>
                             <button onclick="addIgPost()" class="btn-indigo flex-1 py-1.5 rounded font-bold text-white text-sm">新增貼文資料</button>
                         </div>
@@ -467,6 +470,9 @@
                                     <span class="text-gray-500">/</span>
                                     <input type="text" id="giftDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
                                 </div>
+                                <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer ml-2 select-none">
+                                    <input type="checkbox" id="giftIsPlanned" class="accent-purple-500"> 規劃發文
+                                </label>
                             </div>
                             <button onclick="addGiftPost()" class="btn-indigo flex-1 py-1.5 rounded font-bold text-white text-sm">新增禮物資料</button>
                         </div>
@@ -868,7 +874,13 @@
                 <input type="hidden" id="editIgIndex">
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-gray-400 text-xs mb-2">主題</label><input type="text" id="editIgTopic" class="input-dark"></div>
-                    <div><label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label><input type="text" id="editIgDate" class="input-dark"></div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="text" id="editIgDate" class="input-dark">
+                            <label class="whitespace-nowrap text-xs text-gray-400 flex items-center gap-1"><input type="checkbox" id="editIgIsPlanned" class="accent-pink-500"> 規劃發文</label>
+                        </div>
+                    </div>
                 </div>
                 <div><label class="block text-gray-400 text-xs mb-2">檔案名稱 (可換行)</label><textarea id="editIgFile" class="input-dark h-20"></textarea></div>
                 <div><label class="block text-gray-400 text-xs mb-2">內文 (可換行)</label><textarea id="editIgContent" class="input-dark h-24"></textarea></div>
@@ -891,7 +903,13 @@
                 <input type="hidden" id="editGiftIndex">
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="block text-gray-400 text-xs mb-2">禮物 ID</label><input type="text" id="editGiftId" class="input-dark"></div>
-                    <div><label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label><input type="text" id="editGiftDate" class="input-dark"></div>
+                    <div>
+                        <label class="block text-gray-400 text-xs mb-2">日期 (YYYY/MM/DD)</label>
+                        <div class="flex gap-2 items-center">
+                            <input type="text" id="editGiftDate" class="input-dark">
+                            <label class="whitespace-nowrap text-xs text-gray-400 flex items-center gap-1"><input type="checkbox" id="editGiftIsPlanned" class="accent-purple-500"> 規劃發文</label>
+                        </div>
+                    </div>
                 </div>
                 <div><label class="block text-gray-400 text-xs mb-2">檔案名稱 (可換行)</label><textarea id="editGiftFile" class="input-dark h-20"></textarea></div>
                 <div><label class="block text-gray-400 text-xs mb-2">描述 (可換行)</label><textarea id="editGiftDesc" class="input-dark h-24"></textarea></div>
@@ -1377,7 +1395,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             tbody.innerHTML = igPosts.map((p, idx) => `
                 <tr class="table-row">
                     <td class="font-bold text-pink-200">${p.topic}</td>
-                    <td class="text-gray-500 text-xs">${p.date || '-'}</td>
+                    <td class="text-gray-500 text-xs">${p.isPlanned ? '<span class="text-yellow-400 font-bold border border-yellow-400/30 px-2 py-0.5 rounded text-[10px]">規劃中</span>' : (p.date || '-')}</td>
                     <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.content}</td>
                     <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.fileName}</td>
                     <td class="text-blue-300 text-xs">${p.hashtag}</td>
@@ -1394,7 +1412,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             tbody.innerHTML = giftPosts.map((p, idx) => `
                 <tr class="table-row">
                     <td class="font-bold text-purple-200">${p.giftId}</td>
-                    <td class="text-gray-400 text-xs">${p.date}</td>
+                    <td class="text-gray-400 text-xs">${p.isPlanned ? '<span class="text-yellow-400 font-bold border border-yellow-400/30 px-2 py-0.5 rounded text-[10px]">規劃中</span>' : (p.date || '-')}</td>
                     <td class="text-gray-400 text-xs whitespace-pre-wrap">${p.fileName}</td>
                     <td class="text-gray-300 text-xs whitespace-pre-wrap">${p.desc}</td>
                     <td class="text-center">
@@ -1513,6 +1531,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             document.getElementById('editIgIndex').value = idx;
             document.getElementById('editIgTopic').value = p.topic;
             document.getElementById('editIgDate').value = p.date || '';
+            document.getElementById('editIgIsPlanned').checked = p.isPlanned || false;
             document.getElementById('editIgFile').value = p.fileName;
             document.getElementById('editIgContent').value = p.content;
             document.getElementById('editIgHash').value = p.hashtag;
@@ -1523,6 +1542,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             igPosts[idx] = {
                 topic: document.getElementById('editIgTopic').value,
                 date: document.getElementById('editIgDate').value,
+                isPlanned: document.getElementById('editIgIsPlanned').checked,
                 fileName: document.getElementById('editIgFile').value,
                 content: document.getElementById('editIgContent').value,
                 hashtag: document.getElementById('editIgHash').value
@@ -1539,13 +1559,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const fileName = document.getElementById('igFile').value.trim();
             const hashtag = document.getElementById('igHash').value.trim();
             const dateStr = `${document.getElementById('igDateYYYY').value}/${document.getElementById('igDateMM').value}/${document.getElementById('igDateDD').value}`;
+            const isPlanned = document.getElementById('igIsPlanned').checked;
            
             if(!topic) return alert("請輸入主題");
-            igPosts.push({ topic, content, fileName, hashtag, date: dateStr });
+            igPosts.push({ topic, content, fileName, hashtag, date: dateStr, isPlanned });
             localStorage.setItem('igPosts', JSON.stringify(igPosts));
             renderIgPosts();
            
             document.getElementById('igTopic').value = '';
+            document.getElementById('igIsPlanned').checked = false; // 重置勾選框
             document.getElementById('igContent').value = '';
             document.getElementById('igFile').value = '';
             document.getElementById('igHash').value = '';
@@ -1566,6 +1588,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             document.getElementById('editGiftIndex').value = idx;
             document.getElementById('editGiftId').value = p.giftId;
             document.getElementById('editGiftDate').value = p.date;
+            document.getElementById('editGiftIsPlanned').checked = p.isPlanned || false;
             document.getElementById('editGiftFile').value = p.fileName;
             document.getElementById('editGiftDesc').value = p.desc;
             document.getElementById('editGiftModal').classList.remove('hidden');
@@ -1575,6 +1598,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             giftPosts[idx] = {
                 giftId: document.getElementById('editGiftId').value,
                 date: document.getElementById('editGiftDate').value,
+                isPlanned: document.getElementById('editGiftIsPlanned').checked,
                 fileName: document.getElementById('editGiftFile').value,
                 desc: document.getElementById('editGiftDesc').value
             };
@@ -1589,13 +1613,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const fileName = document.getElementById('giftFile').value.trim();
             const desc = document.getElementById('giftDesc').value.trim();
             const dateStr = `${document.getElementById('giftDateYYYY').value}/${document.getElementById('giftDateMM').value}/${document.getElementById('giftDateDD').value}`;
+            const isPlanned = document.getElementById('giftIsPlanned').checked;
            
             if(!giftId) return alert("請輸入禮物 ID");
-            giftPosts.push({ giftId, date: dateStr, fileName, desc });
+            giftPosts.push({ giftId, date: dateStr, fileName, desc, isPlanned });
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             renderGiftPosts();
            
             document.getElementById('giftId').value = '';
+            document.getElementById('giftIsPlanned').checked = false; // 重置
             document.getElementById('giftFile').value = '';
             document.getElementById('giftDesc').value = '';
             showToast('禮物貼文已新增');
@@ -2811,9 +2837,30 @@ if (searchTerm) {
            
             if(!username) return alert("請輸入粉絲帳號");
             heartData.push({ id: Date.now(), username, nickname, responseItem, content, date: dateStr });
+
+            // [同步邏輯] 若為「IG貼文留言」，自動更新粉絲狀態並寫入動態紀錄
+            if (responseItem.startsWith('貼文:')) {
+                // 忽略大小寫比對粉絲
+                const fan = fans.find(f => f.username.toLowerCase() === username.toLowerCase());
+                if (fan) {
+                    if (!fan.interactions.includes('留言')) fan.interactions.push('留言');
+                    
+                    // 比較日期，若新日期較新或相等，則更新最新動態
+                    const newDateTs = parseDate(dateStr);
+                    const oldDateTs = parseDate(fan.latestDate);
+                    if (newDateTs >= oldDateTs) {
+                        fan.latestType = '留言';
+                        fan.latestDate = dateStr;
+                    }
+                }
+                // 自動新增到動態紀錄 (save=false 避免重複存檔)
+                addHistoryLog(username, nickname, '留言', dateStr, `已回應：${content}`, false);
+            }
+
+            saveData(); // 儲存所有更動 (包含 fans 與 heartData)
+            renderHeartData(); // 渲染暖心紀錄
+            renderTable(); // [修正] 立即渲染粉絲列表，顯示最新動態
             
-            saveData(); // 使用全局存檔
-            renderHeartData();
             document.getElementById('heartUser').value = '';
             document.getElementById('heartNick').value = '';
             document.getElementById('heartContent').value = '';
