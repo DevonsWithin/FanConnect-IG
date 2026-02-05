@@ -2466,7 +2466,7 @@ function showSection(s) {
             const brandName = (profile.name || 'Brand').replace(/\s+/g, '');
             const now = new Date();
             const ymd = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
-            const filename = `FanConnect_${brandName}_${ymd}.json`;
+            const filename = `FanConnect_${brandName}_${ymd}_${hm}.json`;
             const link = document.createElement('a');
             // 備份加入 historyData
             link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData, historyData }));
@@ -3129,4 +3129,5 @@ if (searchTerm) {
     </script>
 </body>
 </html>
+
 
