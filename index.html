@@ -133,7 +133,10 @@
 
 <div>
                 <a href="#" onclick="showSection('decrypt')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-teal-500">
-                    <i class="fas fa-key w-6 text-center text-teal-400"></i> <span class="menu-text">連結解密 / 驗證</span>
+                    <i class="fas fa-unlock-alt w-6 text-center text-teal-400"></i> <span class="menu-text">連結解密 / 驗證</span>
+                </a>
+                <a href="#" onclick="showSection('keyManage')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-emerald-500">
+                    <i class="fas fa-key w-6 text-center text-emerald-400"></i> <span class="menu-text">鑰匙管理</span>
                 </a>
             </div>
  
@@ -504,15 +507,25 @@
  
             <div id="heartStatsSection" class="hidden h-full flex flex-col p-8">
                 <div class="w-full max-w-5xl mx-auto flex flex-col h-full bg-[#1a1a1a] p-8 rounded-2xl border border-red-500/20 shadow-2xl">
-                    <h3 class="text-2xl font-bold mb-6 text-red-400 border-b border-white/10 pb-4 shrink-0">
-                        <i class="fas fa-heart mr-2"></i>暖心互動紀錄表
-                    </h3>
+                    <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4 shrink-0">
+                        <h3 class="text-2xl font-bold text-red-400">
+                            <i class="fas fa-heart mr-2"></i>暖心互動紀錄表
+                        </h3>
+                        <div class="flex items-center gap-2">
+                             <select id="heartKeySelect" class="hidden bg-[#222] border border-gray-600 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 transition-all"></select>
+                             <button id="addToKeyBtn" onclick="toggleHeartKeyMode()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-all border border-transparent">
+                                <i class="fas fa-plus mr-1"></i>新增至鑰匙名單
+                             </button>
+                        </div>
+                    </div>
                     <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative">
-                         <div class="h-full overflow-y-auto custom-scrollbar">
+                        <div class="h-full overflow-y-auto custom-scrollbar">
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
-                        
+                                        <th width="5%" class="hidden sticky top-0 bg-[#202020] z-20 shadow-md text-center" id="heartCheckHeader">
+                                            <input type="checkbox" onclick="toggleAllHeartChecks(this)" class="accent-emerald-500">
+                                        </th>
                                         <th width="15%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲帳號</th>
                                         <th width="10%" class="sticky top-0 bg-[#202020] z-20 shadow-md">粉絲暱稱</th>
                                 
@@ -581,6 +594,77 @@
 
 <div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+<div id="keyManageSection" class="hidden h-full flex flex-col p-4">
+                <div class="w-full max-w-6xl mx-auto flex flex-col h-full">
+                    <div class="bg-[#1a1a1a] p-4 rounded-xl border border-emerald-500/30 mb-4 shrink-0 shadow-lg z-10">
+                        <h3 class="text-lg font-bold mb-3 text-emerald-400"><i class="fas fa-key mr-2"></i>鑰匙連結產生器</h3>
+                        <div class="flex items-center gap-3">
+                            <select id="keyGenSelect" class="input-dark text-xs h-10 w-1/4">
+                                <option value="">-- 選擇禮物 ID --</option>
+                            </select>
+                            <button onclick="generateKeyLink()" class="btn-indigo bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded text-white font-bold text-xs h-10 shrink-0">
+                                <i class="fas fa-magic mr-1"></i>產生並複製
+                            </button>
+                            <input type="text" id="keyGenResult" readonly placeholder="連結將顯示於此..." class="input-dark text-xs h-10 flex-1 font-mono text-emerald-300">
+                        </div>
+                    </div>
+
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
+                        <div class="h-full overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr>
+                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">禮物 ID</th>
+                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
+                                        <th width="30%" class="sticky top-0 bg-[#202020] z-20 shadow-md">鑰匙名單</th>
+                                        <th width="30%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">製作清單</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="keyTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="keyListModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[150] backdrop-blur-sm">
+                <div class="bg-[#1a1a1a] border border-emerald-500/30 w-[500px] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+                    <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center shrink-0">
+                        <h3 class="text-emerald-400 font-bold text-lg"><i class="fas fa-user-lock mr-2"></i>管理鑰匙權限</h3>
+                        <button onclick="closeKeyListModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="p-4 bg-black/20 border-b border-white/5 shrink-0">
+                        <h4 id="keyListTitle" class="text-white font-bold mb-2">Gift ID</h4>
+                        <input type="text" id="keyListSearch" onkeyup="filterKeyList()" placeholder="搜尋粉絲帳號..." class="input-dark text-xs">
+                    </div>
+                    <div id="keyListContainer" class="p-4 overflow-y-auto custom-scrollbar flex-1 space-y-2"></div>
+                    <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3 shrink-0">
+                        <button onclick="closeKeyListModal()" class="px-4 py-2 text-gray-400 hover:text-white text-sm">取消</button>
+                        <button onclick="saveKeyPermissions()" class="btn-indigo bg-emerald-700 hover:bg-emerald-600 px-6 py-2 rounded text-white font-bold">儲存變更</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="jsonListModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[150] backdrop-blur-sm">
+                <div class="bg-[#1a1a1a] border border-emerald-500/30 w-[500px] rounded-xl shadow-2xl overflow-hidden">
+                    <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                        <h3 class="text-emerald-400 font-bold text-lg"><i class="fas fa-code mr-2"></i>製作清單 (JSON)</h3>
+                        <button onclick="document.getElementById('jsonListModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-400 text-xs mb-2">請複製以下內容：</p>
+                        <textarea id="jsonOutput" class="w-full bg-black border border-emerald-500/30 p-4 rounded h-40 text-sm font-mono text-emerald-300 focus:outline-none" readonly></textarea>
+                    </div>
+                    <div class="p-4 bg-black/20 border-t border-white/5 flex justify-end gap-3">
+                        <button onclick="document.getElementById('jsonListModal').classList.add('hidden')" class="px-4 py-2 text-gray-400 hover:text-white text-sm">關閉</button>
+                        <button onclick="copyJsonOutput()" class="btn-indigo bg-emerald-700 hover:bg-emerald-600 px-6 py-2 rounded text-white font-bold"><i class="fas fa-copy mr-1"></i>複製</button>
                     </div>
                 </div>
             </div>
@@ -1002,10 +1086,9 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
         let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
         let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
-        let historyData = JSON.parse(localStorage.getItem('historyData')) || []; // 新增動態紀錄
-
-
-
+        let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+        let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
+        let isHeartKeyMode = false; // 暖心互動選擇模式狀態
 
         // 自動為舊資料補上 ID
         heartData = heartData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
@@ -1078,7 +1161,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     igPosts: localStorage.getItem('igPosts') || '[]',
                     giftPosts: localStorage.getItem('giftPosts') || '[]',
                     heartData: localStorage.getItem('heartData') || '[]',
-                    historyData: localStorage.getItem('historyData') || '[]'
+                    historyData: localStorage.getItem('historyData') || '[]',
+                    keyPermissions: localStorage.getItem('keyPermissions') || '{}'
                 };
                 historyStack.push(snapshot);
                 if (historyStack.length > MAX_HISTORY) historyStack.shift();
@@ -1090,6 +1174,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             localStorage.setItem('heartData', JSON.stringify(heartData));
             localStorage.setItem('historyData', JSON.stringify(historyData));
+            localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
         }
  
         function undo() {
@@ -1102,7 +1187,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 igPosts: JSON.stringify(igPosts),
                 giftPosts: JSON.stringify(giftPosts),
                 heartData: JSON.stringify(heartData),
-                historyData: JSON.stringify(historyData)
+                historyData: JSON.stringify(historyData),
+                keyPermissions: JSON.stringify(keyPermissions)
             };
             redoStack.push(currentSnapshot);
 
@@ -1124,7 +1210,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 igPosts: JSON.stringify(igPosts),
                 giftPosts: JSON.stringify(giftPosts),
                 heartData: JSON.stringify(heartData),
-                historyData: JSON.stringify(historyData)
+                historyData: JSON.stringify(historyData),
+                keyPermissions: JSON.stringify(keyPermissions)
             };
             historyStack.push(currentSnapshot);
 
@@ -1144,9 +1231,9 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             giftPosts = JSON.parse(snap.giftPosts);
             heartData = JSON.parse(snap.heartData);
             historyData = JSON.parse(snap.historyData);
+            keyPermissions = JSON.parse(snap.keyPermissions || '{}');
 
-
-            saveData(false); // 僅存檔，不重複推入歷史
+            saveData(false);
             
             // 重新渲染所有畫面
             renderTable();
@@ -1495,8 +1582,14 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
 
 
+                // 新增：根據模式決定是否顯示 checkbox
+                const checkHtml = isHeartKeyMode ? 
+                    `<td class="text-center"><input type="checkbox" value="${d.username}" class="heart-key-checkbox accent-emerald-500 w-4 h-4"></td>` : 
+                    '';
+
                 return `
                 <tr class="table-row">
+                    ${checkHtml}
                     <td class="font-bold">
                         <span class="text-indigo-300 cursor-pointer hover:text-indigo-100 hover:underline select-none" 
                               onmousedown="startFanLongPress(event, '${d.username}')" 
@@ -2008,6 +2101,8 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
 localStorage.setItem('giftPosts', '[]');
                     localStorage.setItem('heartData', '[]');
                     localStorage.setItem('historyData', '[]');
+                    localStorage.setItem('keyPermissions', '{}');
+                    keyPermissions = {};
 
 
 
@@ -2421,11 +2516,13 @@ workbook.SheetNames[0];
 
 
 function showSection(s) {
-            // 加入 'history', 'compare' 到隱藏列表
-            ['fans', 'manual', 'templates', 'decrypt', 'igPosts', 'giftPosts', 'heartStats', 'history', 'compare'].forEach(x => {
+            // 加入 'history', 'compare', 'keyManage' 到隱藏列表
+            ['fans', 'manual', 'templates', 'decrypt', 'keyManage', 'igPosts', 'giftPosts', 'heartStats', 'history', 'compare'].forEach(x => {
                 const el = document.getElementById(x+'Section');
                 if(el) el.classList.add('hidden');
             });
+            
+            if(s === 'keyManage') renderKeyTable(); // 新增渲染呼叫
             const target = document.getElementById(s+'Section');
             if(target) target.classList.remove('hidden');
            
@@ -2468,8 +2565,8 @@ function showSection(s) {
             const hm = `${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
             const filename = `FanConnect_${brandName}_${ymd}_${hm}.json`;
             const link = document.createElement('a');
-            // 備份加入 historyData
-            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData, historyData }));
+            // 備份加入 historyData 與 keyPermissions
+            link.href = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify({ fans, templates, userProfile: profile, igPosts, giftPosts, heartData, historyData, keyPermissions }));
             link.download = filename; link.click();
         }
        
@@ -2484,13 +2581,15 @@ function showSection(s) {
                         igPosts = o.igPosts || [];
                         giftPosts = o.giftPosts || [];
                         heartData = o.heartData || [];
-                        historyData = o.historyData || []; // 還原歷史紀錄
+                        historyData = o.historyData || [];
+                        keyPermissions = o.keyPermissions || {}; // 還原鑰匙權限
                         if (o.userProfile) { localStorage.setItem('userProfile', JSON.stringify(o.userProfile)); loadProfile(); }
                         saveData();
                         localStorage.setItem('igPosts', JSON.stringify(igPosts));
                         localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
                         localStorage.setItem('heartData', JSON.stringify(heartData));
                         localStorage.setItem('historyData', JSON.stringify(historyData));
+                        localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
                         localStorage.setItem('templates', JSON.stringify(templates));
                         renderTable(); renderTemplateList();
                         renderIgPosts(); renderGiftPosts(); renderHeartData();
@@ -3104,7 +3203,189 @@ if (searchTerm) {
 
 
 
+// --- 鑰匙管理系統邏輯 ---
 
+        function renderKeyTable() {
+            const tbody = document.getElementById('keyTableBody');
+            const genSelect = document.getElementById('keyGenSelect');
+            const heartSelect = document.getElementById('heartKeySelect');
+            
+            // 更新下拉選單
+            let options = '<option value="">-- 選擇禮物 ID --</option>';
+            giftPosts.forEach(g => {
+                options += `<option value="${g.giftId}">${g.giftId}</option>`;
+            });
+            genSelect.innerHTML = options;
+            heartSelect.innerHTML = options;
+
+            // 更新表格
+            tbody.innerHTML = giftPosts.map(p => `
+                <tr class="table-row">
+                    <td class="font-bold text-emerald-300 py-3 pl-4">${p.giftId}</td>
+                    <td class="text-gray-400 text-xs">${p.date}</td>
+                    <td>
+                        <button onclick="openKeyListModal('${p.giftId}')" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-6 py-1.5 rounded-full font-bold shadow-lg transition-transform active:scale-95 w-32">
+                            <i class="fas fa-user-lock mr-1"></i>鑰匙名單
+                        </button>
+                    </td>
+                    <td class="text-center">
+                         <button onclick="openMakeListModal('${p.giftId}')" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-xs px-3 py-1.5 rounded font-bold border border-emerald-500/30 transition-colors">
+                            <i class="fas fa-code mr-1"></i>製作清單
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function generateKeyLink() {
+            const giftId = document.getElementById('keyGenSelect').value;
+            if(!giftId) return alert("請先選擇禮物 ID");
+            const url = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
+            const resInput = document.getElementById('keyGenResult');
+            resInput.value = url;
+            resInput.select();
+            document.execCommand('copy');
+            showToast('連結已複製');
+        }
+
+        let currentEditingKey = null;
+
+        function openKeyListModal(giftId) {
+            currentEditingKey = giftId;
+            document.getElementById('keyListTitle').innerText = `管理權限: ${giftId}`;
+            renderKeyListItems();
+            document.getElementById('keyListModal').classList.remove('hidden');
+        }
+
+        function renderKeyListItems() {
+            const container = document.getElementById('keyListContainer');
+            const search = document.getElementById('keyListSearch').value.toLowerCase();
+            const currentPerms = keyPermissions[currentEditingKey] || [];
+            
+            const filteredFans = fans.filter(f => 
+                f.username.toLowerCase().includes(search) || 
+                (f.nickname && f.nickname.toLowerCase().includes(search))
+            );
+
+            // 排序: 已勾選的在上面
+            filteredFans.sort((a, b) => {
+                const aHas = currentPerms.includes(a.username);
+                const bHas = currentPerms.includes(b.username);
+                return bHas - aHas; 
+            });
+
+            container.innerHTML = filteredFans.map(f => {
+                const checked = currentPerms.includes(f.username) ? 'checked' : '';
+                return `
+                    <label class="flex items-center justify-between p-3 bg-white/5 rounded hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition-all">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" value="${f.username}" ${checked} class="accent-emerald-500 w-4 h-4 key-perm-checkbox">
+                            <div>
+                                <div class="font-bold text-gray-200 text-sm">@${f.username}</div>
+                                <div class="text-xs text-gray-500">${f.nickname || ''}</div>
+                            </div>
+                        </div>
+                        ${checked ? '<span class="text-emerald-400 text-xs font-bold"><i class="fas fa-check"></i></span>' : ''}
+                    </label>
+                `;
+            }).join('');
+        }
+
+        function filterKeyList() {
+            renderKeyListItems();
+        }
+
+        function closeKeyListModal() {
+            document.getElementById('keyListModal').classList.add('hidden');
+            currentEditingKey = null;
+        }
+
+        function saveKeyPermissions() {
+            if(!currentEditingKey) return;
+            const checkboxes = document.querySelectorAll('.key-perm-checkbox:checked');
+            const selectedUsers = Array.from(checkboxes).map(cb => cb.value);
+            
+            keyPermissions[currentEditingKey] = selectedUsers;
+            saveData(); // 存檔 (包含 keyPermissions)
+            showToast(`已更新 ${currentEditingKey} 的權限名單`);
+            closeKeyListModal();
+        }
+
+        function openMakeListModal(giftId) {
+            const perms = keyPermissions[giftId] || [];
+            const json = JSON.stringify(perms);
+            document.getElementById('jsonOutput').value = json;
+            document.getElementById('jsonListModal').classList.remove('hidden');
+        }
+
+        function copyJsonOutput() {
+            const el = document.getElementById('jsonOutput');
+            el.select();
+            document.execCommand('copy');
+            showToast('JSON 已複製');
+        }
+
+        // --- 暖心互動整合邏輯 ---
+
+        function toggleHeartKeyMode() {
+            const btn = document.getElementById('addToKeyBtn');
+            const select = document.getElementById('heartKeySelect');
+            const th = document.getElementById('heartCheckHeader');
+            
+            if (!isHeartKeyMode) {
+                // 階段 1: 啟動選擇模式 (紫光閃爍)
+                isHeartKeyMode = true;
+                btn.classList.add('animate-pulse', 'bg-purple-600', 'border-purple-400');
+                btn.classList.remove('bg-gray-700');
+                btn.innerHTML = '<i class="fas fa-check mr-1"></i>確認新增';
+                select.classList.remove('hidden');
+                th.classList.remove('hidden'); // 顯示表頭勾選框
+                renderHeartData(); // 重新渲染以顯示 checkbox
+                showToast('請選擇粉絲並指定禮物ID');
+            } else {
+                // 階段 2: 確認新增
+                const giftId = select.value;
+                if (!giftId) {
+                    alert("請選擇要新增到的禮物 ID");
+                    return;
+                }
+                
+                // 收集勾選的粉絲
+                const checks = document.querySelectorAll('.heart-key-checkbox:checked');
+                if (checks.length === 0) {
+                    alert("請至少勾選一位粉絲");
+                    return;
+                }
+
+                const usersToAdd = Array.from(checks).map(c => c.value);
+                
+                // 更新權限
+                if (!keyPermissions[giftId]) keyPermissions[giftId] = [];
+                // 合併並去重
+                const newSet = new Set([...keyPermissions[giftId], ...usersToAdd]);
+                keyPermissions[giftId] = Array.from(newSet);
+                
+                saveData();
+                
+                // 變回綠色並重置
+                btn.className = "text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded transition-all border border-transparent";
+                btn.innerHTML = '<i class="fas fa-check-double mr-1"></i>已新增';
+                
+                setTimeout(() => {
+                    // 2秒後恢復原狀
+                    isHeartKeyMode = false;
+                    btn.className = "text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-all border border-transparent";
+                    btn.innerHTML = '<i class="fas fa-plus mr-1"></i>新增至鑰匙名單';
+                    select.classList.add('hidden');
+                    th.classList.add('hidden');
+                    renderHeartData();
+                }, 2000);
+            }
+        }
+
+        function toggleAllHeartChecks(source) {
+            document.querySelectorAll('.heart-key-checkbox').forEach(cb => cb.checked = source.checked);
+        }
 
 
 
@@ -3129,5 +3410,6 @@ if (searchTerm) {
     </script>
 </body>
 </html>
+
 
 
