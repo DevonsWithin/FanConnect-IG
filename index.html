@@ -64,6 +64,21 @@
         .date-segment-container { display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 4px 8px; width: fit-content; }
         .date-segment-container input { background: transparent; border: none; color: white; text-align: center; padding: 4px 0; outline: none; width: 100%; }
         .date-segment-container input:focus { border-bottom: 1px solid #a78bfa; }
+
+
+/* 鑰匙管理專用樣式 */
+        @keyframes blink-red { 0%, 100% { background-color: #4b5563; } 50% { background-color: #dc2626; box-shadow: 0 0 10px #ef4444; } }
+        @keyframes blink-green { 0%, 100% { background-color: #064e3b; } 50% { background-color: #059669; box-shadow: 0 0 10px #10b981; } }
+        @keyframes blink-yellow { 0%, 100% { background-color: #713f12; } 50% { background-color: #d97706; box-shadow: 0 0 10px #f59e0b; } }
+        
+        .flashing-master { animation: blink-red 1.5s infinite; color: white !important; border-color: white !important; }
+        .flashing-append { animation: blink-green 1.5s infinite; color: white !important; border-color: white !important; opacity: 1 !important; }
+        .flashing-edit { animation: blink-yellow 1.5s infinite; color: white !important; border-color: white !important; opacity: 1 !important; }
+
+        .key-row-pinned { background-color: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; }
+        .key-row-disabled { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
+
+
     </style>
 </head>
 <body class="flex">
@@ -602,33 +617,81 @@
 
 
 <div id="keyManageSection" class="hidden h-full flex flex-col p-4">
-                <div class="w-full max-w-6xl mx-auto flex flex-col h-full">
+                <div class="w-full max-w-full mx-auto flex flex-col h-full">
                     <div class="bg-[#1a1a1a] p-4 rounded-xl border border-emerald-500/30 mb-4 shrink-0 shadow-lg z-10">
-                        <h3 class="text-lg font-bold mb-3 text-emerald-400"><i class="fas fa-key mr-2"></i>鑰匙連結產生器</h3>
+                        <h3 class="text-lg font-bold mb-3 text-emerald-400"><i class="fas fa-key mr-2"></i>鑰匙管理系統</h3>
                         <div class="flex items-center gap-3">
-                            <select id="keyGenSelect" class="input-dark text-xs h-10 w-1/4">
-                                <option value="">-- 選擇禮物 ID --</option>
-                            </select>
-                            <button onclick="generateKeyLink()" class="btn-indigo bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded text-white font-bold text-xs h-10 shrink-0">
-                                <i class="fas fa-magic mr-1"></i>產生並複製
+                            <!-- 1. 下拉選單 -->
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs text-gray-400 font-bold whitespace-nowrap">Gift ID:</label>
+                                <select id="keyGiftSelect" onchange="renderKeyTable()" class="input-dark text-xs h-10 w-40 border-emerald-500/50 font-bold focus:border-emerald-400">
+                                    <option value="">-- 請選擇 --</option>
+                                </select>
+                            </div>
+
+                            <div class="h-8 w-[1px] bg-white/10 mx-1"></div>
+
+                            <!-- 2. 編輯鑰匙名單 (主按鈕) -->
+                            <button id="btnKeyMaster" onclick="toggleKeyEditMaster()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-xs font-bold transition-all shadow-md whitespace-nowrap border border-white/10">
+                                <i class="fas fa-cog mr-1"></i>編輯鑰匙名單
                             </button>
-                            <input type="text" id="keyGenResult" readonly placeholder="連結將顯示於此..." class="input-dark text-xs h-10 flex-1 font-mono text-emerald-300">
+
+                            <!-- 子功能按鈕區 (隱藏) -->
+                            <div id="keyModeBtns" class="hidden flex gap-2">
+                                <button id="btnKeyAppend" onclick="setKeySubMode('append')" class="px-3 py-2 rounded text-xs font-bold border border-emerald-500/50 text-emerald-300 bg-emerald-900/20 transition-all whitespace-nowrap opacity-50">
+                                    <i class="fas fa-plus mr-1"></i>追加並產出
+                                </button>
+                                <button id="btnKeyEdit" onclick="setKeySubMode('edit')" class="px-3 py-2 rounded text-xs font-bold border border-yellow-500/50 text-yellow-300 bg-yellow-900/20 transition-all whitespace-nowrap opacity-50">
+                                    <i class="fas fa-edit mr-1"></i>僅編輯
+                                </button>
+                            </div>
+
+                            <!-- 3. 製作清單按鈕 -->
+                            <button onclick="openMakeListModal(document.getElementById('keyGiftSelect').value)" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-xs px-4 py-2 rounded font-bold border border-emerald-500/30 transition-colors whitespace-nowrap ml-2">
+                                <i class="fas fa-file-code mr-1"></i>製作清單
+                            </button>
+
+                            <!-- Spacer -->
+                            <div class="flex-1"></div>
+
+                            <!-- 4. 連結產生器 (最右邊) -->
+                            <div class="flex items-center gap-2 bg-black/40 p-1 pl-3 rounded border border-white/10 max-w-[400px]">
+                                <span class="text-[10px] text-gray-500 font-bold whitespace-nowrap select-none"><i class="fas fa-link mr-1"></i>入口連結</span>
+                                <input type="text" id="keyLinkInput" readonly placeholder="選擇 ID 後生成..." class="bg-transparent border-none text-emerald-400 text-xs w-full focus:outline-none font-mono text-ellipsis">
+                                <button onclick="copyKeyLink()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-[10px] px-3 py-1.5 rounded font-bold whitespace-nowrap transition-colors">
+                                    複製
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-right mt-1 h-4">
+                             <span class="text-[10px] text-gray-500 italic" id="keyStatusText"></span>
                         </div>
                     </div>
 
-                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl">
-                        <div class="h-full overflow-y-auto custom-scrollbar">
+                    <!-- 資料列表區 -->
+                    <div class="bg-[#151515] rounded-lg border border-white/5 flex-1 overflow-hidden relative shadow-xl flex flex-col">
+                         <div class="table-container custom-scrollbar flex-1" style="height: auto;">
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
-                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">禮物 ID</th>
-                                        <th width="20%" class="sticky top-0 bg-[#202020] z-20 shadow-md">日期</th>
-                                        <th width="30%" class="sticky top-0 bg-[#202020] z-20 shadow-md">鑰匙名單</th>
-                                        <th width="30%" class="text-center sticky top-0 bg-[#202020] z-20 shadow-md">製作清單</th>
+                                        <th width="4%" class="text-center sticky-col-1 bg-[#202020] z-30">
+                                            <input type="checkbox" id="keySelectAll" onclick="handleKeySelectAll(this)" disabled class="accent-emerald-500 cursor-not-allowed">
+                                        </th>
+                                        <th width="15%" class="sticky-col-2 cursor-pointer select-none bg-[#202020] z-30" onmousedown="startHeaderLongPress(event, 'username')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'username')" ontouchend="cancelHeaderLongPress()">帳號名稱</th>
+                                        <th width="8%" class="bg-[#202020] z-20">暱稱</th>
+                                        <th width="15%" class="text-indigo-300 cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'status')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'status')" ontouchend="cancelHeaderLongPress()"><i class="fas fa-history mr-1"></i>最新動態</th>
+                                        <th width="20%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'interactions')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'interactions')" ontouchend="cancelHeaderLongPress()">互動標籤</th>
+                                        <th width="23%" class="bg-[#202020] z-20">詳細內容</th>
+                                        <th width="8%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'sent')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'sent')" ontouchend="cancelHeaderLongPress()">訊息</th>
+                                        <th width="7%" class="text-center sticky-col-last bg-[#202020] z-30">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody id="keyTableBody"></tbody>
                             </table>
+                            <div id="keyEmptyState" class="flex flex-col items-center justify-center py-20 text-gray-500 hidden">
+                                <i class="fas fa-key text-4xl mb-4 opacity-50"></i>
+                                <p>請選擇上方的禮物 ID 以載入資料</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1310,14 +1373,15 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 clearBtn.classList.add('hidden');
             }
 
-
+            // [修正] 加入 keyManageSection 的判斷，讓搜尋框在鑰匙頁面生效
             if (!document.getElementById('fansSection').classList.contains('hidden')) {
                 renderTable();
             } else if (!document.getElementById('heartStatsSection').classList.contains('hidden')) {
                 renderHeartData();
             } else if (!document.getElementById('historySection').classList.contains('hidden')) {
-                // [更新] 讓動態紀錄支援搜尋
                 renderHistory();
+            } else if (!document.getElementById('keyManageSection').classList.contains('hidden')) {
+                renderKeyTable(); // 關鍵修正：觸發鑰匙列表渲染
             }
         }
 
@@ -3203,119 +3267,289 @@ if (searchTerm) {
 
 
 
-// --- 鑰匙管理系統邏輯 ---
+// --- 鑰匙管理系統邏輯 (功能修復版) ---
 
-        function renderKeyTable() {
-            const tbody = document.getElementById('keyTableBody');
-            const genSelect = document.getElementById('keyGenSelect');
+        let currentKeyMode = 'none'; // 'none', 'append', 'edit'
+
+        // 1. 初始化與更新下拉選單
+        function updateKeyDropdown() {
+            const select = document.getElementById('keyGiftSelect');
             const heartSelect = document.getElementById('heartKeySelect');
-            
-            // 更新下拉選單
-            let options = '<option value="">-- 選擇禮物 ID --</option>';
+            if(!select) return;
+            const oldVal = select.value;
+            let options = '<option value="">-- 請選擇 --</option>';
             giftPosts.forEach(g => {
                 options += `<option value="${g.giftId}">${g.giftId}</option>`;
             });
-            genSelect.innerHTML = options;
-            heartSelect.innerHTML = options;
-
-            // 更新表格
-            tbody.innerHTML = giftPosts.map(p => `
-                <tr class="table-row">
-                    <td class="font-bold text-emerald-300 py-3 pl-4">${p.giftId}</td>
-                    <td class="text-gray-400 text-xs">${p.date}</td>
-                    <td>
-                        <button onclick="openKeyListModal('${p.giftId}')" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-6 py-1.5 rounded-full font-bold shadow-lg transition-transform active:scale-95 w-32">
-                            <i class="fas fa-user-lock mr-1"></i>鑰匙名單
-                        </button>
-                    </td>
-                    <td class="text-center">
-                         <button onclick="openMakeListModal('${p.giftId}')" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-xs px-3 py-1.5 rounded font-bold border border-emerald-500/30 transition-colors">
-                            <i class="fas fa-code mr-1"></i>製作清單
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            select.innerHTML = options;
+            select.value = oldVal;
+            if(heartSelect) heartSelect.innerHTML = options.replace('請選擇', '選擇');
         }
 
-        function generateKeyLink() {
-            const giftId = document.getElementById('keyGenSelect').value;
-            if(!giftId) return alert("請先選擇禮物 ID");
-            const url = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
-            const resInput = document.getElementById('keyGenResult');
-            resInput.value = url;
-            resInput.select();
-            document.execCommand('copy');
-            showToast('連結已複製');
+        // 2. 複製連結功能
+        function copyKeyLink() {
+            const input = document.getElementById('keyLinkInput');
+            if(!input.value) return showToast("請先選擇禮物 ID");
+            input.select(); document.execCommand('copy');
+            showToast("連結已複製");
         }
 
-        let currentEditingKey = null;
-
-        function openKeyListModal(giftId) {
-            currentEditingKey = giftId;
-            document.getElementById('keyListTitle').innerText = `管理權限: ${giftId}`;
-            renderKeyListItems();
-            document.getElementById('keyListModal').classList.remove('hidden');
-        }
-
-        function renderKeyListItems() {
-            const container = document.getElementById('keyListContainer');
-            const search = document.getElementById('keyListSearch').value.toLowerCase();
-            const currentPerms = keyPermissions[currentEditingKey] || [];
+        // 3. [核心] 主渲染函式：負責顯示邏輯、搜尋範圍與排序
+        function renderKeyTable() {
+            if(document.getElementById('keyGiftSelect').options.length <= 1) updateKeyDropdown();
             
-            const filteredFans = fans.filter(f => 
-                f.username.toLowerCase().includes(search) || 
-                (f.nickname && f.nickname.toLowerCase().includes(search))
-            );
+            const giftId = document.getElementById('keyGiftSelect').value;
+            const tbody = document.getElementById('keyTableBody');
+            const emptyState = document.getElementById('keyEmptyState');
+            const selectAllBox = document.getElementById('keySelectAll');
+            const linkInput = document.getElementById('keyLinkInput');
 
-            // 排序: 已勾選的在上面
-            filteredFans.sort((a, b) => {
-                const aHas = currentPerms.includes(a.username);
-                const bHas = currentPerms.includes(b.username);
-                return bHas - aHas; 
+            // 無 ID 狀態
+            if (!giftId) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                selectAllBox.disabled = true;
+                selectAllBox.classList.add('cursor-not-allowed');
+                linkInput.value = "";
+                document.getElementById('keyStatusText').innerText = "";
+                return;
+            }
+
+            // 有 ID，準備資料
+            linkInput.value = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
+            emptyState.classList.add('hidden');
+            const existingKeys = keyPermissions[giftId] || [];
+            document.getElementById('keyStatusText').innerText = `名單人數: ${existingKeys.length}`;
+
+            // 全選框：僅在編輯模式可用
+            selectAllBox.disabled = (currentKeyMode === 'none');
+            selectAllBox.classList.toggle('cursor-not-allowed', currentKeyMode === 'none');
+            selectAllBox.checked = false;
+
+            // [關鍵邏輯 A] 決定資料池 (Scope)
+            let displayFans;
+            if (currentKeyMode === 'none') {
+                // 未編輯 (預設)：資料池僅限「名單內」
+                displayFans = fans.filter(f => existingKeys.includes(f.username));
+            } else {
+                // 編輯中 (追加/編輯)：資料池為「所有人」
+                displayFans = [...fans];
+            }
+
+            // [關鍵邏輯 B] 執行搜尋 (基於 A 的資料池)
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            if (searchTerm) {
+                displayFans = displayFans.filter(f => 
+                    (f.username || '').toLowerCase().includes(searchTerm) ||
+                    (f.nickname || '').toLowerCase().includes(searchTerm) ||
+                    (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
+                    (f.details || '').toLowerCase().includes(searchTerm) // [修正] 新增搜尋詳細內容
+                );
+            }
+
+            // [關鍵邏輯 C] 排序 (隱形分區 + 標題排序)
+            displayFans.sort((a, b) => {
+                const aIn = existingKeys.includes(a.username);
+                const bIn = existingKeys.includes(b.username);
+                
+                // C-1. 隱形分區：編輯模式下，已在名單者強制置頂
+                if (currentKeyMode !== 'none') {
+                    if (aIn && !bIn) return -1;
+                    if (!aIn && bIn) return 1;
+                }
+
+                // C-2. 標題排序 (由 activeSort 控制)
+                if (activeSort) {
+                    const { col, order } = activeSort;
+                    if (col === 'username') return order === 'az' ? a.username.localeCompare(b.username) : b.username.localeCompare(a.username);
+                    if (col === 'status') {
+                        const dateA = parseDate(a.latestDate);
+                        const dateB = parseDate(b.latestDate);
+                        return order === 'new' ? dateB - dateA : dateA - dateB;
+                    }
+                    if (col === 'interactions') return b.interactions.length - a.interactions.length;
+                    if (col === 'sent') return (a.sent === b.sent) ? 0 : (a.sent ? -1 : 1);
+                }
+                return 0;
             });
 
-            container.innerHTML = filteredFans.map(f => {
-                const checked = currentPerms.includes(f.username) ? 'checked' : '';
+            // 4. 產生 HTML
+            tbody.innerHTML = displayFans.map(fan => {
+                const isInKey = existingKeys.includes(fan.username);
+                let rowClass = 'table-row';
+                let checkboxDisabled = true;
+                let checkboxChecked = false;
+                let checkboxClass = 'accent-emerald-500 cursor-not-allowed';
+
+                // 根據模式設定狀態
+                if (currentKeyMode === 'none') {
+                    // 檢視模式：列表呈灰色，Checkbox 勾選但鎖死
+                    checkboxChecked = true; 
+                    rowClass += ' key-row-disabled'; 
+                } else if (currentKeyMode === 'append') {
+                    // 追加模式：已在名單者反灰(鎖死)，未在名單者可勾選
+                    if (isInKey) {
+                        checkboxChecked = true;
+                        checkboxDisabled = true;
+                        rowClass += ' key-row-pinned opacity-50';
+                    } else {
+                        checkboxDisabled = false;
+                        checkboxClass = 'accent-emerald-500 cursor-pointer key-action-check';
+                    }
+                } else if (currentKeyMode === 'edit') {
+                    // 僅編輯模式：所有框可勾選，已在名單者置頂顯示
+                    checkboxDisabled = false;
+                    checkboxChecked = isInKey;
+                    checkboxClass = 'accent-yellow-500 cursor-pointer key-action-check';
+                    if (isInKey) rowClass += ' key-row-pinned';
+                }
+
+                const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="text-white font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || ''}</span></div>` : `-`;
+                const tagsHtml = fan.interactions.map(tag => `<span class="px-1 py-0.5 rounded text-[10px] border border-white/10 bg-white/5 text-gray-400">${tag}</span>`).join('');
+                const statusHtml = fan.sent ? `<span class="text-green-400 text-xs">✓ 已發</span>` : `<span class="text-gray-600 text-xs">● 待發</span>`;
+
                 return `
-                    <label class="flex items-center justify-between p-3 bg-white/5 rounded hover:bg-white/10 cursor-pointer border border-transparent hover:border-emerald-500/30 transition-all">
-                        <div class="flex items-center gap-3">
-                            <input type="checkbox" value="${f.username}" ${checked} class="accent-emerald-500 w-4 h-4 key-perm-checkbox">
-                            <div>
-                                <div class="font-bold text-gray-200 text-sm">@${f.username}</div>
-                                <div class="text-xs text-gray-500">${f.nickname || ''}</div>
-                            </div>
-                        </div>
-                        ${checked ? '<span class="text-emerald-400 text-xs font-bold"><i class="fas fa-check"></i></span>' : ''}
-                    </label>
-                `;
+                <tr class="${rowClass}">
+                    <td class="text-center sticky-col-1 bg-inherit z-10">
+                        <input type="checkbox" value="${fan.username}" ${checkboxChecked ? 'checked' : ''} ${checkboxDisabled ? 'disabled' : ''} class="${checkboxClass} w-4 h-4 transition-all">
+                    </td>
+                    <td class="font-medium sticky-col-2 bg-inherit z-10 text-emerald-100">${fan.username}</td>
+                    <td class="text-gray-400 text-xs">${fan.nickname || '-'}</td>
+                    <td class="text-xs">${latestInfo}</td>
+                    <td><div class="flex flex-wrap gap-1 max-w-[150px]">${tagsHtml}</div></td>
+                    <td><div class="text-xs text-gray-500 truncate w-32" title="${fan.details}">${fan.details}</div></td>
+                    <td>${statusHtml}</td>
+                    <td class="text-center sticky-col-last bg-inherit z-10">
+                        <button onmousedown="startMsgBtnPress(event, '${fan.username}', ${fan.id})" 
+                                onmouseup="endMsgBtnPress(event, ${fan.id})" 
+                                class="btn-indigo px-3 py-1 rounded text-xs text-white font-bold">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </td>
+                </tr>`;
             }).join('');
         }
 
-        function filterKeyList() {
-            renderKeyListItems();
-        }
+        // 4. [按鈕邏輯] 切換主編輯模式
+        function toggleKeyEditMaster() {
+            const giftId = document.getElementById('keyGiftSelect').value;
+            if(!giftId) return alert("請先選擇禮物 ID");
 
-        function closeKeyListModal() {
-            document.getElementById('keyListModal').classList.add('hidden');
-            currentEditingKey = null;
-        }
-
-        function saveKeyPermissions() {
-            if(!currentEditingKey) return;
-            const checkboxes = document.querySelectorAll('.key-perm-checkbox:checked');
-            const selectedUsers = Array.from(checkboxes).map(cb => cb.value);
+            const masterBtn = document.getElementById('btnKeyMaster');
+            const subBtns = document.getElementById('keyModeBtns');
             
-            keyPermissions[currentEditingKey] = selectedUsers;
-            saveData(); // 存檔 (包含 keyPermissions)
-            showToast(`已更新 ${currentEditingKey} 的權限名單`);
-            closeKeyListModal();
+            // 如果已在編輯中，則關閉 (Reset)
+            if (currentKeyMode !== 'none') {
+                currentKeyMode = 'none';
+                subBtns.classList.add('hidden');
+                masterBtn.classList.remove('flashing-master', 'bg-red-600');
+                masterBtn.classList.add('bg-gray-700');
+                masterBtn.innerHTML = '<i class="fas fa-cog mr-1"></i>編輯鑰匙名單';
+                
+                // 重置子按鈕
+                document.getElementById('btnKeyAppend').classList.remove('flashing-append', 'opacity-100');
+                document.getElementById('btnKeyAppend').classList.add('opacity-50');
+                document.getElementById('btnKeyEdit').classList.remove('flashing-edit', 'opacity-100');
+                document.getElementById('btnKeyEdit').classList.add('opacity-50');
+                
+                renderKeyTable(); // 回到檢視模式
+                return;
+            }
+
+            // 啟動主編輯 (Master 閃爍)
+            masterBtn.classList.add('flashing-master');
+            subBtns.classList.remove('hidden');
+        }
+
+        // 5. [按鈕邏輯] 切換子模式 (追加/僅編輯)
+        function setKeySubMode(mode) {
+            const masterBtn = document.getElementById('btnKeyMaster');
+            const btnAppend = document.getElementById('btnKeyAppend');
+            const btnEdit = document.getElementById('btnKeyEdit');
+
+            // 如果點擊「正在閃爍」的按鈕 -> 執行 Finish
+            if (currentKeyMode === mode) {
+                finishKeyAction();
+                return;
+            }
+
+            currentKeyMode = mode;
+            masterBtn.classList.remove('flashing-master'); // 主按鈕停閃
+
+            // 設定狀態與閃爍
+            if (mode === 'append') {
+                btnAppend.classList.add('flashing-append', 'opacity-100');
+                btnAppend.classList.remove('opacity-50');
+                btnAppend.innerHTML = '<i class="fas fa-check mr-1"></i>確認追加'; 
+
+                btnEdit.classList.remove('flashing-edit', 'opacity-100');
+                btnEdit.classList.add('opacity-50');
+                btnEdit.innerHTML = '<i class="fas fa-edit mr-1"></i>僅編輯';
+            } else {
+                btnEdit.classList.add('flashing-edit', 'opacity-100');
+                btnEdit.classList.remove('opacity-50');
+                btnEdit.innerHTML = '<i class="fas fa-check mr-1"></i>確認存檔'; 
+
+                btnAppend.classList.remove('flashing-append', 'opacity-100');
+                btnAppend.classList.add('opacity-50');
+                btnAppend.innerHTML = '<i class="fas fa-plus mr-1"></i>追加並產出';
+            }
+            renderKeyTable(); // 重繪 (觸發開放池與置頂)
+        }
+
+        // 6. [核心功能] 完成並產出
+        function finishKeyAction() {
+            const giftId = document.getElementById('keyGiftSelect').value;
+            const existingKeys = keyPermissions[giftId] || [];
+            let copyText = "";
+
+            if (currentKeyMode === 'append') {
+                // 追加模式：僅抓取 checked 的新 checkbox
+                const newChecks = document.querySelectorAll('.key-action-check:checked');
+                const newUsers = Array.from(newChecks).map(cb => cb.value);
+                
+                if (newUsers.length === 0) return alert("未勾選任何新粉絲");
+
+                // 合併名單
+                const combined = new Set([...existingKeys, ...newUsers]);
+                keyPermissions[giftId] = Array.from(combined);
+                
+                // 產出格式: "user1","user2"
+                copyText = newUsers.map(u => `"${u}"`).join(','); 
+
+            } else if (currentKeyMode === 'edit') {
+                // 編輯模式：抓取所有勾選者 (排除表頭全選框)
+                const allChecks = document.querySelectorAll('#keyTableBody input[type="checkbox"]:checked');
+                const allUsers = Array.from(allChecks).map(cb => cb.value);
+
+                keyPermissions[giftId] = allUsers;
+
+                // 產出格式: ["user1","user2"] (JSON)
+                copyText = JSON.stringify(allUsers);
+            }
+
+            saveData(); // 存檔
+            
+            // 執行複製並顯示您要求的明確訊息
+            navigator.clipboard.writeText(copyText).then(() => {
+                 showToast("已複製清單");
+            });
+            
+            toggleKeyEditMaster(); // 結束並重置
+        }
+
+        function handleKeySelectAll(source) {
+            document.querySelectorAll('.key-action-check').forEach(cb => {
+                if(!cb.disabled) cb.checked = source.checked;
+            });
         }
 
         function openMakeListModal(giftId) {
-            const perms = keyPermissions[giftId] || [];
-            const json = JSON.stringify(perms);
-            document.getElementById('jsonOutput').value = json;
-            document.getElementById('jsonListModal').classList.remove('hidden');
+             if(!giftId) return alert("請先選擇禮物 ID");
+             const perms = keyPermissions[giftId] || [];
+             const json = JSON.stringify(perms);
+             document.getElementById('jsonOutput').value = json;
+             document.getElementById('jsonListModal').classList.remove('hidden');
         }
 
         function copyJsonOutput() {
@@ -3410,6 +3644,7 @@ if (searchTerm) {
     </script>
 </body>
 </html>
+
 
 
 
