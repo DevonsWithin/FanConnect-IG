@@ -29,8 +29,8 @@
  
         @media (max-width: 768px) { table { min-width: 900px; } }
  
-        .sticky-col-1 { position: sticky; left: 0; z-index: 25; background-color: #151515; }
-        .sticky-col-2 { position: sticky; left: 40px; z-index: 25; background-color: #151515; border-right: 1px solid #333; }
+        .sticky-col-1 { position: sticky; left: 0; z-index: 25; background-color: #151515; width: 35px; min-width: 35px; }
+        .sticky-col-2 { position: sticky; left: 35px; z-index: 25; background-color: #151515; border-right: none; }
         .sticky-col-last { position: sticky; right: 0; z-index: 25; background-color: #151515; border-left: 1px solid #333; }
  
         th.sticky-col-1, th.sticky-col-2, th.sticky-col-last { z-index: 30; background-color: #202020; }
@@ -319,7 +319,7 @@
                                         互動標籤 <i id="icon_filter_interactions" class="fas fa-filter text-[10px] text-pink-500 ml-1 hidden"></i>
                                     </th>
                                     <th width="23%">詳細內容</th>
-                                    <th width="8%" class="cursor-pointer select-none"
+                                    <th width="95px" class="cursor-pointer select-none min-w-[95px]"
                                         onmousedown="startHeaderLongPress(event, 'sent')"
                                         onmouseup="cancelHeaderLongPress()"
                                         onmouseleave="cancelHeaderLongPress()"
