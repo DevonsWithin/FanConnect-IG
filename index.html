@@ -65,6 +65,11 @@
         .date-segment-container input { background: transparent; border: none; color: white; text-align: center; padding: 4px 0; outline: none; width: 100%; }
         .date-segment-container input:focus { border-bottom: 1px solid #a78bfa; }
 
+        /* [新增] 疑似重複篩選樣式 */
+        .duplicate-group-a { background-color: rgba(20, 184, 166, 0.15) !important; border-left: 3px solid #14b8a6; } /* 青色 A */
+        .duplicate-group-b { background-color: rgba(20, 184, 166, 0.05) !important; border-left: 3px solid #0d9488; } /* 青色 B (較淺) */
+        .btn-cyan { background-color: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
+        .btn-cyan:hover { background-color: rgba(20, 184, 166, 0.4); color: white; }
 
 /* 鑰匙管理專用樣式 */
         @keyframes blink-red { 0%, 100% { background-color: #4b5563; } 50% { background-color: #dc2626; box-shadow: 0 0 10px #ef4444; } }
@@ -229,36 +234,52 @@
         <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)">
         <input type="file" id="restoreImport" class="hidden" accept=".json" onchange="handleRestore(event)">
  
-        <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0">
-            <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide">粉絲滿意度管理系統</h2>
-           
-            <div class="flex gap-4 items-center">
-                <div class="flex items-center gap-1 p-1">
-                    <button onclick="undo()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-sm" title="復原 (Ctrl+Z)">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                    <div class="w-[1px] h-3 bg-white/10 my-auto"></div>
-                    <button onclick="redo()" class="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-sm" title="重作 (Ctrl+Y)">
-                        <i class="fas fa-redo"></i>
-                    </button>
+        <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0 gap-4">
+            
+            <!-- 左側區域：標題 + 工具列 + 搜尋 -->
+            <div class="flex items-center gap-6 flex-1">
+                <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide shrink-0">粉絲滿意度管理系統</h2>
+                
+                <div class="flex items-center gap-4">
+                    <!-- 復原/重作 (移至左側) -->
+                    <div class="flex items-center gap-1 p-1 bg-white/5 rounded border border-white/5">
+                        <button onclick="undo()" class="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-xs" title="復原 (Ctrl+Z)">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <div class="w-[1px] h-3 bg-white/10 my-auto"></div>
+                        <button onclick="redo()" class="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-xs" title="重作 (Ctrl+Y)">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+
+                    <!-- 搜尋框 (移至左側) -->
+                    <div class="relative group">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
+                        <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
+                               class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-8 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
+                               onkeyup="handleGlobalSearch(); document.getElementById('clearSearchBtn').classList.toggle('hidden', this.value.length === 0)">
+                        <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white" title="清除搜尋">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    </div>
                 </div>
- 
-                <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all">
+            </div>
+
+            <!-- 右側區域：粉絲人數 + 功能按鈕 -->
+            <div class="flex gap-4 items-center shrink-0">
+                <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
                 </div>
- 
-                <div class="relative group">
-                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
-                    <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
-                           class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-8 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
-                           onkeyup="handleGlobalSearch(); document.getElementById('clearSearchBtn').classList.toggle('hidden', this.value.length === 0)">
-                
-     <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white" title="清除搜尋">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                </div>
 
+                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
 
+                <!-- [新增] 疑似重複篩選按鈕 -->
+                <button id="btnDuplicateCheck" onclick="openDuplicateModal()" class="btn-cyan px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap">
+                    <i class="fas fa-clone"></i> 篩選疑似重複
+                </button>
+                <button id="btnDuplicateExit" onclick="exitDuplicateMode()" class="hidden bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap border border-white/10">
+                    <i class="fas fa-times"></i> 結束篩選
+                </button>
             </div>
         </header>
  
@@ -278,7 +299,7 @@
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'username')"
                                         ontouchend="cancelHeaderLongPress()">
-                                        帳號名稱
+                                        帳號名稱 <i id="icon_filter_username" class="fas fa-filter text-[10px] text-pink-500 ml-1 hidden"></i>
                                     </th>
                                     <th width="8%">暱稱</th>
                                     <th width="15%" class="text-indigo-300 cursor-pointer select-none"
@@ -287,7 +308,7 @@
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'status')"
                                         ontouchend="cancelHeaderLongPress()">
-                                        <i class="fas fa-history mr-1"></i>最新動態
+                                        <i class="fas fa-history mr-1"></i>最新動態 <i id="icon_filter_status" class="fas fa-filter text-[10px] text-pink-500 ml-1 hidden"></i>
                                     </th>
                                     <th width="20%" class="cursor-pointer select-none"
                                         onmousedown="startHeaderLongPress(event, 'interactions')"
@@ -295,7 +316,7 @@
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'interactions')"
                                         ontouchend="cancelHeaderLongPress()">
-                                        互動標籤
+                                        互動標籤 <i id="icon_filter_interactions" class="fas fa-filter text-[10px] text-pink-500 ml-1 hidden"></i>
                                     </th>
                                     <th width="23%">詳細內容</th>
                                     <th width="8%" class="cursor-pointer select-none"
@@ -304,7 +325,7 @@
                                         onmouseleave="cancelHeaderLongPress()"
                                         ontouchstart="startHeaderLongPress(event, 'sent')"
                                         ontouchend="cancelHeaderLongPress()">
-                                        訊息
+                                        訊息 <i id="icon_filter_sent" class="fas fa-filter text-[10px] text-pink-500 ml-1 hidden"></i>
                                     </th>
                                     <th width="7%" class="text-center sticky-col-last">操作</th>
                                 </tr>
@@ -399,23 +420,31 @@
                                 </div>
                                 <div>
                                     <label class="block text-gray-400 text-xs mb-2">粉絲暱稱 (自動帶入)</label>
-                                    <input type="text" id="heartNick" class="input-dark py-3" readonly>
+                                    <input type="text" id="heartNick" class="input-dark py-3">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">回應日期</label>
-                                <div class="date-segment-container">
-                                    <input type="text" id="heartDateYYYY" maxlength="4" placeholder="YYYY" style="width: 40px;">
-                                    <span class="text-gray-500">/</span>
-                                    <input type="text" id="heartDateMM" maxlength="2" placeholder="MM" style="width: 24px;">
-                                    <span class="text-gray-500">/</span>
-                                    <input type="text" id="heartDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
+                                <div class="flex items-center gap-4">
+                                    <div class="date-segment-container">
+                                        <input type="text" id="heartDateYYYY" maxlength="4" placeholder="YYYY" style="width: 40px;">
+                                        <span class="text-gray-500">/</span>
+                                        <input type="text" id="heartDateMM" maxlength="2" placeholder="MM" style="width: 24px;">
+                                        <span class="text-gray-500">/</span>
+                                        <input type="text" id="heartDateDD" maxlength="2" placeholder="DD" style="width: 24px;">
+                                    </div>
+                                    <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer select-none">
+                                        <input type="checkbox" id="heartCheckComment" class="accent-pink-500" checked onchange="toggleHeartCheck('comment')"> 留言
+                                    </label>
+                                    <label class="flex items-center gap-1 text-xs text-gray-400 cursor-pointer select-none">
+                                        <input type="checkbox" id="heartCheckDM" class="accent-indigo-500" onchange="toggleHeartCheck('dm')"> DM(私訊)
+                                    </label>
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-gray-400 text-xs mb-2">回應項目</label>
-                                <select id="heartResponseItem" class="input-dark py-3">
-                                    <option value="DM">DM (私訊)</option>
+                                <select id="heartResponseItem" class="input-dark py-3" onchange="handleHeartItemChange(this)">
+                                    <option value="DM">DM私訊內容</option>
                                 </select>
                             </div>
                             <div>
@@ -677,12 +706,20 @@
                                         <th width="4%" class="text-center sticky-col-1 bg-[#202020] z-30">
                                             <input type="checkbox" id="keySelectAll" onclick="handleKeySelectAll(this)" disabled class="accent-emerald-500 cursor-not-allowed">
                                         </th>
-                                        <th width="15%" class="sticky-col-2 cursor-pointer select-none bg-[#202020] z-30" onmousedown="startHeaderLongPress(event, 'username')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'username')" ontouchend="cancelHeaderLongPress()">帳號名稱</th>
+                                        <th width="15%" class="sticky-col-2 cursor-pointer select-none bg-[#202020] z-30" onmousedown="startHeaderLongPress(event, 'username')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'username')" ontouchend="cancelHeaderLongPress()">
+                                            帳號名稱 <i id="key_icon_filter_username" class="fas fa-filter text-[10px] text-emerald-400 ml-1 hidden"></i>
+                                        </th>
                                         <th width="8%" class="bg-[#202020] z-20">暱稱</th>
-                                        <th width="15%" class="text-indigo-300 cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'status')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'status')" ontouchend="cancelHeaderLongPress()"><i class="fas fa-history mr-1"></i>最新動態</th>
-                                        <th width="20%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'interactions')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'interactions')" ontouchend="cancelHeaderLongPress()">互動標籤</th>
+                                        <th width="15%" class="text-indigo-300 cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'status')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'status')" ontouchend="cancelHeaderLongPress()">
+                                            <i class="fas fa-history mr-1"></i>最新動態 <i id="key_icon_filter_status" class="fas fa-filter text-[10px] text-emerald-400 ml-1 hidden"></i>
+                                        </th>
+                                        <th width="20%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'interactions')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'interactions')" ontouchend="cancelHeaderLongPress()">
+                                            互動標籤 <i id="key_icon_filter_interactions" class="fas fa-filter text-[10px] text-emerald-400 ml-1 hidden"></i>
+                                        </th>
                                         <th width="23%" class="bg-[#202020] z-20">詳細內容</th>
-                                        <th width="8%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'sent')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'sent')" ontouchend="cancelHeaderLongPress()">訊息</th>
+                                        <th width="8%" class="cursor-pointer select-none bg-[#202020] z-20" onmousedown="startHeaderLongPress(event, 'sent')" onmouseup="cancelHeaderLongPress()" onmouseleave="cancelHeaderLongPress()" ontouchstart="startHeaderLongPress(event, 'sent')" ontouchend="cancelHeaderLongPress()">
+                                            訊息 <i id="key_icon_filter_sent" class="fas fa-filter text-[10px] text-emerald-400 ml-1 hidden"></i>
+                                        </th>
                                         <th width="7%" class="text-center sticky-col-last bg-[#202020] z-30">操作</th>
                                     </tr>
                                 </thead>
@@ -1107,6 +1144,31 @@
     </div>
  
     <div id="toast" class="fixed bottom-8 right-8 bg-indigo-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">操作成功</div>
+
+    <!-- 疑似重複篩選 Modal -->
+    <div id="duplicateModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[150] backdrop-blur-sm">
+        <div class="bg-[#1a1a1a] border border-cyan-500/30 w-[400px] rounded-xl shadow-2xl overflow-hidden">
+            <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-cyan-400 font-bold text-lg"><i class="fas fa-clone mr-2"></i>篩選疑似重複</h3>
+                <button onclick="document.getElementById('duplicateModal').classList.add('hidden')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-gray-400 text-sm">請選擇要比對的時間範圍 (篩選前先過濾資料量)：</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="runDuplicateAnalysis(7)" class="w-full py-2 bg-black/40 hover:bg-cyan-900/30 text-cyan-100 border border-white/10 rounded text-sm transition-colors text-left px-4">最近 7 天</button>
+                    <button onclick="runDuplicateAnalysis(30)" class="w-full py-2 bg-black/40 hover:bg-cyan-900/30 text-cyan-100 border border-white/10 rounded text-sm transition-colors text-left px-4">最近 1 個月</button>
+                    <button onclick="runDuplicateAnalysis(90)" class="w-full py-2 bg-black/40 hover:bg-cyan-900/30 text-cyan-100 border border-white/10 rounded text-sm transition-colors text-left px-4">最近 3 個月</button>
+                    <button onclick="runDuplicateAnalysis(180)" class="w-full py-2 bg-black/40 hover:bg-cyan-900/30 text-cyan-100 border border-white/10 rounded text-sm transition-colors text-left px-4">3 個月 ~ 6 個月</button>
+                    <button onclick="runDuplicateAnalysis(999)" class="w-full py-2 bg-black/40 hover:bg-cyan-900/30 text-cyan-100 border border-white/10 rounded text-sm transition-colors text-left px-4">6 個月以上 (全範圍)</button>
+                </div>
+                <div class="text-[10px] text-gray-500 mt-2 border-t border-white/5 pt-2">
+                    <p><i class="fas fa-info-circle mr-1"></i> 比對邏輯：</p>
+                    <p class="ml-4">• 粉絲列表：帳號外型相似 (如 0/o, 1/l) 或 暱稱重複</p>
+                    <p class="ml-4">• 暖心/動態：同一人 + 同一日 + 內容相似度 > 80%</p>
+                </div>
+            </div>
+        </div>
+    </div>
  
     <div id="filterMenu" class="fixed z-[600] hidden bg-[#1a1a1a] border border-indigo-500/50 rounded-lg shadow-2xl flex-col w-64 max-h-[450px]" onclick="event.stopPropagation()">
         <div class="p-3 border-b border-white/10 flex justify-between items-center bg-[#252525]">
@@ -1153,6 +1215,229 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
         let isHeartKeyMode = false; // 暖心互動選擇模式狀態
 
+        // [新增] 疑似重複篩選變數
+        let isDuplicateMode = false;
+        let duplicateResults = []; // 存放篩選出的資料
+
+        // [新增] Levenshtein Distance 演算法 (計算字串相似度)
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) { matrix[i] = [i]; }
+            for (let j = 0; j <= a.length; j++) { matrix[0][j] = j; }
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        // [新增] 計算相似度百分比
+        function calculateSimilarity(s1, s2) {
+            if (!s1 || !s2) return 0;
+            const longer = s1.length > s2.length ? s1 : s2;
+            if (longer.length === 0) return 1.0;
+            return (longer.length - levenshteinDistance(s1, s2)) / longer.length;
+        }
+
+        // [新增] 帳號正規化 (處理 AI 誤判形狀)
+        function normalizeUsername(u) {
+            if (!u) return '';
+            return u.toLowerCase()
+                .replace(/0/g, 'o')
+                .replace(/1/g, 'l')
+                .replace(/_/g, '')
+                .replace(/\./g, '');
+        }
+
+        // [新增] 開啟篩選 Modal
+        function openDuplicateModal() {
+            // 判斷目前在哪個 Section
+            const sections = ['fans', 'heartStats', 'history'];
+            const active = sections.find(s => !document.getElementById(s + 'Section').classList.contains('hidden'));
+            
+            if (!active) {
+                alert("此功能僅支援：粉絲列表、暖心互動、動態紀錄");
+                return;
+            }
+            document.getElementById('duplicateModal').classList.remove('hidden');
+        }
+
+        // [新增] 執行篩選分析
+        function runDuplicateAnalysis(days) {
+            document.getElementById('duplicateModal').classList.add('hidden');
+            const sections = ['fans', 'heartStats', 'history'];
+            const activeSection = sections.find(s => !document.getElementById(s + 'Section').classList.contains('hidden'));
+            
+            duplicateResults = []; // 清空舊結果
+            const now = Date.now();
+            const timeLimit = days * 24 * 60 * 60 * 1000;
+            
+            let sourceData = [];
+            
+            // 1. 準備資料與初步時間過濾
+            if (activeSection === 'fans') {
+                sourceData = fans.filter(f => {
+                    if (days === 999) return true;
+                    const d = parseDate(f.latestDate);
+                    // 若無日期視為久遠資料，不列入短期比對，除非選全範圍
+                    if (!d) return false; 
+                    return (now - d) <= timeLimit;
+                });
+            } else if (activeSection === 'heartStats') {
+                sourceData = heartData.filter(h => {
+                    if (days === 999) return true;
+                    const d = parseDate(h.date);
+                    return (now - d) <= timeLimit;
+                });
+            } else if (activeSection === 'history') {
+                // [修正] 動態紀錄需合併「系統紀錄」與「暖心互動」才能抓出跨類型的重複
+                const sysLogs = historyData.filter(h => {
+                    // 過濾掉舊的標籤以免混淆，這部分與 renderHistory 保持一致
+                    return h.type !== '留言' && h.type !== 'DM'; 
+                });
+
+                // 將暖心紀錄轉換為動態紀錄格式
+                const heartLogs = heartData.map(h => ({
+                    id: h.id, 
+                    // 加上前綴避免 ID 衝突 (雖然機率極低)
+                    originalId: h.id, 
+                    source: 'heart',
+                    date: h.date,
+                    username: h.username,
+                    nickname: h.nickname,
+                    type: h.responseItem === 'DM' ? 'DM' : '留言',
+                    details: h.responseItem === 'DM' ? h.content : `已回應：${h.content}`
+                }));
+
+                const allLogs = [...sysLogs, ...heartLogs];
+
+                sourceData = allLogs.filter(h => {
+                    if (days === 999) return true;
+                    const d = parseDate(h.date);
+                    return (now - d) <= timeLimit;
+                });
+            }
+
+            if (sourceData.length < 2) return showToast("篩選範圍內資料不足，無法比對");
+
+            // 2. 執行比對演算法
+            let groups = [];
+            let visited = new Set();
+
+            if (activeSection === 'fans') {
+                // A. 粉絲列表比對邏輯
+                // 優化：先依「正規化帳號」分組，再比對暱稱
+                for (let i = 0; i < sourceData.length; i++) {
+                    if (visited.has(sourceData[i].id)) continue;
+                    let currentGroup = [sourceData[i]];
+                    const normA = normalizeUsername(sourceData[i].username);
+                    const nickA = (sourceData[i].nickname || '').trim().toLowerCase();
+
+                    for (let j = i + 1; j < sourceData.length; j++) {
+                        if (visited.has(sourceData[j].id)) continue;
+                        const itemB = sourceData[j];
+                        const normB = normalizeUsername(itemB.username);
+                        const nickB = (itemB.nickname || '').trim().toLowerCase();
+
+                        // 判斷條件：帳號形狀極似 OR (帳號不同但暱稱完全相同且非空)
+                        const isUserSimilar = calculateSimilarity(normA, normB) > 0.95; // 正規化後極高相似
+                        const isNickSame = nickA && nickB && nickA === nickB; // 暱稱完全相同
+
+                        if (isUserSimilar || isNickSame) {
+                            currentGroup.push(itemB);
+                            visited.add(itemB.id);
+                        }
+                    }
+                    if (currentGroup.length > 1) {
+                        currentGroup.forEach(item => {
+                            // 標記群組 ID，用於渲染顏色
+                            item.dupGroupId = i; 
+                            groups.push(item);
+                        });
+                    }
+                }
+
+            } else {
+                // B. 暖心/動態 比對邏輯
+                // 條件：同一人 + 同一日 + 內容相似度 > 80%
+                for (let i = 0; i < sourceData.length; i++) {
+                    if (visited.has(sourceData[i].id)) continue;
+                    let currentGroup = [sourceData[i]];
+                    const userA = sourceData[i].username.toLowerCase();
+                    const dateA = sourceData[i].date || ''; // YYYY/MM/DD
+                    const contentA = activeSection === 'heartStats' ? (sourceData[i].content || '') : (sourceData[i].details || '');
+
+                    for (let j = i + 1; j < sourceData.length; j++) {
+                        if (visited.has(sourceData[j].id)) continue;
+                        const itemB = sourceData[j];
+                        const userB = itemB.username.toLowerCase();
+                        const dateB = itemB.date || '';
+                        
+                        // 初步篩選：人與日期必須相同
+                        if (userA !== userB || dateA !== dateB) continue;
+
+                        const contentB = activeSection === 'heartStats' ? (itemB.content || '') : (itemB.details || '');
+                        // 內容相似度檢查
+                        if (calculateSimilarity(contentA, contentB) > 0.8) {
+                            currentGroup.push(itemB);
+                            visited.add(itemB.id);
+                        }
+                    }
+                    if (currentGroup.length > 1) {
+                        currentGroup.forEach(item => {
+                            item.dupGroupId = i;
+                            groups.push(item);
+                        });
+                    }
+                }
+            }
+
+            if (groups.length === 0) {
+                showToast("未發現疑似重複資料");
+                return;
+            }
+
+            // 3. 設定狀態並重新渲染
+            duplicateResults = groups;
+            isDuplicateMode = true;
+            document.getElementById('btnDuplicateCheck').classList.add('hidden');
+            document.getElementById('btnDuplicateExit').classList.remove('hidden');
+            
+            // [修正] 立即同步狀態到 localStorage，確保後續操作(如刪除)能捕捉到正確的「當前模式」
+            saveData(false); 
+
+            if (activeSection === 'fans') renderTable();
+            else if (activeSection === 'heartStats') renderHeartData();
+            else if (activeSection === 'history') renderHistory();
+            
+            showToast(`發現 ${groups.length} 筆疑似重複資料`);
+        }
+
+        // [新增] 退出篩選模式
+        function exitDuplicateMode() {
+            isDuplicateMode = false;
+            duplicateResults = [];
+            document.getElementById('btnDuplicateCheck').classList.remove('hidden');
+            document.getElementById('btnDuplicateExit').classList.add('hidden');
+            
+            // [修正] 立即同步狀態到 localStorage
+            saveData(false);
+
+            const sections = ['fans', 'heartStats', 'history'];
+            const active = sections.find(s => !document.getElementById(s + 'Section').classList.contains('hidden'));
+            
+            if (active === 'fans') renderTable();
+            else if (active === 'heartStats') renderHeartData();
+            else if (active === 'history') renderHistory();
+        }
+
         // 自動為舊資料補上 ID
         heartData = heartData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
         historyData = historyData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
@@ -1161,51 +1446,12 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
 
 
         let activeFanId = null;
+        // [修正] 篩選變數改為陣列以支援多選 Checkbox
+        let activeDateFilters = []; // 存放: '1', '3', '7', '30', 'over30'
+        let activeKeyStatusFilters = []; // 存放: 'inList', 'notInList'
 
+        // 移除 cycleDateFilter 函式，改用 toggleFilter 處理
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
         let headerLongPressTimer;
         let activeSourceType = 'fan'; // 用於區分來源: 'fan' 或 'heart'
         let currentFilterCol = null;
@@ -1219,25 +1465,32 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         // 紀錄狀態到歷史 (全面升級：紀錄所有資料表狀態)
         function saveData(recordHistory = true) {
             if (recordHistory) {
+                // 建立快照：讀取 LocalStorage 中的「操作前狀態」
                 const snapshot = {
                     fans: localStorage.getItem('fans') || '[]',
                     igPosts: localStorage.getItem('igPosts') || '[]',
                     giftPosts: localStorage.getItem('giftPosts') || '[]',
                     heartData: localStorage.getItem('heartData') || '[]',
                     historyData: localStorage.getItem('historyData') || '[]',
-                    keyPermissions: localStorage.getItem('keyPermissions') || '{}'
+                    keyPermissions: localStorage.getItem('keyPermissions') || '{}',
+                    // [關鍵修復] 必須將篩選狀態也存入快照，Undo 時才能還原篩選列表
+                    isDuplicateMode: localStorage.getItem('isDuplicateMode') || 'false',
+                    duplicateResults: localStorage.getItem('duplicateResults') || '[]'
                 };
                 historyStack.push(snapshot);
                 if (historyStack.length > MAX_HISTORY) historyStack.shift();
                 redoStack = [];
             }
-            // 同步寫入 LocalStorage
+            // 將「操作後狀態」寫入 LocalStorage
             localStorage.setItem('fans', JSON.stringify(fans));
             localStorage.setItem('igPosts', JSON.stringify(igPosts));
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             localStorage.setItem('heartData', JSON.stringify(heartData));
             localStorage.setItem('historyData', JSON.stringify(historyData));
             localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
+            // [關鍵修復] 同步寫入篩選狀態
+            localStorage.setItem('isDuplicateMode', isDuplicateMode);
+            localStorage.setItem('duplicateResults', JSON.stringify(duplicateResults));
         }
  
         function undo() {
@@ -1245,16 +1498,18 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             isUndoRedoAction = true;
             
             // 復原前，將當前狀態 Snapshot 推入 Redo
+            // 使用 JSON.stringify 確保 duplicateResults 是當下狀態的快照 (深層複製)
             const currentSnapshot = {
                 fans: JSON.stringify(fans),
                 igPosts: JSON.stringify(igPosts),
                 giftPosts: JSON.stringify(giftPosts),
                 heartData: JSON.stringify(heartData),
                 historyData: JSON.stringify(historyData),
-                keyPermissions: JSON.stringify(keyPermissions)
+                keyPermissions: JSON.stringify(keyPermissions),
+                isDuplicateMode: String(isDuplicateMode),
+                duplicateResults: JSON.stringify(duplicateResults)
             };
             redoStack.push(currentSnapshot);
-
 
             const prevSnapshot = historyStack.pop();
             applySnapshot(prevSnapshot);
@@ -1274,14 +1529,14 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 giftPosts: JSON.stringify(giftPosts),
                 heartData: JSON.stringify(heartData),
                 historyData: JSON.stringify(historyData),
-                keyPermissions: JSON.stringify(keyPermissions)
+                keyPermissions: JSON.stringify(keyPermissions),
+                isDuplicateMode: String(isDuplicateMode),
+                duplicateResults: JSON.stringify(duplicateResults)
             };
             historyStack.push(currentSnapshot);
 
-
             const nextSnapshot = redoStack.pop();
             applySnapshot(nextSnapshot);
-
 
             showToast("已重作");
             isUndoRedoAction = false;
@@ -1289,13 +1544,32 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
 
 
         function applySnapshot(snap) {
-            fans = JSON.parse(snap.fans);
-            igPosts = JSON.parse(snap.igPosts);
-            giftPosts = JSON.parse(snap.giftPosts);
-            heartData = JSON.parse(snap.heartData);
-            historyData = JSON.parse(snap.historyData);
+            fans = JSON.parse(snap.fans || '[]');
+            igPosts = JSON.parse(snap.igPosts || '[]');
+            giftPosts = JSON.parse(snap.giftPosts || '[]');
+            heartData = JSON.parse(snap.heartData || '[]');
+            historyData = JSON.parse(snap.historyData || '[]');
             keyPermissions = JSON.parse(snap.keyPermissions || '{}');
 
+            // [新增] 還原篩選狀態
+            isDuplicateMode = (snap.isDuplicateMode === 'true');
+            // [關鍵] 這裡會將 snapshot 中的 duplicateResults 還原回變數
+            duplicateResults = JSON.parse(snap.duplicateResults || '[]');
+
+            // [新增] 根據還原的模式，更新 Header 按鈕的顯示狀態
+            const btnCheck = document.getElementById('btnDuplicateCheck');
+            const btnExit = document.getElementById('btnDuplicateExit');
+            if (btnCheck && btnExit) {
+                if (isDuplicateMode) {
+                    btnCheck.classList.add('hidden');
+                    btnExit.classList.remove('hidden');
+                } else {
+                    btnCheck.classList.remove('hidden');
+                    btnExit.classList.add('hidden');
+                }
+            }
+
+            // 將還原後的狀態寫回 LocalStorage (不記歷史)
             saveData(false);
             
             // 重新渲染所有畫面
@@ -1303,7 +1577,10 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             renderIgPosts();
             renderGiftPosts();
             renderHeartData();
-            if(document.getElementById('historySection')) renderHistory();
+            // 確保動態紀錄頁面存在才渲染
+            if(document.getElementById('historySection') && !document.getElementById('historySection').classList.contains('hidden')) {
+                renderHistory();
+            }
         }
  
         function loadProfile() {
@@ -1404,59 +1681,95 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const totalFanCount = fans.filter(f => f.interactions && f.interactions.includes('粉絲')).length;
             const countBadge = document.getElementById('fanCountBadge');
             if(countBadge) countBadge.innerText = `粉絲人數: ${totalFanCount}`;
- 
-            let filteredFans = fans.filter(f => {
-                const matchesSearch = (f.username || '').toLowerCase().includes(searchTerm) ||
-                                      (f.nickname || '').toLowerCase().includes(searchTerm) ||
-                                      (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
-                                      (f.details || '').toLowerCase().includes(searchTerm);
-                if (!matchesSearch) return false;
-                if (activeFilters.pending && f.sent) return false;
- 
-                // 新增超過14天篩選 (針對已發送)
-                const DAYS_14_MS = 1209600000;
-                if (activeFilters.oldSent) {
-                    const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
-                    if (!isOld) return false;
-                }
- 
-                if (activeFilters.tags.length > 0) {
-                    const matchAll = activeFilters.tags.every(tag => {
-                        if (tag === '非粉絲') return !f.interactions.includes('粉絲');
-                        return f.interactions.includes(tag);
-                    });
-                    if (!matchAll) return false;
-                }
-                return true;
-            });
 
-
-            if (filteredFans.length > 0) {
-                const sorter = (a, b) => {
-                    if (activeSort) {
-                        const { col, order } = activeSort;
-                        if (col === 'username') return order === 'az' ? a.username.localeCompare(b.username) : b.username.localeCompare(a.username);
-                        if (col === 'status') {
-                            const dateA = parseDate(a.latestDate);
-                            const dateB = parseDate(b.latestDate);
-                            return order === 'new' ? dateB - dateA : dateA - dateB;
-                        }
-                        if (col === 'sent') {
-                            const getSentValue = (fan) => {
-                                if (!fan.sent) return 9999999999999;
-                                return fan.sentDate ? parseDate2(fan.sentDate) : 0;
-                            };
-                            const valA = getSentValue(a);
-                            const valB = getSentValue(b);
-                            return order === 'date_new' ? valB - valA : valA - valB;
-                        }
+            // 更新表頭圖示狀態 (Fans)
+            const setIcon = (id, condition) => {
+                const el = document.getElementById(id);
+                if(el) condition ? el.classList.remove('hidden') : el.classList.add('hidden');
+            };
+            // [修正] 預設排序 (status) 不顯示漏斗，只有在有日期篩選時才顯示
+            setIcon('icon_filter_status', activeDateFilters.length > 0);
+            setIcon('icon_filter_interactions', activeFilters.tags.length > 0);
+            setIcon('icon_filter_sent', activeFilters.pending || activeFilters.oldSent || (activeSort && activeSort.col === 'sent'));
+            setIcon('icon_filter_username', activeSort && activeSort.col === 'username');
+ 
+            // [修改] 決定資料來源 (正常 OR 重複篩選)
+            let filteredFans = [];
+            
+            if (isDuplicateMode) {
+                // 重複模式：直接使用篩選結果，不套用其他過濾器 (除了搜尋)
+                filteredFans = duplicateResults.filter(f => {
+                    return (f.username || '').toLowerCase().includes(searchTerm) ||
+                           (f.nickname || '').toLowerCase().includes(searchTerm);
+                });
+            } else {
+                // 正常模式：原本的篩選邏輯
+                filteredFans = fans.filter(f => {
+                    const matchesSearch = (f.username || '').toLowerCase().includes(searchTerm) ||
+                                          (f.nickname || '').toLowerCase().includes(searchTerm) ||
+                                          (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
+                                          (f.details || '').toLowerCase().includes(searchTerm);
+                    if (!matchesSearch) return false;
+                    if (activeFilters.pending && f.sent) return false;
+    
+                    const DAYS_14_MS = 1209600000;
+                    if (activeFilters.oldSent) {
+                        const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
+                        if (!isOld) return false;
                     }
-                    return a.username.toLowerCase().localeCompare(b.username.toLowerCase());
-                };
-                const starredFans = filteredFans.filter(f => f.isCloseFriend);
-                const otherFans = filteredFans.filter(f => !f.isCloseFriend);
-                starredFans.sort(sorter); otherFans.sort(sorter);
-                filteredFans = [...starredFans, ...otherFans];
+
+                    // [修正] 新版日期篩選 (多選 OR 邏輯)
+                    if (activeDateFilters.length > 0) {
+                        if (!f.latestDate) return false;
+                        const d = parseDate(f.latestDate);
+                        const diffDays = (Date.now() - d) / 86400000;
+                        
+                        // 只要符合任一選中條件即可
+                        const matchDate = activeDateFilters.some(filter => {
+                            if (filter === 'over30') return diffDays > 30;
+                            if (filter === 'over7') return diffDays > 7;
+                            return diffDays <= parseInt(filter);
+                        });
+                        if (!matchDate) return false;
+                    }
+    
+                    if (activeFilters.tags.length > 0) {
+                        const matchAll = activeFilters.tags.every(tag => {
+                            if (tag === '非粉絲') return !f.interactions.includes('粉絲');
+                            return f.interactions.includes(tag);
+                        });
+                        if (!matchAll) return false;
+                    }
+                    return true;
+                });
+
+                if (filteredFans.length > 0) {
+                    const sorter = (a, b) => {
+                        if (activeSort) {
+                            const { col, order } = activeSort;
+                            if (col === 'username') return order === 'az' ? a.username.localeCompare(b.username) : b.username.localeCompare(a.username);
+                            if (col === 'status') {
+                                const dateA = parseDate(a.latestDate);
+                                const dateB = parseDate(b.latestDate);
+                                return order === 'new' ? dateB - dateA : dateA - dateB;
+                            }
+                            if (col === 'sent') {
+                                const getSentValue = (fan) => {
+                                    if (!fan.sent) return 9999999999999;
+                                    return fan.sentDate ? parseDate2(fan.sentDate) : 0;
+                                };
+                                const valA = getSentValue(a);
+                                const valB = getSentValue(b);
+                                return order === 'date_new' ? valB - valA : valA - valB;
+                            }
+                        }
+                        return a.username.toLowerCase().localeCompare(b.username.toLowerCase());
+                    };
+                    const starredFans = filteredFans.filter(f => f.isCloseFriend);
+                    const otherFans = filteredFans.filter(f => !f.isCloseFriend);
+                    starredFans.sort(sorter); otherFans.sort(sorter);
+                    filteredFans = [...starredFans, ...otherFans];
+                }
             }
            
             if (filteredFans.length === 0) {
@@ -1464,9 +1777,22 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             } else {
                 emptyState.classList.add('hidden');
                 const DAYS_14 = 1209600000; // 14 days in ms
+
+                // [新增] 用於切換重複群組顏色的變數
+                let lastGroupId = -1;
+                let useGroupColorA = true;
  
                 filteredFans.forEach(fan => {
                     const row = document.createElement('tr'); row.className = 'table-row';
+                    
+                    // [新增] 套用重複群組樣式
+                    if (isDuplicateMode && fan.dupGroupId !== undefined) {
+                        if (fan.dupGroupId !== lastGroupId) {
+                            useGroupColorA = !useGroupColorA; // 切換顏色
+                            lastGroupId = fan.dupGroupId;
+                        }
+                        row.classList.add(useGroupColorA ? 'duplicate-group-a' : 'duplicate-group-b');
+                    }
                     
                     // [修正邏輯] 跨表比對：找出該粉絲在所有紀錄中「最新」的發送狀態
                     let finalSent = fan.sent;
@@ -1514,6 +1840,7 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         else if (tag === '前帳粉') style = 'bg-[#763BE3]/20 text-[#763BE3] border-[#763BE3]/30';
                         else if (tag === '高互動') style = 'bg-amber-900/20 text-amber-500 border-amber-500/30';
                         else if (tag === 'Thread粉') style = 'thread-badge';
+                        else if (tag === 'DM') style = 'bg-indigo-900/40 text-indigo-200 border-indigo-500/30';
                         return `<span class="px-2 py-0.5 rounded text-xs border whitespace-nowrap ${style}">${tag}</span>`;
                     }).join('');
                     
@@ -1581,13 +1908,20 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         }
  
         
+        // [新增] 輔助函式：確保取得最新暱稱
+        function getFanNickname(username) {
+            const fan = fans.find(f => f.username.toLowerCase() === username.toLowerCase());
+            return fan ? (fan.nickname || '-') : '-';
+        }
+
         function renderHeartData() {
             const tbody = document.getElementById('heartTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
             const DAYS_14 = 1209600000; // 14 days
 
-
-            let displayData = [...heartData];
+            // [修改] 決定資料來源
+            let displayData = isDuplicateMode ? [...duplicateResults] : [...heartData];
+            
             if (searchTerm) {
                 displayData = displayData.filter(d => 
                     (d.username || '').toLowerCase().includes(searchTerm) ||
@@ -1597,18 +1931,36 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 );
             }
 
+            // [修改] 重複模式下不以時間排序，而是維持群組排序 (dupGroupId)
+            if (!isDuplicateMode) {
+                displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            }
 
-            displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            // [新增] 用於切換重複群組顏色的變數
+            let lastGroupId = -1;
+            let useGroupColorA = true;
             
             tbody.innerHTML = displayData.map((d) => {
+                // [新增] 套用重複群組樣式Class
+                let rowClass = 'table-row';
+                if (isDuplicateMode && d.dupGroupId !== undefined) {
+                    if (d.dupGroupId !== lastGroupId) {
+                        useGroupColorA = !useGroupColorA;
+                        lastGroupId = d.dupGroupId;
+                    }
+                    rowClass += useGroupColorA ? ' duplicate-group-a' : ' duplicate-group-b';
+                }
+
                 // --- [關鍵修正] 讀取時強制同步狀態 ---
                 const targetUser = (d.username || '').trim().toLowerCase();
                 
+                // [新增] 強制取得最新暱稱 (取代原本的 d.nickname)
+                const currentNick = getFanNickname(d.username);
+
                 // 1. 預設使用該筆紀錄的狀態
                 let finalSent = d.sent;
                 let finalSentDate = d.sentDate;
                 let maxTimestamp = parseDate2(d.sentDate);
-
 
                 // 2. 檢查 [粉絲管理列表] 主檔 (Master) 是否已發送且時間更新
                 const masterFan = fans.find(f => f.username.trim().toLowerCase() === targetUser);
@@ -1621,7 +1973,6 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                         maxTimestamp = fanTime;
                     }
                 }
-
 
                 // 3. 檢查 [其他暖心紀錄] 是否有更新的發送時間 (Siblings)
                 heartData.forEach(h => {
@@ -1636,7 +1987,6 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 });
                 // ------------------------------------
 
-
                 const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
                 const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
                 
@@ -1645,14 +1995,13 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     ? `<div class="flex flex-col"><span class="${sentStyle} text-xs font-bold border px-2 py-0.5 rounded w-fit">✓ 已發送</span><span class="text-[10px] text-gray-500 mt-1">${finalSentDate || ''}</span></div>`
                     : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
 
-
                 // 新增：根據模式決定是否顯示 checkbox
-                const checkHtml = isHeartKeyMode ? 
+                const checkHtml = (typeof isHeartKeyMode !== 'undefined' && isHeartKeyMode) ? 
                     `<td class="text-center"><input type="checkbox" value="${d.username}" class="heart-key-checkbox accent-emerald-500 w-4 h-4"></td>` : 
                     '';
 
                 return `
-                <tr class="table-row">
+                <tr class="${rowClass}">
                     ${checkHtml}
                     <td class="font-bold">
                         <span class="text-indigo-300 cursor-pointer hover:text-indigo-100 hover:underline select-none" 
@@ -1663,9 +2012,9 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                             @${d.username}
                         </span>
                     </td>
-                    <td class="text-gray-400">${d.nickname}</td>
+                    <td class="text-gray-400">${currentNick}</td>
                     <td class="text-gray-400 text-xs">${d.date}</td>
-                    <td class="text-pink-300 text-xs border border-pink-900/50 bg-pink-900/20 px-2 rounded w-fit">${d.responseItem}</td>
+                    <td class="text-pink-300 text-xs border border-pink-900/50 bg-pink-900/20 px-2 rounded w-fit">${d.responseItem || '-'}</td>
                     <td class="text-gray-300 text-xs whitespace-pre-wrap">${d.content}</td>
                     <td>${statusHtml}</td>
                     <td class="text-center">
@@ -1685,6 +2034,10 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                     </td>
                 </tr>`;
             }).join('');
+            
+            // 更新計數 (若有此元素)
+            const countEl = document.getElementById('heartCount');
+            if(countEl) countEl.innerText = displayData.length;
         }
  
         // --- Add/Delete/Edit Logic ---
@@ -1840,8 +2193,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             const editGroupIg = document.getElementById('editHeartItemIg');
             const editGroupGift = document.getElementById('editHeartItemGift');
             
-            // Basic options
-            select.innerHTML = '<option value="DM">DM (私訊)</option>';
+            // Basic options [修正文字] - 加入預設空白選項
+            select.innerHTML = '<option value="">-- 請選擇 --</option><option value="DM">DM私訊內容</option>';
             editGroupIg.innerHTML = '';
             editGroupGift.innerHTML = '';
            
@@ -1879,34 +2232,74 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             currentFilterCol = key;
             const container = document.getElementById('filterContentContainer');
             container.innerHTML = '';
-            if (key === 'username' || key === 'status') {
+            
+            // 判斷當前是否在鑰匙管理頁面
+            const isKeyPage = !document.getElementById('keyManageSection').classList.contains('hidden');
+
+            if (key === 'username') {
+                if (isKeyPage) {
+                    // 鑰匙管理模式：顯示「未加入/已加入」篩選
+                    container.innerHTML = `<div class="text-xs text-emerald-400 mb-2 font-bold">名單狀態篩選：</div>`;
+                    const opts = [
+                        { val: 'notInList', txt: '未加入名單' },
+                        { val: 'inList', txt: '已加入名單' }
+                    ];
+                    opts.forEach(o => {
+                        const checked = activeKeyStatusFilters.includes(o.val) ? 'checked' : '';
+                        container.innerHTML += `<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${o.val}" ${checked} onchange="toggleFilter('keyStatus', this.value)" class="accent-emerald-500"> ${o.txt}</label>`;
+                    });
+                } else {
+                    // 粉絲管理模式：顯示排序
+                    container.innerHTML = `<label class="text-xs text-gray-400 block mb-2">排序方式：</label><select id="filterSortSelect" onchange="applySort(this.value)" class="bg-black/40 border border-gray-600 text-gray-300 text-xs rounded w-full p-2 focus:border-indigo-500 outline-none"></select>`;
+                    const sortSelect = document.getElementById('filterSortSelect');
+                    sortSelect.innerHTML = '<option value="">(預設)</option>';
+                    const opts = [{val:'az', txt:'字母順序 (A-Z)'}, {val:'za', txt:'字母順序 (Z-A)'}];
+                    opts.forEach(o => {
+                        const selected = (activeSort && activeSort.col === key && activeSort.order === o.val) ? 'selected' : '';
+                        sortSelect.innerHTML += `<option value="${o.val}" ${selected}>${o.txt}</option>`;
+                    });
+                }
+            } else if (key === 'status') {
+                // 通用：排序 + 日期篩選
                 container.innerHTML = `<label class="text-xs text-gray-400 block mb-2">排序方式：</label><select id="filterSortSelect" onchange="applySort(this.value)" class="bg-black/40 border border-gray-600 text-gray-300 text-xs rounded w-full p-2 focus:border-indigo-500 outline-none"></select>`;
                 const sortSelect = document.getElementById('filterSortSelect');
                 sortSelect.innerHTML = '<option value="">(預設)</option>';
-                const addOpt = (val, txt) => {
-                    const selected = (activeSort && activeSort.col === key && activeSort.order === val) ? 'selected' : '';
-                    sortSelect.innerHTML += `<option value="${val}" ${selected}>${txt}</option>`;
-                };
-                if (key === 'username') { addOpt('az', '字母順序 (A-Z)'); addOpt('za', '字母順序 (Z-A)'); }
-                else if (key === 'status') { addOpt('new', '活動日期 (新-舊)'); addOpt('old', '活動日期 (舊-新)'); }
+                const sOpts = [{val:'new', txt:'活動日期 (新-舊)'}, {val:'old', txt:'活動日期 (舊-新)'}];
+                sOpts.forEach(o => {
+                    const selected = (activeSort && activeSort.col === key && activeSort.order === o.val) ? 'selected' : '';
+                    sortSelect.innerHTML += `<option value="${o.val}" ${selected}>${o.txt}</option>`;
+                });
+
+                // 新版日期篩選 (Checkbox)
+                // 新版日期篩選 (Checkbox)
+                container.innerHTML += `<div class="mt-3 border-t border-white/10 pt-2"><label class="text-xs text-gray-400 block mb-1">日期篩選 (多選/OR)：</label></div>`;
+                const dateOpts = [
+                    { val: '1', txt: '最近 1 天' },
+                    { val: '3', txt: '最近 3 天' },
+                    { val: '7', txt: '最近 7 天' },
+                    { val: 'over7', txt: '超過 7 天' },
+                    { val: 'over30', txt: '超過 30 天' }
+                ];
+                dateOpts.forEach(d => {
+                    const checked = activeDateFilters.includes(d.val) ? 'checked' : '';
+                    container.innerHTML += `<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${d.val}" ${checked} onchange="toggleFilter('date', this.value)" class="accent-indigo-500"> ${d.txt}</label>`;
+                });
+
             } else if (key === 'interactions') {
                 container.innerHTML = `<div class="text-xs text-gray-400 mb-2 font-bold">篩選標籤 (需同時滿足/AND)：</div>`;
-                // 新增 '前帳粉' 與 '高互動', 'Thread粉'
-                ['粉絲', '非粉絲', '前帳粉', 'Thread粉', '高互動', '留言', '轉發', '分享'].forEach(tag => {
+                ['粉絲', '非粉絲', '前帳粉', 'Thread粉', '高互動', '留言', '轉發', '分享', 'DM'].forEach(tag => {
                     const checked = activeFilters.tags.includes(tag) ? 'checked' : '';
                     let colorClass = "text-gray-300";
+                    if(tag==='粉絲') colorClass = "text-pink-200";
+                    if(tag==='前帳粉') colorClass = "text-[#763BE3]";
+                    if(tag==='Thread粉') colorClass = "text-white";
+                    if(tag==='高互動') colorClass = "text-amber-400";
+                    if(tag==='DM') colorClass = "text-indigo-300";
                     
-                    if(tag==='粉絲') colorClass = "text-pink-200"; // 粉絲改為粉紅色
-                    if(tag==='前帳粉') colorClass = "text-[#763BE3]"; // 移除粗體
-                    if(tag==='Thread粉') colorClass = "text-white"; // 移除粗體
-                    if(tag==='高互動') colorClass = "text-amber-400"; // 移除粗體
-                    
-                    container.innerHTML += `<label class="flex items-center gap-2 text-sm ${colorClass} 
-cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag}" ${checked} onchange="toggleFilter('tag', this.value)" class="accent-indigo-500"> ${tag}</label>`;
-        });
+                    container.innerHTML += `<label class="flex items-center gap-2 text-sm ${colorClass} cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag}" ${checked} onchange="toggleFilter('tag', this.value)" class="accent-indigo-500"> ${tag}</label>`;
+                });
             } else if (key === 'sent') {
                 const pendingChecked = activeFilters.pending ? 'checked' : '';
-                // 新增超過14天篩選
                 const oldSentChecked = activeFilters.oldSent ? 'checked' : '';
                 let html = `<label class="flex items-center gap-2 text-sm text-amber-400 font-bold cursor-pointer mb-2"><input type="checkbox" ${pendingChecked} onchange="toggleFilter('pending')" class="accent-amber-500"> 顯示「待處理」</label>`;
                 html += `<label class="flex items-center gap-2 text-sm text-[#4B0082] font-bold cursor-pointer border-b border-white/10 pb-2 mb-2"><input type="checkbox" ${oldSentChecked} onchange="toggleFilter('oldSent')" class="accent-indigo-900"> 超過14天</label>`;
@@ -1933,7 +2326,18 @@ cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag
                 if (activeFilters.tags.includes(value)) activeFilters.tags = activeFilters.tags.filter(t => t !== value);
                 else activeFilters.tags.push(value);
             }
-            renderTable();
+            else if (type === 'date') {
+                if (activeDateFilters.includes(value)) activeDateFilters = activeDateFilters.filter(v => v !== value);
+                else activeDateFilters.push(value);
+            }
+            else if (type === 'keyStatus') {
+                if (activeKeyStatusFilters.includes(value)) activeKeyStatusFilters = activeKeyStatusFilters.filter(v => v !== value);
+                else activeKeyStatusFilters.push(value);
+            }
+
+            // 判斷要刷新哪個表格
+            if (!document.getElementById('fansSection').classList.contains('hidden')) renderTable();
+            if (!document.getElementById('keyManageSection').classList.contains('hidden')) renderKeyTable();
         }
  
         function closeFilterMenu() { document.getElementById('filterMenu').classList.add('hidden'); document.getElementById('filterMenu').classList.remove('flex'); currentFilterCol = null; }
@@ -2135,6 +2539,8 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
             if(fan) {
                 const usernameInput = document.getElementById('editFanUsername');
                 if(!validateInput(usernameInput)) return alert("帳號格式錯誤");
+                
+                // 更新主資料
                 fan.username = usernameInput.value.trim();
                 fan.nickname = document.getElementById('editFanNickname').value.trim();
                 fan.details = document.getElementById('editFanDetails').value.trim();
@@ -2142,7 +2548,22 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                 const standardValues = Array.from(document.querySelectorAll('#editFanCheckboxes input')).map(cb => cb.value);
                 const currentExtra = fan.interactions.filter(t => !standardValues.includes(t));
                 fan.interactions = Array.from(new Set([...checked, ...currentExtra]));
-                saveData(); renderTable(); closeEditFanModal(); showToast('資料已更新');
+
+                // [修正] 若在篩選模式，同步更新 duplicateResults 以即時反映變更
+                if (isDuplicateMode) {
+                    const dupFan = duplicateResults.find(f => f.id === id);
+                    if (dupFan) {
+                        dupFan.username = fan.username;
+                        dupFan.nickname = fan.nickname;
+                        dupFan.details = fan.details;
+                        dupFan.interactions = fan.interactions;
+                    }
+                }
+
+                saveData(); 
+                renderTable(); 
+                closeEditFanModal(); 
+                showToast('資料已更新');
             }
         }
         function closeEditFanModal() { document.getElementById('editFanModal').classList.add('hidden'); }
@@ -2206,9 +2627,6 @@ localStorage.setItem('giftPosts', '[]');
             const ws1 = XLSX.utils.json_to_sheet(wsData1);
             XLSX.utils.book_append_sheet(wb, ws1, "互動紀錄");
 
-
-
-
             // Sheet 2: 暖心時刻
             const wsData2 = heartData.map(h => ({
                 "粉絲帳號": h.username,
@@ -2220,8 +2638,16 @@ localStorage.setItem('giftPosts', '[]');
             const ws2 = XLSX.utils.json_to_sheet(wsData2);
             XLSX.utils.book_append_sheet(wb, ws2, "暖心時刻");
 
-
-
+            // Sheet 3: 動態紀錄 (新增區塊)
+            const wsData3 = historyData.map(h => ({
+                "日期": h.date,
+                "帳號": h.username,
+                "暱稱": h.nickname,
+                "類型": h.type,
+                "詳細內容": h.details
+            }));
+            const ws3 = XLSX.utils.json_to_sheet(wsData3);
+            XLSX.utils.book_append_sheet(wb, ws3, "動態紀錄");
 
             // 檔名改為 FanConnect_"Brand Name"_Export_YYYYMMDD
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
@@ -2363,8 +2789,18 @@ localStorage.setItem('giftPosts', '[]');
             reader.readAsArrayBuffer(file);
         }
  
-        function deleteFan(id) { if(confirm('刪除資料？')) { fans = fans.filter(f => f.id !== id);
-            saveData(); renderTable(); showToast('已刪除'); } }
+        function deleteFan(id) { 
+            if(confirm('刪除資料？')) { 
+                fans = fans.filter(f => f.id !== id);
+                // [修正] 若在重複模式，同步移除篩選結果中的資料
+                if (isDuplicateMode) {
+                    duplicateResults = duplicateResults.filter(f => f.id !== id);
+                }
+                saveData(); 
+                renderTable(); 
+                showToast('已刪除'); 
+            } 
+        }
         function openModal(id) {
             activeFanId = id;
             // 根據來源查找資料
@@ -2575,6 +3011,11 @@ localStorage.setItem('giftPosts', '[]');
 
 
 function showSection(s) {
+            // [修正] 切換頁面時，強制退出疑似重複篩選模式，避免資料欄位錯亂 (undefined)
+            if (typeof exitDuplicateMode === 'function' && isDuplicateMode) {
+                exitDuplicateMode();
+            }
+
             // 加入 'history', 'compare', 'keyManage' 到隱藏列表
             ['fans', 'manual', 'templates', 'decrypt', 'keyManage', 'igPosts', 'giftPosts', 'heartStats', 'history', 'compare'].forEach(x => {
                 const el = document.getElementById(x+'Section');
@@ -2787,66 +3228,104 @@ function showSection(s) {
             const tbody = document.getElementById('historyTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
 
+            // [修正] A. 準備資料來源
+            let displayData = [];
 
-            // [更新] 1. 搜尋過濾
-            let displayData = [...historyData];
-if (searchTerm) {
+            if (isDuplicateMode) {
+                // 重複模式：直接使用篩選結果
+                displayData = [...duplicateResults];
+            } else {
+                // 正常模式：合併資料
+                // 1. 系統紀錄 (過濾掉舊的 '留言'/'DM'，避免與 heartData 重複)
+                const systemLogs = historyData.filter(h => h.type !== '留言' && h.type !== 'DM');
+                
+                // 2. 互動紀錄 (從 heartData 即時生成，確保內容與暱稱同步)
+                const interactionLogs = heartData.map(h => ({
+                    id: h.id,
+                    date: h.date,
+                    username: h.username,
+                    // nickname: h.nickname, // 不使用儲存的舊暱稱，稍後動態取得
+                    type: h.responseItem === 'DM' ? 'DM' : '留言',
+                    details: h.responseItem === 'DM' ? h.content : `已回應：${h.content}`, // 格式化內容
+                    isInteraction: true // 標記來源
+                }));
+                displayData = [...systemLogs, ...interactionLogs];
+            }
+
+            // C. 搜尋過濾
+            if (searchTerm) {
                 displayData = displayData.filter(h => 
                     (h.username || '').toLowerCase().includes(searchTerm) ||
-                    (h.nickname || '').toLowerCase().includes(searchTerm) ||
+                    (getFanNickname(h.username) || '').toLowerCase().includes(searchTerm) || // 搜尋最新暱稱
                     (h.type || '').toLowerCase().includes(searchTerm) ||
-         
-           (h.details || '').toLowerCase().includes(searchTerm)
+                    (h.details || '').toLowerCase().includes(searchTerm)
                 );
-}
+            }
 
+            // D. 排序
+            if (!isDuplicateMode) {
+                displayData.sort((a, b) => {
+                    const dateA = parseDate(a.date);
+                    const dateB = parseDate(b.date);
+                    return dateB - dateA;
+                });
+            }
 
-            // 2. 排序 (強制新到舊)
-            const sorted = displayData.sort((a, b) => {
-                const dateA = parseDate(a.date);
-                const dateB = parseDate(b.date);
-                return dateB - dateA;
-     
-       });
+            // [新增] 用於切換重複群組顏色的變數
+            let lastGroupId = -1;
+            let useGroupColorA = true;
             
-            tbody.innerHTML = sorted.map(h => {
+            tbody.innerHTML = displayData.map(h => {
+                // [新增] 套用重複群組樣式Class
+                let rowClass = 'table-row';
+                if (isDuplicateMode && h.dupGroupId !== undefined) {
+                    if (h.dupGroupId !== lastGroupId) {
+                        useGroupColorA = !useGroupColorA;
+                        lastGroupId = h.dupGroupId;
+                    }
+                    rowClass += useGroupColorA ? ' duplicate-group-a' : ' duplicate-group-b';
+                }
+
+                // [關鍵] 強制取得最新暱稱
+                const currentNick = getFanNickname(h.username);
+
                 let typeClass = 'text-gray-400';
                 const t = (h.type || '').toString();
                 
-                // [更新] 樣式判斷
-              
-  if(t.includes('新粉絲')) typeClass = 'text-green-400 font-bold';
+                // 樣式判斷
+                if(t.includes('新粉絲')) typeClass = 'text-green-400 font-bold';
                 else if(t.includes('退追')) typeClass = 'text-red-400 font-bold';
                 else if(t.includes('前帳粉')) typeClass = 'text-[#763BE3] font-bold';
                 else if(t.includes('粉絲')) typeClass = 'text-pink-300';
                 else if(h.type === '更新') typeClass = 'text-blue-400';
+                else if(h.type === 'DM') typeClass = 'text-indigo-300'; // DM 樣式
+                else if(h.type === '留言') typeClass = 'text-pink-300'; // 留言 樣式
 
+                // 操作按鈕：如果是同步過來的互動紀錄，顯示提示文字代替按鈕，避免邏輯錯誤
+                // [修正] 重複模式下，即使是互動紀錄也允許操作(因為是顯示特定的duplicateResults項目)
+                const actionButtons = (h.isInteraction && !isDuplicateMode) ? 
+                    `<span class="text-[10px] text-gray-600 select-none">(同步顯示)</span>` :
+                    `<div class="flex justify-center gap-2">
+                        <button onclick="openHistoryModal('${h.id}')" class="text-gray-400 hover:text-white" title="編輯"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white" title="刪除"><i class="fas fa-trash-alt"></i></button>
+                    </div>`;
 
-        
-        return `<tr class="table-row">
+                return `<tr class="${rowClass}">
                     <td class="text-xs text-gray-500">${h.date}</td>
                     <td class="font-bold">
                         <span class="text-indigo-300 cursor-pointer hover:text-indigo-100 hover:underline select-none" 
-                 
-             onmousedown="startFanLongPress(event, '${h.username}')" 
+                              onmousedown="startFanLongPress(event, '${h.username}')" 
                               onmouseup="cancelFanLongPress(this, '${h.username}')" 
                               ontouchstart="startFanLongPress(event, '${h.username}')" 
-                     
-         ontouchend="cancelFanLongPress(this, '${h.username}')">
+                              ontouchend="cancelFanLongPress(this, '${h.username}')">
                             ${h.username}
                         </span>
                     </td>
-                  
-  <td class="text-xs text-gray-400">${h.nickname || '-'}</td>
+                    <td class="text-xs text-gray-400">${currentNick}</td>
                     <td class="text-xs ${typeClass}">${h.type}</td>
-                    <td class="text-xs text-gray-300 whitespace-pre-wrap">${h.details ||
-''}</td>
+                    <td class="text-xs text-gray-300 whitespace-pre-wrap">${h.details || ''}</td>
                     <td class="text-center">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="openHistoryModal('${h.id}')" class="text-gray-400 hover:text-white" title="編輯"><i class="fas fa-edit"></i></button>
-                   
-         <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white" title="刪除"><i class="fas fa-trash-alt"></i></button>
-                        </div>
+                        ${actionButtons}
                     </td>
                 </tr>`;
             }).join('');
@@ -2937,22 +3416,49 @@ if (searchTerm) {
             const checked = Array.from(document.querySelectorAll('#histCheckboxes input:checked')).map(cb => cb.value);
             const typeStr = checked.join(' / ');
 
-
             if (!user) return alert("請輸入帳號");
 
-
             if (id) {
-                const idx = historyData.findIndex(h => h.id == id);
-                if (idx !== -1) {
-                    historyData[idx] = { ...historyData[idx], username: user, nickname: nick, date: dateStr, type: typeStr, details: details };
+                // 1. 嘗試更新 HistoryData (系統/手動紀錄)
+                const histIdx = historyData.findIndex(h => h.id == id);
+                let isHeartSource = false;
+
+                if (histIdx !== -1) {
+                    historyData[histIdx] = { ...historyData[histIdx], username: user, nickname: nick, date: dateStr, type: typeStr, details: details };
+                } else {
+                    // 2. 若找不到，嘗試更新 HeartData (顯示在動態紀錄中的暖心互動)
+                    const heartIdx = heartData.findIndex(h => h.id == id);
+                    if (heartIdx !== -1) {
+                        isHeartSource = true;
+                        // 更新暖心紀錄 (注意欄位對應: details -> content)
+                        heartData[heartIdx].username = user;
+                        heartData[heartIdx].nickname = nick;
+                        heartData[heartIdx].date = dateStr;
+                        heartData[heartIdx].content = details; // 暖心內容對應 details
+                        // 暖心紀錄通常不修改 'type' (留言/DM 由 responseItem 決定)，此處略過 typeStr 更新
+                    }
                 }
+
+                // 3. [修正] 同步更新 duplicateResults
+                if (isDuplicateMode) {
+                    const dupItem = duplicateResults.find(h => h.id == id);
+                    if (dupItem) {
+                        dupItem.username = user;
+                        dupItem.nickname = nick;
+                        dupItem.date = dateStr;
+                        dupItem.type = typeStr;
+                        dupItem.details = details;
+                        if (isHeartSource) dupItem.content = details; // 若是暖心來源，同步 content
+                    }
+                }
+                
+                saveData(); // 全局存檔
+                renderHistory();
+                if (isHeartSource) renderHeartData(); // 若更動了暖心紀錄，同步刷新暖心表
             } else {
                 addHistoryLog(user, nick, typeStr, dateStr, details);
-                closeHistoryModal();
-                return;
             }
-            saveData(); // 使用全局存檔以支援 Undo
-            renderHistory();
+            
             closeHistoryModal();
         }
 
@@ -2992,69 +3498,136 @@ if (searchTerm) {
         }
 
 
+        // [新增] 勾選框互斥邏輯
+        function toggleHeartCheck(type) {
+            const checkComment = document.getElementById('heartCheckComment');
+            const checkDM = document.getElementById('heartCheckDM');
+            
+            if (type === 'comment' && checkComment.checked) {
+                checkDM.checked = false;
+            } else if (type === 'dm' && checkDM.checked) {
+                checkComment.checked = false;
+            }
+            
+            // 確保至少一個被選取 (若取消當前，則選取另一個)
+            if (!checkComment.checked && !checkDM.checked) {
+                if (type === 'comment') checkDM.checked = true;
+                else checkComment.checked = true;
+            }
+        }
+
+        // [新增] 下拉選單連動邏輯
+        function handleHeartItemChange(select) {
+            if (select.value === 'DM') {
+                document.getElementById('heartCheckDM').checked = true;
+                document.getElementById('heartCheckComment').checked = false;
+            }
+        }
+
+        // [新增] 輔助函式：取得粉絲最新暱稱 (確保各列表顯示同步)
+        function getFanNickname(username) {
+            const fan = fans.find(f => f.username.toLowerCase() === username.toLowerCase());
+            return fan ? (fan.nickname || '-') : '-';
+        }
+
         function addHeartData() {
             const username = document.getElementById('heartUser').value.trim();
             const nickname = document.getElementById('heartNick').value.trim();
-            const responseItem = document.getElementById('heartResponseItem').value;
-            const content = document.getElementById('heartContent').value.trim();
+            const rawResponseItem = document.getElementById('heartResponseItem').value;
+            const inputContent = document.getElementById('heartContent').value.trim();
             const dateStr = `${document.getElementById('heartDateYYYY').value}/${document.getElementById('heartDateMM').value}/${document.getElementById('heartDateDD').value}`;
+            
+            const isDM = document.getElementById('heartCheckDM').checked;
            
             if(!username) return alert("請輸入粉絲帳號");
             
+            // 定義儲存與顯示的內容變數
+            let saveResponseItem, saveContent, latestType, detailMsg;
+
+            if (isDM) {
+                // --- DM 模式邏輯 ---
+                latestType = 'DM';
+                saveResponseItem = 'DM'; 
+
+                if (rawResponseItem && rawResponseItem !== 'DM') {
+                    saveContent = `回應項目: ${rawResponseItem}\n${inputContent}`;
+                    detailMsg = `回應項目: ${rawResponseItem}`; 
+                } else {
+                    saveContent = inputContent;
+                    detailMsg = '';
+                }
+
+            } else {
+                // --- 留言 模式邏輯 ---
+                latestType = '留言';
+                saveResponseItem = rawResponseItem;
+                saveContent = inputContent;
+                detailMsg = `在"${rawResponseItem}"留言`;
+            }
+
             // 1. 新增暖心紀錄
-            heartData.push({ id: Date.now(), username, nickname, responseItem, content, date: dateStr });
+            heartData.push({ 
+                id: Date.now(), 
+                username, 
+                nickname, // 這裡存的暱稱僅供備份，顯示時將優先使用 getFanNickname
+                responseItem: saveResponseItem, 
+                content: saveContent, 
+                date: dateStr 
+            });
 
             // 2. 同步至粉絲列表
             let fan = fans.find(f => f.username.toLowerCase() === username.toLowerCase());
             
-            // [修正] 詳細內容格式：在"項目"留言
-            const detailMsg = `在"${responseItem}"留言`;
-
             if (fan) {
-                // A. 舊粉絲
-                if (!fan.interactions.includes('留言')) fan.interactions.push('留言');
+                // 同步互動標籤
+                if (isDM) {
+                    if (!fan.interactions.includes('DM')) fan.interactions.push('DM');
+                } else {
+                    if (!fan.interactions.includes('留言')) fan.interactions.push('留言');
+                }
                 
                 // 更新時間
                 const newDateTs = parseDate(dateStr);
                 const oldDateTs = fan.latestDate ? parseDate(fan.latestDate) : 0;
                 
                 if (!fan.latestDate || newDateTs >= oldDateTs) {
-                    fan.latestType = '留言';
+                    fan.latestType = latestType;
                     fan.latestDate = dateStr;
                 }
                 if (nickname && !fan.nickname) fan.nickname = nickname;
 
-                // [修正] 更新詳細內容 (若已有內容則累加)
-                if (fan.details) {
-                    fan.details += ` / ${detailMsg}`;
-                } else {
-                    fan.details = detailMsg;
+                // 更新詳細內容
+                if (detailMsg) {
+                    if (fan.details) {
+                        fan.details += ` / ${detailMsg}`;
+                    } else {
+                        fan.details = detailMsg;
+                    }
                 }
-                
             } else {
-                // B. 新粉絲 (自動建立)
+                // 新粉絲建立
                 fans.unshift({
                     id: Date.now() + Math.random(),
                     username: username,
                     nickname: nickname || '',
                     language: '中',
-                    interactions: ['留言'],
-                    latestType: '留言',
+                    interactions: isDM ? ['DM'] : ['留言'],
+                    latestType: latestType,
                     latestDate: dateStr,
-                    details: detailMsg, // [修正] 寫入指定格式
+                    details: detailMsg,
                     sent: false,
                     sentDate: '',
                     isCloseFriend: false
                 });
             }
             
-            // 3. 自動同步到 [動態紀錄]
-            // [修正] 回復原本格式 "已回應：內容"
-            addHistoryLog(username, nickname, '留言', dateStr, `已回應：${content}`, false);
-
+            // 3. [修正] 移除 addHistoryLog 呼叫，避免資料雙重儲存與不同步
+            // 顯示將由 renderHistory 自動合併 heartData 生成
+            
             saveData(); 
             renderHeartData(); 
-            renderTable();
+            renderTable(); // 刷新粉絲列表
+            if(typeof renderHistory === 'function') renderHistory(); // 刷新動態紀錄
             
             document.getElementById('heartUser').value = '';
             document.getElementById('heartNick').value = '';
@@ -3080,14 +3653,30 @@ if (searchTerm) {
             const id = parseFloat(document.getElementById('editHeartIndex').value);
             const idx = heartData.findIndex(h => h.id === id);
             if(idx !== -1) {
+                // 更新主資料
                 heartData[idx] = {
                     id: id,
                     username: document.getElementById('editHeartUser').value,
                     nickname: document.getElementById('editHeartNick').value,
                     date: document.getElementById('editHeartDate').value,
                     responseItem: document.getElementById('editHeartItem').value,
-                    content: document.getElementById('editHeartContent').value
+                    content: document.getElementById('editHeartContent').value,
+                    sent: heartData[idx].sent, // 保留發送狀態
+                    sentDate: heartData[idx].sentDate
                 };
+
+                // [修正] 若在篩選模式，同步更新 duplicateResults
+                if (isDuplicateMode) {
+                    const dupItem = duplicateResults.find(h => h.id === id);
+                    if (dupItem) {
+                        dupItem.username = heartData[idx].username;
+                        dupItem.nickname = heartData[idx].nickname;
+                        dupItem.date = heartData[idx].date;
+                        dupItem.responseItem = heartData[idx].responseItem;
+                        dupItem.content = heartData[idx].content;
+                    }
+                }
+
                 saveData(); // 使用全局存檔
                 renderHeartData();
                 document.getElementById('editHeartModal').classList.add('hidden');
@@ -3096,9 +3685,23 @@ if (searchTerm) {
  
         function deleteHeartData(id) {
             if(confirm("確定刪除?")) {
-                heartData = heartData.filter(h => h.id !== id);
-                saveData(); // 使用全局存檔
+                // [關鍵修復] 如果在篩選模式，先強制同步當前狀態到 LocalStorage
+                // 這確保了等一下 saveData() 建立的快照裡，duplicateResults 是「刪除前」的完整狀態
+                if (isDuplicateMode) saveData(false);
+
+                // 1. 執行刪除 (寬鬆比對)
+                heartData = heartData.filter(h => h.id != id);
+                
+                // 2. 同步移除篩選結果
+                if (isDuplicateMode) {
+                    duplicateResults = duplicateResults.filter(h => h.id != id);
+                }
+                
+                // 3. 建立快照 (這時會讀取到剛才強制同步的完整列表作為 Undo 備份) 並存檔
+                saveData(); 
+                
                 renderHeartData();
+                showToast('已刪除');
             }
         }
 
@@ -3107,9 +3710,30 @@ if (searchTerm) {
 
         function deleteHistory(id) {
             if(confirm("刪除此條紀錄？")) {
+                // [關鍵修復] 刪除前強制同步，確保 Undo 快照包含完整篩選列表
+                if (isDuplicateMode) saveData(false);
+
+                // 1. 嘗試從 historyData (系統紀錄) 刪除
+                const initialHistoryLen = historyData.length;
                 historyData = historyData.filter(h => h.id != id);
-                localStorage.setItem('historyData', JSON.stringify(historyData));
+                
+                // 2. 如果 historyData 沒變 (代表可能是暖心紀錄)，則嘗試從 heartData 刪除
+                if (historyData.length === initialHistoryLen) {
+                    heartData = heartData.filter(h => h.id != id);
+                }
+
+                // 3. 若在重複模式，同步移除篩選結果中的資料
+                if (isDuplicateMode) {
+                    duplicateResults = duplicateResults.filter(h => h.id != id);
+                }
+
+                saveData();
                 renderHistory();
+                // 若刪到了暖心紀錄，建議也刷新暖心表 (雖然當下看不到)
+                if (document.getElementById('heartStatsSection') && !document.getElementById('heartStatsSection').classList.contains('hidden')) {
+                     renderHeartData();
+                }
+                showToast('已刪除');
             }
         }
 
@@ -3330,7 +3954,17 @@ if (searchTerm) {
             const selectAllBox = document.getElementById('keySelectAll');
             const linkInput = document.getElementById('keyLinkInput');
 
-            // 無 ID 狀態
+            // 更新表頭圖示狀態 (Keys)
+            const setIcon = (id, condition) => {
+                const el = document.getElementById(id);
+                if(el) condition ? el.classList.remove('hidden') : el.classList.add('hidden');
+            };
+            setIcon('key_icon_filter_status', activeDateFilters.length > 0 || (activeSort && activeSort.col === 'status'));
+            setIcon('key_icon_filter_interactions', activeFilters.tags.length > 0);
+            setIcon('key_icon_filter_sent', activeFilters.pending || activeFilters.oldSent || (activeSort && activeSort.col === 'sent'));
+            setIcon('key_icon_filter_username', activeKeyStatusFilters.length > 0);
+
+            // 1. 無 ID 狀態
             if (!giftId) {
                 tbody.innerHTML = '';
                 emptyState.classList.remove('hidden');
@@ -3341,50 +3975,86 @@ if (searchTerm) {
                 return;
             }
 
-            // 有 ID，準備資料
+            // 2. 有 ID，準備初始資料
             linkInput.value = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
             emptyState.classList.add('hidden');
             const existingKeys = keyPermissions[giftId] || [];
             document.getElementById('keyStatusText').innerText = `名單人數: ${existingKeys.length}`;
 
-            // 全選框：僅在編輯模式可用
+            // 全選框狀態
             selectAllBox.disabled = (currentKeyMode === 'none');
             selectAllBox.classList.toggle('cursor-not-allowed', currentKeyMode === 'none');
             selectAllBox.checked = false;
 
-            // [關鍵邏輯 A] 決定資料池 (Scope)
+            // 3. 決定初始資料池
             let displayFans;
             if (currentKeyMode === 'none') {
-                // 未編輯 (預設)：資料池僅限「名單內」
+                // 檢視模式：只顯示已在名單內的人
                 displayFans = fans.filter(f => existingKeys.includes(f.username));
             } else {
-                // 編輯中 (追加/編輯)：資料池為「所有人」
+                // 編輯/追加模式：顯示所有人，讓使用者挑選
                 displayFans = [...fans];
             }
 
-            // [關鍵邏輯 B] 執行搜尋 (基於 A 的資料池)
+            // 4. [修正] 多重篩選邏輯 (Date, Tags, Sent, KeyStatus)
+            displayFans = displayFans.filter(f => {
+                // A. 日期篩選
+                if (activeDateFilters.length > 0) {
+                    if (!f.latestDate) return false;
+                    const d = parseDate(f.latestDate);
+                    const diffDays = (Date.now() - d) / 86400000;
+                    const matchDate = activeDateFilters.some(filter => {
+                        if (filter === 'over30') return diffDays > 30;
+                        if (filter === 'over7') return diffDays > 7;
+                        return diffDays <= parseInt(filter);
+                    });
+                    if (!matchDate) return false;
+                }
+
+                // B. 互動標籤篩選 (AND)
+                if (activeFilters.tags.length > 0) {
+                    const matchAll = activeFilters.tags.every(tag => {
+                        if (tag === '非粉絲') return !f.interactions.includes('粉絲');
+                        return f.interactions.includes(tag);
+                    });
+                    if (!matchAll) return false;
+                }
+
+                // C. 訊息狀態篩選
+                if (activeFilters.pending && f.sent) return false;
+                const DAYS_14_MS = 1209600000;
+                if (activeFilters.oldSent) {
+                    const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
+                    if (!isOld) return false;
+                }
+
+                // D. 鑰匙名單狀態篩選
+                if (activeKeyStatusFilters.length > 0) {
+                    const isInKey = existingKeys.includes(f.username);
+                    const matchStatus = activeKeyStatusFilters.some(s => {
+                        if (s === 'inList') return isInKey;
+                        if (s === 'notInList') return !isInKey;
+                        return false;
+                    });
+                    if (!matchStatus) return false;
+                }
+
+                return true;
+            });
+
+            // 5. 關鍵字搜尋
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
             if (searchTerm) {
                 displayFans = displayFans.filter(f => 
                     (f.username || '').toLowerCase().includes(searchTerm) ||
                     (f.nickname || '').toLowerCase().includes(searchTerm) ||
                     (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
-                    (f.details || '').toLowerCase().includes(searchTerm) // [修正] 新增搜尋詳細內容
+                    (f.details || '').toLowerCase().includes(searchTerm)
                 );
             }
 
-            // [關鍵邏輯 C] 排序 (隱形分區 + 標題排序)
+            // 6. [修正] 排序邏輯
             displayFans.sort((a, b) => {
-                const aIn = existingKeys.includes(a.username);
-                const bIn = existingKeys.includes(b.username);
-                
-                // C-1. 隱形分區：編輯模式下，已在名單者強制置頂
-                if (currentKeyMode !== 'none') {
-                    if (aIn && !bIn) return -1;
-                    if (!aIn && bIn) return 1;
-                }
-
-                // C-2. 標題排序 (由 activeSort 控制)
                 if (activeSort) {
                     const { col, order } = activeSort;
                     if (col === 'username') return order === 'az' ? a.username.localeCompare(b.username) : b.username.localeCompare(a.username);
@@ -3393,13 +4063,22 @@ if (searchTerm) {
                         const dateB = parseDate(b.latestDate);
                         return order === 'new' ? dateB - dateA : dateA - dateB;
                     }
+                    if (col === 'sent') {
+                        const getSentValue = (fan) => {
+                            if (!fan.sent) return 9999999999999;
+                            return fan.sentDate ? parseDate2(fan.sentDate) : 0;
+                        };
+                        const valA = getSentValue(a);
+                        const valB = getSentValue(b);
+                        return order === 'date_new' ? valB - valA : valA - valB;
+                    }
+                    // [修正] 互動標籤數量排序
                     if (col === 'interactions') return b.interactions.length - a.interactions.length;
-                    if (col === 'sent') return (a.sent === b.sent) ? 0 : (a.sent ? -1 : 1);
                 }
-                return 0;
+                return a.username.localeCompare(b.username);
             });
 
-            // 4. 產生 HTML
+            // 7. 產生 HTML
             tbody.innerHTML = displayFans.map(fan => {
                 const isInKey = existingKeys.includes(fan.username);
                 let rowClass = 'table-row';
@@ -3423,11 +4102,11 @@ if (searchTerm) {
                         checkboxClass = 'accent-emerald-500 cursor-pointer key-action-check';
                     }
                 } else if (currentKeyMode === 'edit') {
-                    // 僅編輯模式：所有框可勾選，已在名單者置頂顯示
+                    // 僅編輯模式：所有框可勾選，已在名單者特別標示(但不強制置頂)
                     checkboxDisabled = false;
                     checkboxChecked = isInKey;
                     checkboxClass = 'accent-yellow-500 cursor-pointer key-action-check';
-                    if (isInKey) rowClass += ' key-row-pinned';
+                    if (isInKey) rowClass += ' key-row-pinned'; // 僅保留顏色標示，不影響排序
                 }
 
                 const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="text-white font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || ''}</span></div>` : `-`;
@@ -3531,42 +4210,54 @@ if (searchTerm) {
 
             if (currentKeyMode === 'append') {
                 // 追加模式：僅抓取 checked 的新 checkbox
+                // 這裡只會抓到「可見且勾選」的新增者，不會影響既有名單
                 const newChecks = document.querySelectorAll('.key-action-check:checked');
                 const newUsers = Array.from(newChecks).map(cb => cb.value);
                 
                 if (newUsers.length === 0) return alert("未勾選任何新粉絲");
 
-                // 合併名單
                 const combined = new Set([...existingKeys, ...newUsers]);
                 keyPermissions[giftId] = Array.from(combined);
-                
-                // 產出格式: "user1","user2"
                 copyText = newUsers.map(u => `"${u}"`).join(','); 
 
             } else if (currentKeyMode === 'edit') {
-                // 編輯模式：抓取所有勾選者 (排除表頭全選框)
-                const allChecks = document.querySelectorAll('#keyTableBody input[type="checkbox"]:checked');
-                const allUsers = Array.from(allChecks).map(cb => cb.value);
+                // 編輯模式：需修正邏輯以「保留被篩選隱藏的既有名單」
+                
+                // 1. 取得當前「畫面上可見」的所有使用者 (包含勾選與未勾選)
+                const visibleRows = document.querySelectorAll('#keyTableBody .key-action-check');
+                const visibleUsernames = Array.from(visibleRows).map(cb => cb.value);
 
-                keyPermissions[giftId] = allUsers;
+                // 2. 取得「畫面上被勾選」的使用者
+                const checkedVisibleRows = document.querySelectorAll('#keyTableBody .key-action-check:checked');
+                const checkedUsernames = Array.from(checkedVisibleRows).map(cb => cb.value);
 
-                // 產出格式: ["user1","user2"] (JSON)
-                copyText = JSON.stringify(allUsers);
+                // 3. 找出「原本在名單內，但目前被篩選隱藏」的使用者 (這些人應該要被保留)
+                const hiddenButSelected = existingKeys.filter(user => !visibleUsernames.includes(user));
+
+                // 4. 新名單 = (隱藏且保留者) + (畫面上勾選者)
+                const finalUsers = [...hiddenButSelected, ...checkedUsernames];
+
+                keyPermissions[giftId] = finalUsers;
+                copyText = JSON.stringify(finalUsers);
             }
 
-            saveData(); // 存檔
+            saveData(); 
             
-            // 執行複製並顯示您要求的明確訊息
             navigator.clipboard.writeText(copyText).then(() => {
                  showToast("已複製清單");
             });
             
-            toggleKeyEditMaster(); // 結束並重置
+            toggleKeyEditMaster(); 
         }
 
         function handleKeySelectAll(source) {
-            document.querySelectorAll('.key-action-check').forEach(cb => {
-                if(!cb.disabled) cb.checked = source.checked;
+            // [修正] 強制只抓取 keyTableBody 內的 Checkbox，確保不選到隱藏或非當前列表的資料
+            const checkboxes = document.querySelectorAll('#keyTableBody .key-action-check');
+            checkboxes.forEach(cb => {
+                // 額外增加 offsetParent 判斷，確保該元素在畫面上是可見的 (雙重保險)
+                if(!cb.disabled && cb.offsetParent !== null) {
+                    cb.checked = source.checked;
+                }
             });
         }
 
@@ -3670,6 +4361,7 @@ if (searchTerm) {
     </script>
 </body>
 </html>
+
 
 
 
