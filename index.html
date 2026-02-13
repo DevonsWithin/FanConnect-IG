@@ -1688,23 +1688,28 @@ let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫
         // [新增] 通用雙重搜尋判斷邏輯
         function checkSearchMatch(dataStr) {
             if (!dataStr) return false;
-            const term1 = document.getElementById('globalSearch').value.toLowerCase();
-            const term2 = document.getElementById('globalSearchAnd').value.toLowerCase();
+            
+            // 取得輸入值並轉小寫，加入 trim() 去除前後空白，確保單純輸入空白時不影響邏輯
+            const term1 = document.getElementById('globalSearch').value.trim().toLowerCase();
+            const term2 = document.getElementById('globalSearchAnd').value.trim().toLowerCase();
             const isReverse = document.getElementById('searchReverse').checked;
             const target = dataStr.toLowerCase();
 
-            // 1. 主搜尋 (必須符合)
-            const match1 = target.includes(term1);
-            if (!match1) return false;
+            // 1. 主搜尋檢查 (僅在有實際輸入內容時才進行篩選)
+            if (term1 && !target.includes(term1)) {
+                return false;
+            }
 
-            // 2. 子搜尋 (若有輸入)
+            // 2. 子搜尋檢查 (僅在有實際輸入內容時才進行篩選)
             if (term2) {
                 const hasTerm2 = target.includes(term2);
-                // 若反向勾選：必須 "不包含" term2 (NOT邏輯)
-                // 若未勾選：必須 "包含" term2 (AND邏輯)
+                
+                // 若反向勾選：若資料包含關鍵字則排除 (NOT邏輯) -> 顯示不包含此關鍵字的資料
                 if (isReverse) {
                     if (hasTerm2) return false;
-                } else {
+                } 
+                // 若未勾選：若資料不包含關鍵字則排除 (AND邏輯)
+                else {
                     if (!hasTerm2) return false;
                 }
             }
