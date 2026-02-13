@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanConnect V5.3 - 粉絲滿意度管理系統</title>
+    <title>FanConnect V5.5 - 粉絲滿意度管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -93,7 +93,7 @@
             <button onclick="toggleSidebar()" class="text-white text-lg hover:text-indigo-400 w-6 text-center">
                 <i class="fas fa-bars"></i>
             </button>
-            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.3</span></span>
+            <span class="font-bold text-lg tracking-wider italic logo-text text-indigo-400">FanConnect <span class="text-xs bg-indigo-600 text-white px-1 rounded ml-1 not-italic">V5.5</span></span>
         </div>
  
         <div class="profile-section">
@@ -252,15 +252,35 @@
                         </button>
                     </div>
 
-                    <!-- 搜尋框 (移至左側) -->
-                    <div class="relative group">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
-                        <input type="text" id="globalSearch" placeholder="搜尋帳號 / 互動..."
-                               class="bg-[#222] border border-gray-700 rounded-full pl-8 pr-8 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-64 transition-all"
-                               onkeyup="handleGlobalSearch(); document.getElementById('clearSearchBtn').classList.toggle('hidden', this.value.length === 0)">
-                        <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white" title="清除搜尋">
-                            <i class="fas fa-times text-xs"></i>
-                        </button>
+                    <!-- 搜尋框 (移至左側) - 雙重邏輯搜尋 -->
+                    <div class="flex items-center gap-2">
+                        <!-- 主搜尋 -->
+                        <div class="relative group">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
+                            <input type="text" id="globalSearch" placeholder="主搜尋 (包含)..."
+                                   class="bg-[#222] border border-gray-700 rounded-l-full pl-8 pr-8 py-1.5 text-sm focus:outline-none focus:border-indigo-500 w-48 transition-all"
+                                   onkeyup="handleGlobalSearch(); document.getElementById('clearSearchBtn').classList.toggle('hidden', this.value.length === 0)">
+                            <button onclick="clearSearch()" id="clearSearchBtn" class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white" title="清除搜尋">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- AND 邏輯連接文字 -->
+                        <span class="text-[10px] text-gray-500 font-bold">AND</span>
+
+                        <!-- 子搜尋 (含反向) -->
+                        <div class="relative group flex items-center bg-[#222] border border-gray-700 rounded-r-full pr-2">
+                            <input type="text" id="globalSearchAnd" placeholder="子搜尋條件..."
+                                   class="bg-transparent border-none pl-3 py-1.5 text-sm focus:outline-none text-white w-32 placeholder-gray-600"
+                                   onkeyup="handleGlobalSearch()">
+                            
+                            <div class="h-4 w-[1px] bg-gray-700 mx-1"></div>
+                            
+                            <label class="flex items-center gap-1 cursor-pointer select-none px-1" title="勾選後排除包含此條件的資料 (NOT邏輯)">
+                                <input type="checkbox" id="searchReverse" class="accent-red-500 w-3 h-3" onchange="handleGlobalSearch()">
+                                <span class="text-[10px] text-red-400 font-bold whitespace-nowrap">反向</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -597,7 +617,7 @@
                             <input type="text" id="tmpTitle" placeholder="模板標題" class="input-dark">
                             <div class="relative">
                                 <textarea id="tmpBody" placeholder="輸入訊息內容... &#10;提示：輸入 {link} 可自動帶入生成的加密連結" class="input-dark h-32"></textarea>
-                                <div class="absolute bottom-2 right-2 text-xs text-gray-500">可用變數: {nickname}, {link}</div>
+                                <div class="absolute bottom-2 right-2 text-xs text-gray-500">可用變數: {nickname}, {account}, {link}</div>
                             </div>
                             <div class="flex gap-2">
                                 <button id="saveTmpBtn" onclick="addTemplate()" class="btn-indigo flex-1 py-2 rounded font-bold text-white">儲存模板</button>
@@ -1213,7 +1233,8 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
         let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
         let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
         let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
-        let isHeartKeyMode = false; // 暖心互動選擇模式狀態
+let isHeartKeyMode = false; // 暖心互動選擇模式狀態
+let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
 
         // [新增] 疑似重複篩選變數
         let isDuplicateMode = false;
@@ -1642,9 +1663,11 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
 
          function handleGlobalSearch() {
             const input = document.getElementById('globalSearch');
+            const inputAnd = document.getElementById('globalSearchAnd');
             const clearBtn = document.getElementById('clearSearchBtn');
             
-            if (input.value.length > 0) {
+            // 只要任一搜尋框有值，就顯示清除按鈕
+            if (input.value.length > 0 || inputAnd.value.length > 0) {
                 clearBtn.classList.remove('hidden');
             } else {
                 clearBtn.classList.add('hidden');
@@ -1662,11 +1685,38 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
             }
         }
 
+        // [新增] 通用雙重搜尋判斷邏輯
+        function checkSearchMatch(dataStr) {
+            if (!dataStr) return false;
+            const term1 = document.getElementById('globalSearch').value.toLowerCase();
+            const term2 = document.getElementById('globalSearchAnd').value.toLowerCase();
+            const isReverse = document.getElementById('searchReverse').checked;
+            const target = dataStr.toLowerCase();
+
+            // 1. 主搜尋 (必須符合)
+            const match1 = target.includes(term1);
+            if (!match1) return false;
+
+            // 2. 子搜尋 (若有輸入)
+            if (term2) {
+                const hasTerm2 = target.includes(term2);
+                // 若反向勾選：必須 "不包含" term2 (NOT邏輯)
+                // 若未勾選：必須 "包含" term2 (AND邏輯)
+                if (isReverse) {
+                    if (hasTerm2) return false;
+                } else {
+                    if (!hasTerm2) return false;
+                }
+            }
+            
+            return true;
+        }
 
         function clearSearch() {
-            const input = document.getElementById('globalSearch');
-            input.value = '';
-            handleGlobalSearch(); // 觸發重繪與隱藏按鈕
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('globalSearchAnd').value = ''; // 清除子搜尋
+            // 不清除反向勾選狀態，保留使用者偏好
+            handleGlobalSearch(); 
         }
 
 
@@ -1704,12 +1754,14 @@ let fans = JSON.parse(localStorage.getItem('fans')) || [];
                 });
             } else {
                 // 正常模式：原本的篩選邏輯
-                filteredFans = fans.filter(f => {
-                    const matchesSearch = (f.username || '').toLowerCase().includes(searchTerm) ||
-                                          (f.nickname || '').toLowerCase().includes(searchTerm) ||
-                                          (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
-                                          (f.details || '').toLowerCase().includes(searchTerm);
-                    if (!matchesSearch) return false;
+            filteredFans = fans.filter(f => {
+                // [修正] 改用 checkSearchMatch 進行雙重搜尋比對
+                // 組合所有可搜尋欄位成一個字串
+                const fullText = `${f.username} ${f.nickname || ''} ${(f.interactions || []).join(' ')} ${f.details || ''}`;
+                
+                if (!checkSearchMatch(fullText)) return false;
+
+                if (activeFilters.pending && f.sent) return false;
                     if (activeFilters.pending && f.sent) return false;
     
                     const DAYS_14_MS = 1209600000;
@@ -2944,6 +2996,9 @@ localStorage.setItem('giftPosts', '[]');
             const template = templates.find(t => t.id == tId);
             if(template && data) {
                 let content = template.body.replace(/{nickname}/g, data.nickname || data.username);
+                // [新增] 替換 {account} 為粉絲帳號
+                content = content.replace(/{account}/g, data.username);
+                
                 const link = document.getElementById('finalGeneratedLink').value;
                 if(link) content = content.replace(/{link}|{url}/g, link);
                 const msgBox = document.getElementById('modalText'); msgBox.value = content;
@@ -3978,19 +4033,25 @@ function showSection(s) {
             // 2. 有 ID，準備初始資料
             linkInput.value = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
             emptyState.classList.add('hidden');
-            const existingKeys = keyPermissions[giftId] || [];
-            document.getElementById('keyStatusText').innerText = `名單人數: ${existingKeys.length}`;
+            const savedKeys = keyPermissions[giftId] || [];
+            
+            // [顯示邏輯修正]
+            // 若在編輯/追加模式，顯示的計數應為「暫存區」的數量 (即時反應)
+            // 若在檢視模式，顯示存檔的數量
+            const countDisplay = (currentKeyMode === 'none') ? savedKeys.length : tempKeyBuffer.size;
+            document.getElementById('keyStatusText').innerText = `名單人數: ${countDisplay}`;
 
             // 全選框狀態
             selectAllBox.disabled = (currentKeyMode === 'none');
             selectAllBox.classList.toggle('cursor-not-allowed', currentKeyMode === 'none');
-            selectAllBox.checked = false;
+            // 全選框是否勾選，暫時設為 false，需複雜邏輯判斷是否全選當前頁，這裡簡化處理
+            selectAllBox.checked = false; 
 
             // 3. 決定初始資料池
             let displayFans;
             if (currentKeyMode === 'none') {
                 // 檢視模式：只顯示已在名單內的人
-                displayFans = fans.filter(f => existingKeys.includes(f.username));
+                displayFans = fans.filter(f => savedKeys.includes(f.username));
             } else {
                 // 編輯/追加模式：顯示所有人，讓使用者挑選
                 displayFans = [...fans];
@@ -4029,11 +4090,13 @@ function showSection(s) {
                 }
 
                 // D. 鑰匙名單狀態篩選
+                // [注意] 在編輯模式下，狀態應反映 "暫存區 (tempKeyBuffer)" 而非 "已存檔 (savedKeys)"
+                // 這樣使用者才能透過篩選器看到「剛剛勾選」的人
                 if (activeKeyStatusFilters.length > 0) {
-                    const isInKey = existingKeys.includes(f.username);
+                    const isInList = (currentKeyMode === 'none') ? savedKeys.includes(f.username) : tempKeyBuffer.has(f.username);
                     const matchStatus = activeKeyStatusFilters.some(s => {
-                        if (s === 'inList') return isInKey;
-                        if (s === 'notInList') return !isInKey;
+                        if (s === 'inList') return isInList;
+                        if (s === 'notInList') return !isInList;
                         return false;
                     });
                     if (!matchStatus) return false;
@@ -4042,18 +4105,13 @@ function showSection(s) {
                 return true;
             });
 
-            // 5. 關鍵字搜尋
-            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
-            if (searchTerm) {
-                displayFans = displayFans.filter(f => 
-                    (f.username || '').toLowerCase().includes(searchTerm) ||
-                    (f.nickname || '').toLowerCase().includes(searchTerm) ||
-                    (f.interactions || []).join('').toLowerCase().includes(searchTerm) ||
-                    (f.details || '').toLowerCase().includes(searchTerm)
-                );
-            }
+            // 5. [關鍵修正] 搜尋邏輯改用 checkSearchMatch
+            displayFans = displayFans.filter(f => {
+                const fullText = `${f.username} ${f.nickname || ''} ${(f.interactions || []).join(' ')} ${f.details || ''}`;
+                return checkSearchMatch(fullText);
+            });
 
-            // 6. [修正] 排序邏輯
+            // 6. 排序邏輯
             displayFans.sort((a, b) => {
                 if (activeSort) {
                     const { col, order } = activeSort;
@@ -4072,7 +4130,6 @@ function showSection(s) {
                         const valB = getSentValue(b);
                         return order === 'date_new' ? valB - valA : valA - valB;
                     }
-                    // [修正] 互動標籤數量排序
                     if (col === 'interactions') return b.interactions.length - a.interactions.length;
                 }
                 return a.username.localeCompare(b.username);
@@ -4080,33 +4137,46 @@ function showSection(s) {
 
             // 7. 產生 HTML
             tbody.innerHTML = displayFans.map(fan => {
-                const isInKey = existingKeys.includes(fan.username);
+                // [核心邏輯] 判斷是否勾選/鎖定
+                // 檢視模式：看 savedKeys
+                // 編輯/追加模式：看 tempKeyBuffer
+                const isSaved = savedKeys.includes(fan.username);
+                const isBuffered = tempKeyBuffer.has(fan.username);
+                
                 let rowClass = 'table-row';
                 let checkboxDisabled = true;
                 let checkboxChecked = false;
                 let checkboxClass = 'accent-emerald-500 cursor-not-allowed';
+                let onClickAttr = ''; // 新增點擊事件
 
-                // 根據模式設定狀態
                 if (currentKeyMode === 'none') {
-                    // 檢視模式：列表呈灰色，Checkbox 勾選但鎖死
-                    checkboxChecked = true; 
-                    rowClass += ' key-row-disabled'; 
+                    // 檢視模式
+                    checkboxChecked = true; // 因為只顯示已加入的
+                    rowClass += ' key-row-disabled';
                 } else if (currentKeyMode === 'append') {
-                    // 追加模式：已在名單者反灰(鎖死)，未在名單者可勾選
-                    if (isInKey) {
+                    // 追加模式
+                    if (isSaved) {
+                        // 已在原存檔中 -> 鎖死並勾選
                         checkboxChecked = true;
                         checkboxDisabled = true;
                         rowClass += ' key-row-pinned opacity-50';
                     } else {
+                        // 未在原存檔 -> 可操作，狀態看 Buffer
                         checkboxDisabled = false;
+                        checkboxChecked = isBuffered;
                         checkboxClass = 'accent-emerald-500 cursor-pointer key-action-check';
+                        onClickAttr = `onclick="updateKeyBuffer('${fan.username}', this.checked)"`;
+                        if (isBuffered) rowClass += ' bg-emerald-900/20'; // 視覺提示已選
                     }
                 } else if (currentKeyMode === 'edit') {
-                    // 僅編輯模式：所有框可勾選，已在名單者特別標示(但不強制置頂)
+                    // 編輯模式
                     checkboxDisabled = false;
-                    checkboxChecked = isInKey;
+                    checkboxChecked = isBuffered; // 完全依賴 Buffer
                     checkboxClass = 'accent-yellow-500 cursor-pointer key-action-check';
-                    if (isInKey) rowClass += ' key-row-pinned'; // 僅保留顏色標示，不影響排序
+                    onClickAttr = `onclick="updateKeyBuffer('${fan.username}', this.checked)"`;
+                    
+                    if (isSaved) rowClass += ' key-row-pinned'; // 原本在名單內的給予顏色標示
+                    if (isBuffered && !isSaved) rowClass += ' bg-yellow-900/20'; // 新增的給予另一種標示
                 }
 
                 const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="text-white font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || ''}</span></div>` : `-`;
@@ -4116,7 +4186,7 @@ function showSection(s) {
                 return `
                 <tr class="${rowClass}">
                     <td class="text-center sticky-col-1 bg-inherit z-10">
-                        <input type="checkbox" value="${fan.username}" ${checkboxChecked ? 'checked' : ''} ${checkboxDisabled ? 'disabled' : ''} class="${checkboxClass} w-4 h-4 transition-all">
+                        <input type="checkbox" value="${fan.username}" ${checkboxChecked ? 'checked' : ''} ${checkboxDisabled ? 'disabled' : ''} ${onClickAttr} class="${checkboxClass} w-4 h-4 transition-all">
                     </td>
                     <td class="font-medium sticky-col-2 bg-inherit z-10 text-emerald-100">${fan.username}</td>
                     <td class="text-gray-400 text-xs">${fan.nickname || '-'}</td>
@@ -4135,6 +4205,17 @@ function showSection(s) {
             }).join('');
         }
 
+        // [新增] 處理單一勾選狀態變更 (記憶功能)
+        function updateKeyBuffer(username, isChecked) {
+            if (isChecked) {
+                tempKeyBuffer.add(username);
+            } else {
+                tempKeyBuffer.delete(username);
+            }
+            // 更新計數顯示
+            document.getElementById('keyStatusText').innerText = `名單人數: ${tempKeyBuffer.size}`;
+        }
+
         // 4. [按鈕邏輯] 切換主編輯模式
         function toggleKeyEditMaster() {
             const giftId = document.getElementById('keyGiftSelect').value;
@@ -4146,6 +4227,8 @@ function showSection(s) {
             // 如果已在編輯中，則關閉 (Reset)
             if (currentKeyMode !== 'none') {
                 currentKeyMode = 'none';
+                tempKeyBuffer.clear(); // 清空暫存
+                
                 subBtns.classList.add('hidden');
                 masterBtn.classList.remove('flashing-master', 'bg-red-600');
                 masterBtn.classList.add('bg-gray-700');
@@ -4166,8 +4249,11 @@ function showSection(s) {
             subBtns.classList.remove('hidden');
         }
 
-        // 5. [按鈕邏輯] 切換子模式 (追加/僅編輯)
+        // 5. [按鈕邏輯] 切換子模式 (初始化暫存區)
         function setKeySubMode(mode) {
+            const giftId = document.getElementById('keyGiftSelect').value;
+            const existingKeys = keyPermissions[giftId] || [];
+            
             const masterBtn = document.getElementById('btnKeyMaster');
             const btnAppend = document.getElementById('btnKeyAppend');
             const btnEdit = document.getElementById('btnKeyEdit');
@@ -4181,8 +4267,13 @@ function showSection(s) {
             currentKeyMode = mode;
             masterBtn.classList.remove('flashing-master'); // 主按鈕停閃
 
-            // 設定狀態與閃爍
+            // [核心] 初始化 Buffer
+            tempKeyBuffer.clear();
             if (mode === 'append') {
+                // 追加模式：暫存區先包含所有已存在的 (因為UI上這些是勾選且鎖定的)
+                // 實際上使用者只能操作 "新增加" 的部分，但為了計數正確，我們先載入
+                existingKeys.forEach(k => tempKeyBuffer.add(k));
+                
                 btnAppend.classList.add('flashing-append', 'opacity-100');
                 btnAppend.classList.remove('opacity-50');
                 btnAppend.innerHTML = '<i class="fas fa-check mr-1"></i>確認追加'; 
@@ -4191,6 +4282,9 @@ function showSection(s) {
                 btnEdit.classList.add('opacity-50');
                 btnEdit.innerHTML = '<i class="fas fa-edit mr-1"></i>僅編輯';
             } else {
+                // 編輯模式：載入現有名單到暫存區，供使用者增刪
+                existingKeys.forEach(k => tempKeyBuffer.add(k));
+
                 btnEdit.classList.add('flashing-edit', 'opacity-100');
                 btnEdit.classList.remove('opacity-50');
                 btnEdit.innerHTML = '<i class="fas fa-check mr-1"></i>確認存檔'; 
@@ -4199,64 +4293,76 @@ function showSection(s) {
                 btnAppend.classList.add('opacity-50');
                 btnAppend.innerHTML = '<i class="fas fa-plus mr-1"></i>追加並產出';
             }
-            renderKeyTable(); // 重繪 (觸發開放池與置頂)
+            renderKeyTable(); 
         }
 
-        // 6. [核心功能] 完成並產出
+        // 6. [核心功能] 完成並產出 (從 Buffer 存檔)
         function finishKeyAction() {
             const giftId = document.getElementById('keyGiftSelect').value;
-            const existingKeys = keyPermissions[giftId] || [];
             let copyText = "";
 
+            // 無論是 append 還是 edit，最終名單都在 tempKeyBuffer 中
+            // append 模式下，tempKeyBuffer 包含 (原有鎖定) + (新勾選)
+            // edit 模式下，tempKeyBuffer 包含 (原有 - 取消) + (新勾選)
+            
+            const finalUsers = Array.from(tempKeyBuffer);
+            keyPermissions[giftId] = finalUsers;
+
             if (currentKeyMode === 'append') {
-                // 追加模式：僅抓取 checked 的新 checkbox
-                // 這裡只會抓到「可見且勾選」的新增者，不會影響既有名單
-                const newChecks = document.querySelectorAll('.key-action-check:checked');
-                const newUsers = Array.from(newChecks).map(cb => cb.value);
+                // 追加模式下，使用者通常只想複製「新增的部分」
+                // 找出不在原本 savedKeys 裡的人
+                const savedKeys = JSON.parse(localStorage.getItem('keyPermissions') || '{}')[giftId] || []; // 這裡要讀取舊檔比較嗎？不，因為我們已經更新了 keyPermissions
+                // 應該讀取操作前的狀態比較準確，但為了簡化，我們假設 "剛剛勾選的操作" 是新增的
+                // 這裡改為：輸出所有名單，或者我們比較一下 Buffer 和 操作前的差異？
+                // 為了符合一般直覺，追加模式通常是想拿新名單去發送，這裡我們複製 "全部有效名單" 或者 "僅新增名單"
+                // 根據舊有邏輯，追加模式是複製 "新勾選的人"。
+                // 但因為 Buffer 已經混在一起了，我們用 Set 差集來找
                 
-                if (newUsers.length === 0) return alert("未勾選任何新粉絲");
-
-                const combined = new Set([...existingKeys, ...newUsers]);
-                keyPermissions[giftId] = Array.from(combined);
-                copyText = newUsers.map(u => `"${u}"`).join(','); 
-
-            } else if (currentKeyMode === 'edit') {
-                // 編輯模式：需修正邏輯以「保留被篩選隱藏的既有名單」
+                // 重新讀取一次舊檔 (注意：這時 keyPermissions 已經被覆蓋了，所以這邏輯有瑕疵)
+                // 修正：finishKeyAction 應該先計算差異，再存檔
                 
-                // 1. 取得當前「畫面上可見」的所有使用者 (包含勾選與未勾選)
-                const visibleRows = document.querySelectorAll('#keyTableBody .key-action-check');
-                const visibleUsernames = Array.from(visibleRows).map(cb => cb.value);
-
-                // 2. 取得「畫面上被勾選」的使用者
-                const checkedVisibleRows = document.querySelectorAll('#keyTableBody .key-action-check:checked');
-                const checkedUsernames = Array.from(checkedVisibleRows).map(cb => cb.value);
-
-                // 3. 找出「原本在名單內，但目前被篩選隱藏」的使用者 (這些人應該要被保留)
-                const hiddenButSelected = existingKeys.filter(user => !visibleUsernames.includes(user));
-
-                // 4. 新名單 = (隱藏且保留者) + (畫面上勾選者)
-                const finalUsers = [...hiddenButSelected, ...checkedUsernames];
-
-                keyPermissions[giftId] = finalUsers;
+            } 
+            
+            // 修正順序：
+            // 1. 計算要複製的文字
+            if (currentKeyMode === 'append') {
+                // 為了找出新增者，我們需要知道原始名單
+                // 因為我們已經沒辦法輕易拿到"修改前"的狀態 (除非存檔前做)，
+                // 這裡改為：輸出 *當前 Buffer 中所有尚未在原始存檔中的人*
+                // 但因為 keyPermissions 還沒存檔，我們可以先讀取
+                const oldPerms = JSON.parse(localStorage.getItem('keyPermissions')) || {};
+                const oldList = oldPerms[giftId] || [];
+                
+                const newAdded = finalUsers.filter(u => !oldList.includes(u));
+                if (newAdded.length === 0 && finalUsers.length > oldList.length) {
+                    // 防呆
+                    copyText = JSON.stringify(finalUsers);
+                } else {
+                    copyText = newAdded.map(u => `"${u}"`).join(',');
+                }
+            } else {
+                // 編輯模式：複製完整 JSON
                 copyText = JSON.stringify(finalUsers);
             }
 
+            // 2. 存檔
             saveData(); 
             
             navigator.clipboard.writeText(copyText).then(() => {
-                 showToast("已複製清單");
+                 showToast("已複製清單/新增項目");
             });
             
-            toggleKeyEditMaster(); 
+            toggleKeyEditMaster(); // 結束編輯並重置
         }
 
         function handleKeySelectAll(source) {
-            // [修正] 強制只抓取 keyTableBody 內的 Checkbox，確保不選到隱藏或非當前列表的資料
+            // [修正] 全選功能：針對目前「搜尋結果中顯示的資料」進行 Buffer 更新
             const checkboxes = document.querySelectorAll('#keyTableBody .key-action-check');
             checkboxes.forEach(cb => {
-                // 額外增加 offsetParent 判斷，確保該元素在畫面上是可見的 (雙重保險)
+                // 只處理可見且未禁用的
                 if(!cb.disabled && cb.offsetParent !== null) {
                     cb.checked = source.checked;
+                    updateKeyBuffer(cb.value, source.checked); // 同步更新 Buffer
                 }
             });
         }
@@ -4361,6 +4467,7 @@ function showSection(s) {
     </script>
 </body>
 </html>
+
 
 
 
