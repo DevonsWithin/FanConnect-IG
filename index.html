@@ -3091,6 +3091,10 @@ function showSection(s) {
             if(s==='giftPosts') renderGiftPosts();
             if(s==='heartStats') renderHeartData();
             if(s==='history') renderHistory(); // 渲染動態紀錄
+            
+            // [新增] 當切換回手動紀錄頁面時，才恢復為當天日期
+            if(s==='manual') initDateInput();
+
             if(s==='manual' || s==='heartStats') updateUsernameDatalist();
         }
         function closeModal() { document.getElementById('msgModal').classList.add('hidden');
@@ -3552,7 +3556,8 @@ function showSection(s) {
 
 
             usernameInput.value = ''; document.getElementById('manualNickname').value = '';
-            document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); initDateInput();
+            document.getElementById('manualDetails').value = ''; document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false); 
+            // initDateInput(); // [修改] 移除此行，新增後保留原本日期
             saveData(); // 使用全局存檔
             renderTable();
         }
@@ -4472,6 +4477,7 @@ function showSection(s) {
     </script>
 </body>
 </html>
+
 
 
 
