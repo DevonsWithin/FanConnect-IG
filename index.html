@@ -1754,8 +1754,9 @@ let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫
             if (isDuplicateMode) {
                 // 重複模式：直接使用篩選結果，不套用其他過濾器 (除了搜尋)
                 filteredFans = duplicateResults.filter(f => {
-                    return (f.username || '').toLowerCase().includes(searchTerm) ||
-                           (f.nickname || '').toLowerCase().includes(searchTerm);
+                    // [修正] 改用 checkSearchMatch 進行雙重搜尋比對
+                    const fullText = `${f.username} ${f.nickname || ''} ${(f.interactions || []).join(' ')} ${f.details || ''}`;
+                    return checkSearchMatch(fullText);
                 });
             } else {
                 // 正常模式：原本的篩選邏輯
@@ -1979,14 +1980,11 @@ let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫
             // [修改] 決定資料來源
             let displayData = isDuplicateMode ? [...duplicateResults] : [...heartData];
             
-            if (searchTerm) {
-                displayData = displayData.filter(d => 
-                    (d.username || '').toLowerCase().includes(searchTerm) ||
-                    (d.nickname || '').toLowerCase().includes(searchTerm) ||
-                    (d.content || '').toLowerCase().includes(searchTerm) ||
-                    (d.responseItem || '').toLowerCase().includes(searchTerm)
-                );
-            }
+            // [修正] 改用 checkSearchMatch 進行雙重搜尋比對
+            displayData = displayData.filter(d => {
+                const fullText = `${d.username || ''} ${d.nickname || ''} ${d.content || ''} ${d.responseItem || ''}`;
+                return checkSearchMatch(fullText);
+            });
 
             // [修改] 重複模式下不以時間排序，而是維持群組排序 (dupGroupId)
             if (!isDuplicateMode) {
@@ -3317,14 +3315,12 @@ function showSection(s) {
             }
 
             // C. 搜尋過濾
-            if (searchTerm) {
-                displayData = displayData.filter(h => 
-                    (h.username || '').toLowerCase().includes(searchTerm) ||
-                    (getFanNickname(h.username) || '').toLowerCase().includes(searchTerm) || // 搜尋最新暱稱
-                    (h.type || '').toLowerCase().includes(searchTerm) ||
-                    (h.details || '').toLowerCase().includes(searchTerm)
-                );
-            }
+            // [修正] 改用 checkSearchMatch 進行雙重搜尋比對
+            displayData = displayData.filter(h => {
+                const currentNick = getFanNickname(h.username) || '';
+                const fullText = `${h.username || ''} ${currentNick} ${h.type || ''} ${h.details || ''}`;
+                return checkSearchMatch(fullText);
+            });
 
             // D. 排序
             if (!isDuplicateMode) {
@@ -4477,6 +4473,7 @@ function showSection(s) {
     </script>
 </body>
 </html>
+
 
 
 
