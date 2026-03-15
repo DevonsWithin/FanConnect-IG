@@ -3845,67 +3845,92 @@ function showSection(s) {
 
 
 
-        function compareData(officialUsers) {
-            const currentUsers = fans.map(f => f.username);
-            const newUsers = officialUsers.filter(u => !currentUsers.includes(u));
-            
-            pendingNewFans = newUsers.map(u => ({ username: u, nickname: '', lang: '中' }));
-            
-            const unfollowedUsers = fans.filter(f => {
-                const isMarkedFan = f.interactions.includes('粉絲');
-                return isMarkedFan && !officialUsers.includes(f.username);
-            });
-            
-            pendingUnfollowed = unfollowedUsers;
-            renderCompareResults();
-        }
+        // --- [ 修正版 compareData ] ---
+function compareData(officialUsers) {
+    // 1. 處理官方名單：統一轉小寫 + 去除隱藏空白 (解決完全沒出現的問題)
+    const officialUsersLower = officialUsers.map(u => u.toLowerCase().trim());
+
+    // 2. 找出新粉絲 (邏輯優化)
+    const currentUsersLower = fans.map(f => (f.username || "").toLowerCase().trim());
+    const newUsers = officialUsers.filter(u => {
+        const uLower = u.toLowerCase().trim();
+        return uLower !== "" && !currentUsersLower.includes(uLower);
+    });
+    pendingNewFans = newUsers.map(u => ({ username: u, nickname: '', lang: '中' }));
+
+    // 3. 找出退追者：嚴格執行「粉絲標籤」鐵律
+    pendingUnfollowed = fans.filter(f => {
+        // 鐵律：系統內必須有「粉絲」標籤才列入比對 [cite: 1, 229]
+        const isMarkedFan = f.interactions && f.interactions.includes('粉絲');
+        if (!isMarkedFan) return false;
+
+        // 比對：不在官方名單中的人 [cite: 1, 46]
+        const sysNameLower = (f.username || "").toLowerCase().trim();
+        return !officialUsersLower.includes(sysNameLower);
+    });
+
+    renderCompareResults();
+}
 
 
 
 
-        function renderCompareResults() {
-            document.getElementById('newFansCount').innerText = pendingNewFans.length;
-            const newBody = document.getElementById('newFansBody');
-            if(pendingNewFans.length > 0) {
-                document.getElementById('newFansResult').classList.remove('hidden');
-                newBody.innerHTML = pendingNewFans.map((u, idx) => `
-                    <tr class="border-b border-white/5 hover:bg-white/5">
-                        <td class="py-2 font-bold text-green-300">${u.username}</td>
-                        <td><input type="text" onchange="updatePendingNewFan(${idx}, 'nickname', this.value)" placeholder="暱稱" class="bg-black/30 border border-gray-600 rounded px-2 py-1 text-xs w-24"></td>
-                        <td>
-                            <select onchange="updatePendingNewFan(${idx}, 'lang', this.value)" class="bg-black/30 border border-gray-600 rounded px-1 py-1 text-xs">
-                                <option value="中">中</option>
-                                <option value="英">英</option>
-                            </select>
-                        </td>
-                        <td class="text-xs text-gray-400">待加入</td>
-                    </tr>
-                `).join('');
-            } else {
-                document.getElementById('newFansResult').classList.add('hidden');
-            }
+        // --- [ 修正版 renderCompareResults ] ---
+function renderCompareResults() {
+    document.getElementById('newFansCount').innerText = pendingNewFans.length;
+    document.getElementById('unfollowedCount').innerText = pendingUnfollowed.length;
+
+    // A. 渲染新粉絲
+    const newBody = document.getElementById('newFansBody');
+    newBody.innerHTML = pendingNewFans.map((f, idx) => `
+        <tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-2 text-center">
+                <input type="checkbox" class="new-fan-checkbox accent-green-500 w-4 h-4 cursor-pointer" value="${idx}" checked>
+            </td>
+            <td class="py-2 font-bold text-green-300">
+                <a href="https://www.instagram.com/${f.username}/" target="_blank" class="hover:underline flex items-center">
+                    <i class="fab fa-instagram mr-1 text-xs"></i>${f.username}
+                </a>
+            </td>
+            <td><input type="text" onchange="pendingNewFans[${idx}].nickname=this.value" placeholder="輸入暱稱" class="bg-black/40 border border-gray-700 rounded px-2 py-1 text-xs w-24 text-white"></td>
+            <td><select onchange="pendingNewFans[${idx}].lang=this.value" class="bg-black/40 border border-gray-700 rounded px-2 py-1 text-xs text-white">
+                <option value="中">中</option><option value="英">英</option></select></td>
+            <td><span class="text-[10px] bg-green-900/30 text-green-400 px-2 py-1 rounded">新加入資料庫</span></td>
+        </tr>
+    `).join('');
+
+    // B. 渲染退追蹤 (對應你的 5 個 th 欄位)
+    const unfBody = document.getElementById('unfollowedBody');
+    unfBody.innerHTML = pendingUnfollowed.map((f, idx) => `
+        <tr class="border-b border-white/5 hover:bg-white/5">
+            <td class="py-2 text-center">
+                <input type="checkbox" class="unfollow-checkbox accent-red-500 w-4 h-4 cursor-pointer" value="${idx}" checked>
+            </td>
+            <td class="py-2 font-bold text-red-300">
+                <a href="https://www.instagram.com/${f.username}/" target="_blank" class="hover:underline flex items-center">
+                    <i class="fab fa-instagram mr-1 text-xs"></i>${f.username}
+                </a>
+            </td>
+            <td class="text-gray-400 text-xs">${f.nickname || '-'}</td>
+            <td class="text-gray-500 text-xs">${f.latestDate || '-'}</td>
+            <td><span class="text-[10px] bg-red-900/30 text-red-300 px-2 py-1 rounded border border-red-500/30">將移除「粉絲」標籤</span></td>
+        </tr>
+    `).join('');
+
+    // 控制區塊顯示
+    document.getElementById('newFansResult').classList.toggle('hidden', pendingNewFans.length === 0);
+    document.getElementById('unfollowedResult').classList.toggle('hidden', pendingUnfollowed.length === 0);
+}
 
 
 
-
-            document.getElementById('unfollowedCount').innerText = pendingUnfollowed.length;
-            const unfBody = document.getElementById('unfollowedBody');
-            if(pendingUnfollowed.length > 0) {
-                document.getElementById('unfollowedResult').classList.remove('hidden');
-                unfBody.innerHTML = pendingUnfollowed.map(f => `
-                    <tr class="border-b border-white/5 hover:bg-white/5">
-                        <td class="py-2 font-bold text-red-300">${f.username}</td>
-                        <td class="text-gray-400 text-xs">${f.nickname || '-'}</td>
-                        <td class="text-gray-500 text-xs">${f.latestDate || '-'}</td>
-                        <td><span class="text-xs bg-red-900/50 text-red-300 px-2 py-1 rounded border border-red-500/30">將移除「粉絲」標籤</span></td>
-                    </tr>
-                `).join('');
-            } else {
-                document.getElementById('unfollowedResult').classList.add('hidden');
-            }
-        }
-
-
+// 全選控制邏輯
+function toggleAllCompare(type, isChecked) {
+    const className = type === 'new' ? '.new-fan-checkbox' : '.unfollow-checkbox';
+    document.querySelectorAll(className).forEach(cb => {
+        cb.checked = isChecked;
+    });
+}
 
 
         function updatePendingNewFan(idx, field, value) {
@@ -3946,23 +3971,33 @@ function showSection(s) {
 
 
         function confirmUnfollowed() {
-            if(!confirm(`確定更新 ${pendingUnfollowed.length} 位退追狀態？\n(將移除「粉絲」標籤)`)) return;
-            
-            const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
-            pendingUnfollowed.forEach(u => {
-                const fan = fans.find(f => f.id === u.id);
-                if(fan) {
-                    fan.interactions = fan.interactions.filter(t => t !== '粉絲');
-                    // 更新參數順序
-                    addHistoryLog(fan.username, fan.nickname, '退追', nowStr, '官方資料比對移除粉絲標籤');
-                }
-            });
-            
-            saveData();
-            pendingUnfollowed = [];
-            renderCompareResults();
-            showToast('已更新退追狀態');
+    // 1. 抓取目前畫面上有被勾選的索引
+    const checkedBoxes = Array.from(document.querySelectorAll('.unfollow-checkbox:checked')).map(cb => parseInt(cb.value));
+    
+    if(checkedBoxes.length === 0) return alert("請至少勾選一位要處理的退追人員");
+
+    if(!confirm(`確定要將勾選的 ${checkedBoxes.length} 位人員移除「粉絲」標籤？`)) return;
+
+    const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
+    
+    // 2. 篩選出「要執行的」與「要保留在畫面上的」
+    const selected = pendingUnfollowed.filter((_, idx) => checkedBoxes.includes(idx));
+    pendingUnfollowed = pendingUnfollowed.filter((_, idx) => !checkedBoxes.includes(idx));
+
+    // 3. 執行移除標籤
+    selected.forEach(u => {
+        const fan = fans.find(f => f.id === u.id);
+        if(fan) {
+            fan.interactions = fan.interactions.filter(t => t !== '粉絲');
+            addHistoryLog(fan.username, fan.nickname, '退追', nowStr, '官方比對：確定退追');
         }
+    });
+
+    saveData();
+    renderCompareResults(); // 刷新比較表格
+    renderTable();          // 刷新主表格
+    showToast(`已完成 ${selected.length} 位人員處理`);
+}
 
 
 
@@ -4473,6 +4508,8 @@ function showSection(s) {
     </script>
 </body>
 </html>
+
+
 
 
 
