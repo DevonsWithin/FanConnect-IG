@@ -852,6 +852,9 @@
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
+                                        <th width="5%" class="sticky top-0 bg-[#202020] z-20 text-center">
+                                            <input type="checkbox" onclick="toggleAllCompare('new', this.checked)" class="accent-green-500 w-4 h-4 cursor-pointer" checked title="全選/取消全選">
+                                        </th>
                                         <th class="sticky top-0 bg-[#202020] z-20">帳號名稱</th>
                                         <th class="sticky top-0 bg-[#202020] z-20">設定暱稱</th>
                                         <th class="sticky top-0 bg-[#202020] z-20">語系</th>
@@ -877,6 +880,9 @@
                             <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr>
+                                        <th width="5%" class="sticky top-0 bg-[#202020] z-20 text-center">
+                                            <input type="checkbox" onclick="toggleAllCompare('unfollow', this.checked)" class="accent-red-500 w-4 h-4 cursor-pointer" checked title="全選/取消全選">
+                                        </th>
                                         <th class="sticky top-0 bg-[#202020] z-20">帳號名稱</th>
                                         <th class="sticky top-0 bg-[#202020] z-20">目前暱稱</th>
                                         <th class="sticky top-0 bg-[#202020] z-20">最後互動</th>
@@ -3941,10 +3947,19 @@ function toggleAllCompare(type, isChecked) {
 
 
         function confirmNewFans() {
-            if(!confirm(`確定加入 ${pendingNewFans.length} 位新粉絲？`)) return;
+            // 1. 抓取目前畫面上有被勾選的索引
+            const checkedBoxes = Array.from(document.querySelectorAll('.new-fan-checkbox:checked')).map(cb => parseInt(cb.value));
+            if(checkedBoxes.length === 0) return alert("請至少勾選一位要加入的新粉絲");
+
+            if(!confirm(`確定加入勾選的 ${checkedBoxes.length} 位新粉絲？`)) return;
             const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
             
-            pendingNewFans.forEach(u => {
+            // 2. 篩選出「要執行的」與「要保留在畫面上的」
+            const selected = pendingNewFans.filter((_, idx) => checkedBoxes.includes(idx));
+            pendingNewFans = pendingNewFans.filter((_, idx) => !checkedBoxes.includes(idx));
+
+            // 3. 執行加入邏輯
+            selected.forEach(u => {
                 fans.push({
                     id: Date.now() + Math.random(),
                     username: u.username,
@@ -3962,9 +3977,9 @@ function toggleAllCompare(type, isChecked) {
             });
             
             saveData();
-            pendingNewFans = [];
-            renderCompareResults();
-            showToast('已加入新粉絲');
+            renderCompareResults(); // 刷新比較表格
+            renderTable();          // 刷新主表格 (確保新粉絲即時顯示)
+            showToast(`已加入 ${selected.length} 位新粉絲`);
         }
 
 
@@ -4508,6 +4523,7 @@ function toggleAllCompare(type, isChecked) {
     </script>
 </body>
 </html>
+
 
 
 
