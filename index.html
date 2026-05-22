@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -455,17 +455,18 @@
 
             <!-- 右側區域：粉絲人數 + 功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
+                <!-- [新增] 手動同步按鈕 -->
+                <button id="btnManualSync" onclick="manualSyncToCloud()" class="bg-indigo-900/50 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap border border-indigo-500/30">
+                    <i id="iconManualSync" class="fas fa-sync-alt"></i> 備份至雲端
+                </button>
+
+                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
+
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
                 </div>
 
-
-
-
                 <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
-
-
-
 
                 <!-- [新增] 疑似重複篩選按鈕 -->
                 <button id="btnDuplicateCheck" onclick="openDuplicateModal()" class="btn-cyan px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap">
@@ -1704,70 +1705,49 @@ let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; /
 let isHeartKeyMode = false; // 暖心互動選擇模式狀態
 let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
 
-// 雲端同步鎖，避免短時間內重複連線
+// 雲端同步鎖
 let isSyncing = false;
 
-// [雲端核心 1] 從 Google Sheets 下載並同步更新至最新狀態
-async function loadFromCloud() {
-    try {
-        showToast("☁️ 正在與雲端同步資料中...");
-        const response = await fetch(GAS_API_URL);
-        const cloudData = await response.json();
-        
-        if (cloudData) {
-            if (cloudData.fans) fans = JSON.parse(cloudData.fans);
-            if (cloudData.templates) templates = JSON.parse(cloudData.templates);
-            if (cloudData.igPosts) igPosts = JSON.parse(cloudData.igPosts);
-            if (cloudData.giftPosts) giftPosts = JSON.parse(cloudData.giftPosts);
-            if (cloudData.heartData) heartData = JSON.parse(cloudData.heartData);
-            if (cloudData.historyData) historyData = JSON.parse(cloudData.historyData);
-            if (cloudData.keyPermissions) keyPermissions = JSON.parse(cloudData.keyPermissions);
-            
-            // 下載成功後，即時覆寫本地快取，確保離線時有最新資料可用
-            localStorage.setItem('fans', JSON.stringify(fans));
-            localStorage.setItem('templates', JSON.stringify(templates));
-            localStorage.setItem('igPosts', JSON.stringify(igPosts));
-            localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
-            localStorage.setItem('heartData', JSON.stringify(heartData));
-            localStorage.setItem('historyData', JSON.stringify(historyData));
-            localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
-            
-            showToast("☁️ 雲端同步成功！已載入最新資料");
-        }
-    } catch (error) {
-        console.error("雲端載入失敗，將退回使用本地快取:", error);
-        showToast("⚠️ 雲端同步失敗，已載入本地離線快取資料");
-    }
-}
-
-// [雲端核心 2] 將本地最新快照異步上傳至 Google Sheets 雲端備份
-async function syncToCloud() {
+// [純手動同步] 只有在按下按鈕時，將畫面上的資料「單向推播」至雲端備份，絕不自動下載或覆蓋
+async function manualSyncToCloud() {
     if (isSyncing) return;
+    
+    // 多一層防護，讓您確認
+    if (!confirm("即將以「目前的資料」覆蓋雲端試算表備份，確認同步嗎？")) return;
+
     isSyncing = true;
+    const btn = document.getElementById('btnManualSync');
+    const icon = document.getElementById('iconManualSync');
+    if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
+    if (icon) icon.classList.add('fa-spin'); // 讓圈圈圖示轉動
+
+    showToast("☁️ 雲端備份上傳中，請稍候...");
+    
     try {
         const payload = {
-            fans: JSON.stringify(fans),
-            templates: JSON.stringify(templates),
-            igPosts: JSON.stringify(igPosts),
-            giftPosts: JSON.stringify(giftPosts),
-            heartData: JSON.stringify(heartData),
-            historyData: JSON.stringify(historyData),
-            keyPermissions: JSON.stringify(keyPermissions)
+            fans: localStorage.getItem('fans') || '[]',
+            templates: localStorage.getItem('templates') || '[]',
+            igPosts: localStorage.getItem('igPosts') || '[]',
+            giftPosts: localStorage.getItem('giftPosts') || '[]',
+            heartData: localStorage.getItem('heartData') || '[]',
+            historyData: localStorage.getItem('historyData') || '[]',
+            keyPermissions: localStorage.getItem('keyPermissions') || '{}'
         };
         
-        // 使用 no-cors 模式確保能跨域順暢將資料推送到 Apps Script Web App
         await fetch(GAS_API_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        console.log("☁️ 雲端同步完成");
+        showToast("✅ 同步完成！目前資料已安全備份至雲端。");
     } catch (error) {
         console.error("雲端同步失敗:", error);
-        showToast("⚠️ 雲端備份未成功（請檢查網路連線狀態）");
+        showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
     } finally {
         isSyncing = false;
+        if (btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        if (icon) icon.classList.remove('fa-spin'); // 停止轉動
     }
 }
 
@@ -2108,7 +2088,7 @@ async function syncToCloud() {
         const MAX_HISTORY = 50;
         let isUndoRedoAction = false;
  
-        // 紀錄狀態到歷史 (全面升級：紀錄所有資料表狀態 + 背景雲端同步)
+        // 紀錄狀態到歷史 (全面升級：紀錄所有資料表狀態)
         function saveData(recordHistory = true) {
             if (recordHistory) {
                 // 建立快照：讀取 LocalStorage 中的「操作前狀態」
@@ -2127,7 +2107,7 @@ async function syncToCloud() {
                 if (historyStack.length > MAX_HISTORY) historyStack.shift();
                 redoStack = [];
             }
-            // 將「操作後狀態」寫入 LocalStorage
+            // 將「操作後狀態」純粹寫入本地 LocalStorage (移除自動雲端同步)
             localStorage.setItem('fans', JSON.stringify(fans));
             localStorage.setItem('igPosts', JSON.stringify(igPosts));
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
@@ -2137,9 +2117,6 @@ async function syncToCloud() {
             // [關鍵修復] 同步寫入篩選狀態
             localStorage.setItem('isDuplicateMode', isDuplicateMode);
             localStorage.setItem('duplicateResults', JSON.stringify(duplicateResults));
-
-            // 自動異步同步至雲端試算表資料庫
-            syncToCloud();
         }
  
         function undo() {
@@ -6398,14 +6375,11 @@ function toggleAllCompare(type, isChecked) {
 
 
 
-        window.onload = async () => {
+        window.onload = () => {
             loadProfile();
             initDateInput();
             
-            // 系統啟動時，優先從 Google Sheets 資料庫同步最新版本
-            await loadFromCloud();
-            
-            // 同步完畢後，執行介面渲染，保證呈現最新雲端數據
+            // 系統啟動時，絕對只讀取本地瀏覽器快取 (切斷所有外部自動下載)
             renderTable();
             renderTemplateList();
             renderIgPosts();
@@ -6415,3 +6389,4 @@ function toggleAllCompare(type, isChecked) {
     </script>
 </body>
 </html>
+
