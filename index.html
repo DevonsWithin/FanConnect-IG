@@ -1503,209 +1503,62 @@
         <div class="p-3 border-t border-white/10 flex justify-end bg-[#252525]"><p class="text-[10px] text-gray-500">提示：點擊 X 關閉視窗</p></div>
     </div>
  
-    <script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 綁定 Google Apps Script 專屬 API 端點網址
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzVV-k20jbNMXdK9FeZyOd3NzeQ3UPB7G-ENOMzZs2I5RAFDk-FzcxyXqpkHL5S-1Nl/exec';
-
-let fans = JSON.parse(localStorage.getItem('fans')) || [];
-let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
-let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
-let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
-let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
-let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
-let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
-let isHeartKeyMode = false; // 暖心互動選擇模式狀態
-let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
-
-// 綁定 Google Apps Script 專屬 API 端點網址
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzVV-k20jbNMXdK9FeZyOd3NzeQ3UPB7G-ENOMzZs2I5RAFDk-FzcxyXqpkHL5S-1Nl/exec';
-
-// 雲端同步鎖
-let isSyncing = false;
-
-// [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
-async function manualSyncToCloud() {
-    if (isSyncing) return;
-    
-    if (!confirm("⚠️ 確認要以「目前的畫面資料」覆蓋雲端試算表備份嗎？")) return;
-
-    isSyncing = true;
-    const icon = document.getElementById('iconManualSync');
-    if (icon) icon.classList.add('fa-spin'); // 讓左側選單的圈圈圖示轉動
-
-    showToast("☁️ 雲端備份上傳中，請稍候...");
-    
-    try {
-        const payload = {
-            fans: localStorage.getItem('fans') || '[]',
-            templates: localStorage.getItem('templates') || '[]',
-            igPosts: localStorage.getItem('igPosts') || '[]',
-            giftPosts: localStorage.getItem('giftPosts') || '[]',
-            heartData: localStorage.getItem('heartData') || '[]',
-            historyData: localStorage.getItem('historyData') || '[]',
-            keyPermissions: localStorage.getItem('keyPermissions') || '{}'
-        };
+<script>
+        // 綁定 Google Apps Script 專屬 API 端點網址
+        const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzVV-k20jbNMXdK9FeZyOd3NzeQ3UPB7G-ENOMzZs2I5RAFDk-FzcxyXqpkHL5S-1Nl/exec';
+
+        let fans = JSON.parse(localStorage.getItem('fans')) || [];
+        let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
+        let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
+        let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
+        let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
+        let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+        let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; 
         
-        await fetch(GAS_API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        showToast("✅ 同步完成！目前資料已安全備份至雲端。");
-    } catch (error) {
-        console.error("雲端同步失敗:", error);
-        showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
-    } finally {
-        isSyncing = false;
-        if (icon) icon.classList.remove('fa-spin'); // 停止轉動
-    }
-}
+        let isHeartKeyMode = false; // 暖心互動選擇模式狀態
+        let tempKeyBuffer = new Set(); // 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
 
-        // [新增] 疑似重複篩選變數
-        let isDuplicateMode = false;
+        // 雲端同步鎖
+        let isSyncing = false;
 
-// [純手動同步] 只有在按下按鈕時，將畫面上的資料「單向推播」至雲端備份，絕不自動下載或覆蓋
-async function manualSyncToCloud() {
-    if (isSyncing) return;
-    
-    // 多一層防護，讓您確認
-    if (!confirm("即將以「目前的資料」覆蓋雲端試算表備份，確認同步嗎？")) return;
+        // [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
+        async function manualSyncToCloud() {
+            if (isSyncing) return;
+            
+            if (!confirm("⚠️ 確認要以「目前的畫面資料」覆蓋雲端試算表備份嗎？")) return;
 
-    isSyncing = true;
-    const btn = document.getElementById('btnManualSync');
-    const icon = document.getElementById('iconManualSync');
-    if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
-    if (icon) icon.classList.add('fa-spin'); // 讓圈圈圖示轉動
+            isSyncing = true;
+            const icon = document.getElementById('iconManualSync');
+            if (icon) icon.classList.add('fa-spin'); // 讓圈圈圖示轉動
 
-    showToast("☁️ 雲端備份上傳中，請稍候...");
-    
-    try {
-        const payload = {
-            fans: localStorage.getItem('fans') || '[]',
-            templates: localStorage.getItem('templates') || '[]',
-            igPosts: localStorage.getItem('igPosts') || '[]',
-            giftPosts: localStorage.getItem('giftPosts') || '[]',
-            heartData: localStorage.getItem('heartData') || '[]',
-            historyData: localStorage.getItem('historyData') || '[]',
-            keyPermissions: localStorage.getItem('keyPermissions') || '{}'
-        };
-        
-        await fetch(GAS_API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        showToast("✅ 同步完成！目前資料已安全備份至雲端。");
-    } catch (error) {
-        console.error("雲端同步失敗:", error);
-        showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
-    } finally {
-        isSyncing = false;
-        if (btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        if (icon) icon.classList.remove('fa-spin'); // 停止轉動
-    }
-}
-
-
-
+            showToast("☁️ 雲端備份上傳中，請稍候...");
+            
+            try {
+                const payload = {
+                    fans: localStorage.getItem('fans') || '[]',
+                    templates: localStorage.getItem('templates') || '[]',
+                    igPosts: localStorage.getItem('igPosts') || '[]',
+                    giftPosts: localStorage.getItem('giftPosts') || '[]',
+                    heartData: localStorage.getItem('heartData') || '[]',
+                    historyData: localStorage.getItem('historyData') || '[]',
+                    keyPermissions: localStorage.getItem('keyPermissions') || '{}'
+                };
+                
+                await fetch(GAS_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                showToast("✅ 同步完成！目前資料已安全備份至雲端。");
+            } catch (error) {
+                console.error("雲端同步失敗:", error);
+                showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
+            } finally {
+                isSyncing = false;
+                if (icon) icon.classList.remove('fa-spin'); // 停止轉動
+            }
+        }
 
         // [新增] 疑似重複篩選變數
         let isDuplicateMode = false;
