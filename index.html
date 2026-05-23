@@ -266,10 +266,13 @@
 
 <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
-            <div>
-                <!-- [新增] 手動雲端同步按鈕 -->
+<div>
+                <!-- [更新] 雲端同步與讀取按鈕 -->
                 <a href="#" onclick="manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
-                    <i id="iconManualSync" class="fas fa-sync-alt w-6 text-center text-indigo-400"></i> <span class="menu-text font-bold">手動同步至雲端</span>
+                    <i id="iconManualSync" class="fas fa-cloud-upload-alt w-6 text-center text-indigo-400"></i> <span class="menu-text font-bold">同步資料至雲端</span>
+                </a>
+                <a href="#" onclick="loadFromCloud()" class="flex items-center gap-4 p-4 hover:bg-emerald-900/40 text-emerald-300 hover:text-emerald-100 transition-colors border-l-4 border-emerald-500 bg-emerald-900/10">
+                    <i id="iconLoadCloud" class="fas fa-cloud-download-alt w-6 text-center text-emerald-400"></i> <span class="menu-text font-bold">讀取雲端資料</span>
                 </a>
                 <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
                     <i class="fas fa-save w-6 text-center text-yellow-400"></i> <span class="menu-text">備份資料</span>
@@ -361,14 +364,9 @@
 
 
 
-            <!-- 右側區域：粉絲人數 + 功能按鈕 -->
+<!-- 右側區域：粉絲人數 + 功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
-                <!-- [新增] 手動同步按鈕 -->
-                <button id="btnManualSync" onclick="manualSyncToCloud()" class="bg-indigo-900/50 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap border border-indigo-500/30">
-                    <i id="iconManualSync" class="fas fa-sync-alt"></i> 備份至雲端
-                </button>
-
-                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
+                <!-- (已移除右上方的備份至雲端按鈕與分隔線) -->
 
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
@@ -1554,9 +1552,80 @@
             } catch (error) {
                 console.error("雲端同步失敗:", error);
                 showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
-            } finally {
+} finally {
                 isSyncing = false;
                 if (icon) icon.classList.remove('fa-spin'); // 停止轉動
+            }
+        }
+
+        // [新增] 雲端讀取鎖
+        let isLoadingCloud = false;
+
+        // [新增] 從雲端讀取資料並覆蓋本地
+        async function loadFromCloud() {
+            if (isLoadingCloud) return;
+            
+            if (!confirm("⚠️ 警告：這將會以「雲端的備份資料」覆蓋您目前本地的所有資料！您確定要繼續嗎？")) return;
+
+            isLoadingCloud = true;
+            const icon = document.getElementById('iconLoadCloud');
+            if (icon) icon.classList.add('fa-spin');
+
+            showToast("☁️ 正在從雲端讀取資料，請稍候...");
+            
+            try {
+                // 發送 GET 請求取得雲端資料
+                const response = await fetch(GAS_API_URL);
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const result = await response.json();
+                
+                // 假設您的 GAS API doGet 回傳格式為 { status: 'success', data: { fans: "...", ... } }
+                if (result && result.data) {
+                    const o = result.data;
+                    
+                    // 覆蓋前先建立本地快照，保留復原的機會
+                    saveData();
+
+                    // 解析並覆蓋本地變數 (相容空資料)
+                    fans = JSON.parse(o.fans || '[]');
+                    templates = JSON.parse(o.templates || '[]');
+                    igPosts = JSON.parse(o.igPosts || '[]');
+                    giftPosts = JSON.parse(o.giftPosts || '[]');
+                    heartData = JSON.parse(o.heartData || '[]');
+                    historyData = JSON.parse(o.historyData || '[]');
+                    keyPermissions = JSON.parse(o.keyPermissions || '{}');
+
+                    // 寫入 localStorage (不觸發歷史快照)
+                    localStorage.setItem('fans', JSON.stringify(fans));
+                    localStorage.setItem('templates', JSON.stringify(templates));
+                    localStorage.setItem('igPosts', JSON.stringify(igPosts));
+                    localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
+                    localStorage.setItem('heartData', JSON.stringify(heartData));
+                    localStorage.setItem('historyData', JSON.stringify(historyData));
+                    localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
+
+                    // 重新渲染畫面
+                    renderTable();
+                    renderTemplateList();
+                    renderIgPosts();
+                    renderGiftPosts();
+                    renderHeartData();
+                    if(document.getElementById('historySection') && !document.getElementById('historySection').classList.contains('hidden')) {
+                        renderHistory();
+                    }
+                    
+                    showToast("✅ 讀取完成！已成功覆蓋為雲端資料。");
+                } else {
+                    throw new Error("雲端回傳資料格式不正確或為空");
+                }
+            } catch (error) {
+                console.error("雲端讀取失敗:", error);
+                showToast("⚠️ 雲端讀取失敗（請檢查 API 格式或網路連線）");
+            } finally {
+                isLoadingCloud = false;
+                if (icon) icon.classList.remove('fa-spin');
             }
         }
 
