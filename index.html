@@ -266,7 +266,7 @@
 
 <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
-<div>
+            <div>
                 <!-- [更新] 雲端同步與讀取按鈕 -->
                 <a href="#" onclick="manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
                     <i id="iconManualSync" class="fas fa-cloud-upload-alt w-6 text-center text-indigo-400"></i> <span class="menu-text font-bold">同步資料至雲端</span>
@@ -364,9 +364,14 @@
 
 
 
-<!-- 右側區域：粉絲人數 + 功能按鈕 -->
+            <!-- 右側區域：粉絲人數 + 功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
-                <!-- (已移除右上方的備份至雲端按鈕與分隔線) -->
+                <!-- [新增] 手動同步按鈕 -->
+                <button id="btnManualSync" onclick="manualSyncToCloud()" class="bg-indigo-900/50 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap border border-indigo-500/30">
+                    <i id="iconManualSync" class="fas fa-sync-alt"></i> 備份至雲端
+                </button>
+
+                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
 
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
@@ -1561,7 +1566,7 @@
         // [新增] 雲端讀取鎖
         let isLoadingCloud = false;
 
-        // [新增] 從雲端讀取資料並覆蓋本地
+        // [新增] 從雲端讀取資料並覆蓋本地 (完美對接您的 GAS 結構)
         async function loadFromCloud() {
             if (isLoadingCloud) return;
             
@@ -1576,26 +1581,24 @@
             try {
                 // 發送 GET 請求取得雲端資料
                 const response = await fetch(GAS_API_URL);
-                
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
                 const result = await response.json();
                 
-                // 假設您的 GAS API doGet 回傳格式為 { status: 'success', data: { fans: "...", ... } }
-                if (result && result.data) {
-                    const o = result.data;
+                // 檢查 result 是否為有效物件 (對接您現有 GAS API 回傳的鍵值對格式)
+                if (result && Object.keys(result).length > 0) {
                     
-                    // 覆蓋前先建立本地快照，保留復原的機會
+                    // 覆蓋前先建立本地快照，萬一後悔可以按復原
                     saveData();
 
                     // 解析並覆蓋本地變數 (相容空資料)
-                    fans = JSON.parse(o.fans || '[]');
-                    templates = JSON.parse(o.templates || '[]');
-                    igPosts = JSON.parse(o.igPosts || '[]');
-                    giftPosts = JSON.parse(o.giftPosts || '[]');
-                    heartData = JSON.parse(o.heartData || '[]');
-                    historyData = JSON.parse(o.historyData || '[]');
-                    keyPermissions = JSON.parse(o.keyPermissions || '{}');
+                    fans = JSON.parse(result.fans || '[]');
+                    templates = JSON.parse(result.templates || '[]');
+                    igPosts = JSON.parse(result.igPosts || '[]');
+                    giftPosts = JSON.parse(result.giftPosts || '[]');
+                    heartData = JSON.parse(result.heartData || '[]');
+                    historyData = JSON.parse(result.historyData || '[]');
+                    keyPermissions = JSON.parse(result.keyPermissions || '{}');
 
                     // 寫入 localStorage (不觸發歷史快照)
                     localStorage.setItem('fans', JSON.stringify(fans));
@@ -1606,7 +1609,7 @@
                     localStorage.setItem('historyData', JSON.stringify(historyData));
                     localStorage.setItem('keyPermissions', JSON.stringify(keyPermissions));
 
-                    // 重新渲染畫面
+                    // 重新渲染所有畫面
                     renderTable();
                     renderTemplateList();
                     renderIgPosts();
@@ -1618,11 +1621,11 @@
                     
                     showToast("✅ 讀取完成！已成功覆蓋為雲端資料。");
                 } else {
-                    throw new Error("雲端回傳資料格式不正確或為空");
+                    throw new Error("雲端沒有資料，或資料格式為空");
                 }
             } catch (error) {
                 console.error("雲端讀取失敗:", error);
-                showToast("⚠️ 雲端讀取失敗（請檢查 API 格式或網路連線）");
+                showToast("⚠️ 雲端讀取失敗（請確保 GAS 部署權限為「所有人」且網址正確）");
             } finally {
                 isLoadingCloud = false;
                 if (icon) icon.classList.remove('fa-spin');
@@ -6287,5 +6290,6 @@ function toggleAllCompare(type, isChecked) {
     </script>
 </body>
 </html>
+
 
 
