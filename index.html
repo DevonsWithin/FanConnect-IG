@@ -304,14 +304,18 @@
         <input type="file" id="excelImport" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleExcelImport(event)">
         <input type="file" id="restoreImport" class="hidden" accept=".json" onchange="handleRestore(event)">
  
-        <header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0 gap-4">
+<header class="h-16 border-b border-white/10 flex justify-between items-center px-6 bg-[#121212] shrink-0 gap-4">
             
-            <!-- 左側區域：標題 + 工具列 + 搜尋 -->
+            <!-- 左側區域：工具列 + 搜尋 -->
             <div class="flex items-center gap-6 flex-1">
-                <h2 id="sectionTitle" class="text-xl font-bold text-white tracking-wide shrink-0">粉絲滿意度管理系統</h2>
+                
+                <!-- 粉絲人數 (移至左側原本標題的位置) -->
+                <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0">
+                    粉絲人數: 0
+                </div>
                 
                 <div class="flex items-center gap-4">
-                    <!-- 復原/重作 (移至左側) -->
+                    <!-- 復原/重作 (維持在左側) -->
                     <div class="flex items-center gap-1 p-1 bg-white/5 rounded border border-white/5">
                         <button onclick="undo()" class="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors text-xs" title="復原 (Ctrl+Z)">
                             <i class="fas fa-undo"></i>
@@ -325,7 +329,7 @@
 
 
 
-                    <!-- 搜尋框 (移至左側) - 雙重邏輯搜尋 -->
+                    <!-- 搜尋框 (維持在左側) - 雙重邏輯搜尋 -->
                     <div class="flex items-center gap-2">
                         <!-- 主搜尋 -->
                         <div class="relative group">
@@ -364,14 +368,8 @@
 
 
 
-<!-- 右側區域：粉絲人數 + 功能按鈕 -->
+            <!-- 右側區域：功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
-                <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
-                    粉絲人數: 0
-                </div>
-
-                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
-
                 <!-- [新增] 疑似重複篩選按鈕 -->
                 <button id="btnDuplicateCheck" onclick="openDuplicateModal()" class="btn-cyan px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap">
                     <i class="fas fa-clone"></i> 篩選疑似重複
