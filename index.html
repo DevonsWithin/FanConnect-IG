@@ -268,7 +268,7 @@
             
             <div>
                 <!-- [更新] 雲端同步與讀取按鈕 -->
-                <a href="#" onclick="manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
+                <a href="#" onclick="event.preventDefault(); manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
                     <i id="iconManualSync" class="fas fa-cloud-upload-alt w-6 text-center text-indigo-400"></i> <span class="menu-text font-bold">同步資料至雲端</span>
                 </a>
                 <a href="#" onclick="loadFromCloud()" class="flex items-center gap-4 p-4 hover:bg-emerald-900/40 text-emerald-300 hover:text-emerald-100 transition-colors border-l-4 border-emerald-500 bg-emerald-900/10">
@@ -1543,11 +1543,10 @@
                 };
                 
                 // [專家修改 3]：恢復 mode: 'no-cors' 以防瀏覽器 POST 跨域阻擋。
-                // 由於 GAS doPost 無法附加 CORS 標頭，強行讀取 response.json 會導致前端報錯當機。
+                // 移除自定義 headers，讓瀏覽器底層自動以純文字發送，保證不觸發嚴格的 OPTIONS 預檢
                 await fetch(GAS_API_URL, {
                     method: 'POST',
                     mode: 'no-cors', 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
                 
