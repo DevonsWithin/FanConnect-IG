@@ -3394,10 +3394,10 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-        function handleExcelImport(e) {
+function handleExcelImport(e) {
             const file = e.target.files[0];
             if (!file) return;
-            // [新增] 匯入前先存檔，確保可復原
+            // [新增] 匯入前先建立快照，確保可復原
             saveData();
             
             const reader = new FileReader();
@@ -3410,79 +3410,71 @@ localStorage.setItem('giftPosts', '[]');
                     
                     // 1. 處理 {互動紀錄}
                     const sheet1Name = workbook.SheetNames.find(n => n.includes('互動')) || workbook.SheetNames[0];
-                    const json1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1Name], { defval: "" });
-                    
-                    json1.forEach(row => {
-                        const getVal = (kws) => { const k = Object.keys(row).find(key => kws.some(kw => key.toLowerCase().includes(kw))); return k ? row[k] : ''; };
-                        const username = getVal(['帳號','user']).toString().trim();
-                        if (!username) return;
- 
-                        const nickname = getVal(['暱稱','name','profile']).toString().trim();
-                        let dateVal = getVal(['日期','date','time']);
-                        let fileDate = (typeof dateVal === 'number') ? excelDateToJSDate(dateVal) : dateVal.toString().trim() || todayStr;
+                    if (sheet1Name) {
+                        const json1 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet1Name], { defval: "" });
                         
-                        let typeRaw = getVal(['互動','type']).toString();
-                        let tags = typeRaw.split(/[\/，,]/).map(s=>s.trim()).filter(s=>s).map(t=>(t==='新粉絲'||t==='New Fan')?'粉絲':t);
-                        
-                        const details = getVal(['詳細','details']).toString().trim();
-                        const language = getVal(['語言']).toString().trim() || '中';
-                        
-                        const msgVal = getVal(['訊息', 'message', 'status']).toString().trim();
-                        let isSent = false, sentDate = '';
-                        if (msgVal.includes('已發送')) {
-                            isSent = true;
-                            sentDate = msgVal.replace('已發送', '').trim();
-                        }
-
-
-
-
-                        // 更新粉絲資料邏輯
-                        const existing = fans.find(f => f.username === username);
-                        if (existing) {
-                            let mergedTags = new Set([...existing.interactions, ...tags]);
-                            existing.interactions = Array.from(mergedTags);
-
-
-
-
-                            if (details && !existing.details.includes(details)) existing.details += " / " + details;
-                            if (nickname && !existing.nickname) existing.nickname = nickname;
-                            existing.language = language;
-                            if (msgVal) { existing.sent = isSent; existing.sentDate = sentDate; }
-                            if (parseDate(fileDate) >= parseDate(existing.latestDate)) { 
-                                existing.latestType = tags.join(' / ');
-                                existing.latestDate = fileDate; 
+                        json1.forEach(row => {
+                            const getVal = (kws) => { const k = Object.keys(row).find(key => kws.some(kw => key.toLowerCase().includes(kw))); return k ? row[k] : ''; };
+                            const username = getVal(['帳號','user']).toString().trim();
+                            if (!username) return;
+    
+                            const nickname = getVal(['暱稱','name','profile']).toString().trim();
+                            let dateVal = getVal(['日期','date','time']);
+                            let fileDate = (typeof dateVal === 'number') ? excelDateToJSDate(dateVal) : dateVal.toString().trim() || todayStr;
+                            
+                            let typeRaw = getVal(['互動','type']).toString();
+                            let tags = typeRaw.split(/[\/，,]/).map(s=>s.trim()).filter(s=>s).map(t=>(t==='新粉絲'||t==='New Fan')?'粉絲':t);
+                            
+                            const details = getVal(['詳細','details']).toString().trim();
+                            const language = getVal(['語言']).toString().trim() || '中';
+                            
+                            const msgVal = getVal(['訊息', 'message', 'status']).toString().trim();
+                            let isSent = false, sentDate = '';
+                            if (msgVal.includes('已發送')) {
+                                isSent = true;
+                                sentDate = msgVal.replace('已發送', '').trim();
                             }
-                            updateCount++;
-                        } else {
-                            fans.push({ id: Date.now()+Math.random(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: fileDate, details, sent: isSent, sentDate: sentDate, isCloseFriend: false });
-                            newCount++;
-                        }
-                        
-                        // [更新] 連動動態紀錄 (加強去重：檢查 帳號+日期+類型+內容)
-                        const tagStr = tags.join(' / ');
-                        const existHistIdx = historyData.findIndex(h => 
-                            h.username === username && 
-                            h.date === fileDate && 
-                            h.type === tagStr && // 嚴格比對類型
-                            h.details === details
-                        );
-                        if (existHistIdx === -1) {
-                             addHistoryLog(username, nickname, tagStr, fileDate, details, false);
-                        } else {
-                            // 若重複但新資料為「前帳粉」，則更新
-                            const oldLog = historyData[existHistIdx];
-                            if (tags.includes('前帳粉') && oldLog.type.includes('粉絲') && !oldLog.type.includes('前帳粉')) {
-                                historyData[existHistIdx].type = tagStr;
+
+                            // 更新粉絲資料邏輯
+                            const existing = fans.find(f => f.username === username);
+                            if (existing) {
+                                let mergedTags = new Set([...existing.interactions, ...tags]);
+                                existing.interactions = Array.from(mergedTags);
+
+                                if (details && !existing.details.includes(details)) existing.details += " / " + details;
+                                if (nickname && !existing.nickname) existing.nickname = nickname;
+                                existing.language = language;
+                                if (msgVal) { existing.sent = isSent; existing.sentDate = sentDate; }
+                                if (parseDate(fileDate) >= parseDate(existing.latestDate)) { 
+                                    existing.latestType = tags.join(' / ');
+                                    existing.latestDate = fileDate; 
+                                }
+                                updateCount++;
+                            } else {
+                                fans.push({ id: Date.now()+Math.random(), username, nickname, language, interactions: tags, latestType: tags.join(' / '), latestDate: fileDate, details, sent: isSent, sentDate: sentDate, isCloseFriend: false });
+                                newCount++;
                             }
-                        }
-                    });
+                            
+                            // [更新] 連動動態紀錄 (加強去重：檢查 帳號+日期+類型+內容)
+                            const tagStr = tags.join(' / ');
+                            const existHistIdx = historyData.findIndex(h => 
+                                h.username === username && 
+                                h.date === fileDate && 
+                                h.type === tagStr && 
+                                h.details === details
+                            );
+                            if (existHistIdx === -1) {
+                                addHistoryLog(username, nickname, tagStr, fileDate, details, false);
+                            } else {
+                                const oldLog = historyData[existHistIdx];
+                                if (tags.includes('前帳粉') && oldLog.type.includes('粉絲') && !oldLog.type.includes('前帳粉')) {
+                                    historyData[existHistIdx].type = tagStr;
+                                }
+                            }
+                        });
+                    }
 
-
-
-
-                    // 2. 處理 {暖心時刻} (新增去重邏輯)
+                    // 2. 處理 {暖心時刻} (去重邏輯)
                     const sheet2Name = workbook.SheetNames.find(n => n.includes('暖心'));
                     if (sheet2Name) {
                         const json2 = XLSX.utils.sheet_to_json(workbook.Sheets[sheet2Name], { defval: "" });
@@ -3495,42 +3487,73 @@ localStorage.setItem('giftPosts', '[]');
                                const responseItem = (row['回應項目'] || 'DM').toString().trim();
                                const content = (row['回應內容'] || '').toString().trim();
                                
-                               // [去重檢查] 檢查是否已存在完全相同的紀錄 (Username + Date + Item + Content)
-                               const isDuplicate = heartData.some(h => 
-                                   h.username === username &&
-                                   h.date === finalDate &&
-                                   h.responseItem === responseItem &&
-                                   h.content === content
-                               );
-
-
-
+                               const isDuplicate = heartData.some(h => h.username === username && h.date === finalDate && h.responseItem === responseItem && h.content === content);
 
                                if (!isDuplicate) {
-                                   heartData.push({
-                                       id: Date.now() + Math.random(),
-                                       username: username,
-                                       nickname: (row['粉絲暱稱'] || '').toString().trim(),
-                                       date: finalDate,
-                                       responseItem: responseItem,
-                                       content: content
-                                   });
+                                   heartData.push({ id: Date.now() + Math.random(), username, nickname: (row['粉絲暱稱'] || '').toString().trim(), date: finalDate, responseItem, content });
                                    addedHeartCount++;
                                }
                            }
                         });
-                        console.log(`已匯入 ${addedHeartCount} 筆暖心紀錄 (略過重複)`);
                     }
 
+                    // 3. 處理 {IG貼文列表}
+                    const sheetIgName = workbook.SheetNames.find(n => n.includes('IG貼文'));
+                    if (sheetIgName) {
+                        const jsonIg = XLSX.utils.sheet_to_json(workbook.Sheets[sheetIgName], { defval: "" });
+                        jsonIg.forEach(row => {
+                            const topic = (row['主題'] || '').toString().trim();
+                            if (topic) {
+                                let rawDate = row['日期'];
+                                let isPlanned = false;
+                                let finalDate = '';
+                                if (rawDate === '規劃中') {
+                                    isPlanned = true;
+                                } else {
+                                    finalDate = (typeof rawDate === 'number') ? excelDateToJSDate(rawDate) : (rawDate || '').toString().trim();
+                                }
+                                const content = (row['內文'] || '').toString();
+                                const fileName = (row['檔案名稱'] || '').toString();
+                                const hashtag = (row['Hashtag'] || '').toString();
 
+                                const isDup = igPosts.some(p => p.topic === topic && p.content === content);
+                                if (!isDup) igPosts.push({ topic, date: finalDate, isPlanned, content, fileName, hashtag });
+                            }
+                        });
+                    }
 
+                    // 4. 處理 {禮物貼文列表}
+                    const sheetGiftName = workbook.SheetNames.find(n => n.includes('禮物貼文'));
+                    if (sheetGiftName) {
+                        const jsonGift = XLSX.utils.sheet_to_json(workbook.Sheets[sheetGiftName], { defval: "" });
+                        jsonGift.forEach(row => {
+                            const giftId = (row['禮物 ID'] || '').toString().trim();
+                            if (giftId) {
+                                let rawDate = row['日期'];
+                                let isPlanned = false;
+                                let finalDate = '';
+                                if (rawDate === '規劃中') {
+                                    isPlanned = true;
+                                } else {
+                                    finalDate = (typeof rawDate === 'number') ? excelDateToJSDate(rawDate) : (rawDate || '').toString().trim();
+                                }
+                                const fileName = (row['檔案名稱'] || '').toString();
+                                const desc = (row['描述'] || '').toString();
 
-                    localStorage.setItem('heartData', JSON.stringify(heartData));
-                    localStorage.setItem('fans', JSON.stringify(fans));
-                    localStorage.setItem('historyData', JSON.stringify(historyData)); 
+                                const isDup = giftPosts.some(p => p.giftId === giftId);
+                                if (!isDup) giftPosts.push({ giftId, date: finalDate, isPlanned, fileName, desc });
+                            }
+                        });
+                    }
+
+                    // 統一儲存至 LocalStorage 並更新所有畫面
+                    saveData(false);
                     renderTable(); 
                     renderHeartData();
-                    showToast(`匯入完成：新粉絲 ${newCount} / 更新 ${updateCount}`); 
+                    renderIgPosts();
+                    renderGiftPosts();
+                    updateResponseOptions(); // 更新訊息模板中的下拉選單
+                    showToast(`匯入完成：新粉絲 ${newCount} / 更新 ${updateCount}，包含貼文資料`); 
                     e.target.value = '';
                 } catch (err) { alert("匯入失敗：" + err.message); }
             };
