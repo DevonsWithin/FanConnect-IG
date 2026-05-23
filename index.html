@@ -364,15 +364,8 @@
 
 
 
-            <!-- 右側區域：粉絲人數 + 功能按鈕 -->
+<!-- 右側區域：粉絲人數 + 功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
-                <!-- [新增] 手動同步按鈕 -->
-                <button id="btnManualSync" onclick="manualSyncToCloud()" class="bg-indigo-900/50 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap border border-indigo-500/30">
-                    <i id="iconManualSync" class="fas fa-sync-alt"></i> 備份至雲端
-                </button>
-
-                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
-
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
                 </div>
@@ -1536,7 +1529,7 @@
 
             showToast("☁️ 雲端備份上傳中，請稍候...");
             
-            try {
+try {
                 const payload = {
                     fans: localStorage.getItem('fans') || '[]',
                     templates: localStorage.getItem('templates') || '[]',
@@ -1547,17 +1540,25 @@
                     keyPermissions: localStorage.getItem('keyPermissions') || '{}'
                 };
                 
-                await fetch(GAS_API_URL, {
+                // 移除 mode: 'no-cors' 並改用 text/plain，確保能取得真實成功狀態並繞過預檢阻擋
+                const response = await fetch(GAS_API_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
-                showToast("✅ 同步完成！目前資料已安全備份至雲端。");
+                
+                if (!response.ok) throw new Error("伺服器連線失敗");
+                
+                const result = await response.json();
+                if (result.status === "success") {
+                    showToast("✅ 同步完成！目前資料已安全備份至雲端。");
+                } else {
+                    throw new Error("雲端寫入未成功");
+                }
             } catch (error) {
                 console.error("雲端同步失敗:", error);
                 showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
-} finally {
+            } finally {
                 isSyncing = false;
                 if (icon) icon.classList.remove('fa-spin'); // 停止轉動
             }
