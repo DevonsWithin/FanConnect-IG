@@ -66,15 +66,11 @@
         .date-segment-container input:focus { border-bottom: 1px solid #a78bfa; }
 
 
-
-
         /* [新增] 疑似重複篩選樣式 */
         .duplicate-group-a { background-color: rgba(20, 184, 166, 0.15) !important; border-left: 3px solid #14b8a6; } /* 青色 A */
         .duplicate-group-b { background-color: rgba(20, 184, 166, 0.05) !important; border-left: 3px solid #0d9488; } /* 青色 B (較淺) */
         .btn-cyan { background-color: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.3); }
         .btn-cyan:hover { background-color: rgba(20, 184, 166, 0.4); color: white; }
-
-
 
 
 /* 鑰匙管理專用樣式 */
@@ -87,14 +83,8 @@
         .flashing-edit { animation: blink-yellow 1.5s infinite; color: white !important; border-color: white !important; opacity: 1 !important; }
 
 
-
-
         .key-row-pinned { background-color: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; }
         .key-row-disabled { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
-
-
-
-
 
 
 
@@ -173,39 +163,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             
-
-
-
-
-
-
-
-
 
 
 
@@ -232,14 +190,6 @@
 
 
 
-
-
-
-
-
-
-
-
             <div>
                 <a href="#" onclick="showSection('history')" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors border-l-4 border-transparent hover:border-cyan-500">
                     <i class="fas fa-history w-6 text-center text-cyan-400"></i> <span class="menu-text">動態紀錄</span>
@@ -256,66 +206,10 @@
 
 
 
-
-
-
-
-
-
-
-
             <div class="my-2 border-t border-white/10 mx-4 shrink-0"></div>
             
             <div>
                 <a href="#" onclick="backupData()" class="flex items-center gap-4 p-4 hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -412,8 +306,6 @@
                     </div>
 
 
-
-
                     <!-- 搜尋框 (移至左側) - 雙重邏輯搜尋 -->
                     <div class="flex items-center gap-2">
                         <!-- 主搜尋 -->
@@ -429,8 +321,6 @@
                         
                         <!-- AND 邏輯連接文字 -->
                         <span class="text-[10px] text-gray-500 font-bold">AND</span>
-
-
 
 
                         <!-- 子搜尋 (含反向) -->
@@ -451,22 +341,15 @@
             </div>
 
 
-
-
             <!-- 右側區域：粉絲人數 + 功能按鈕 -->
             <div class="flex gap-4 items-center shrink-0">
-                <!-- [新增] 手動同步按鈕 -->
-                <button id="btnManualSync" onclick="manualSyncToCloud()" class="bg-indigo-900/50 hover:bg-indigo-600 text-indigo-200 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap border border-indigo-500/30">
-                    <i id="iconManualSync" class="fas fa-sync-alt"></i> 備份至雲端
-                </button>
-
-                <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
-
                 <div id="fanCountBadge" class="fan-badge-style px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap">
                     粉絲人數: 0
                 </div>
 
+
                 <div class="h-6 w-[1px] bg-white/10 mx-1"></div>
+
 
                 <!-- [新增] 疑似重複篩選按鈕 -->
                 <button id="btnDuplicateCheck" onclick="openDuplicateModal()" class="btn-cyan px-3 py-1.5 rounded text-xs font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap">
@@ -843,43 +726,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div class="flex justify-between"><span class="text-gray-500">有效期限</span><span id="resExpire" class="text-gray-300"></span></div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-
-
-
-
-
-
 
 
 
@@ -902,19 +753,13 @@
                             </div>
 
 
-
-
                             <div class="h-8 w-[1px] bg-white/10 mx-1"></div>
-
-
 
 
                             <!-- 2. 編輯鑰匙名單 (主按鈕) -->
                             <button id="btnKeyMaster" onclick="toggleKeyEditMaster()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-xs font-bold transition-all shadow-md whitespace-nowrap border border-white/10">
                                 <i class="fas fa-cog mr-1"></i>編輯鑰匙名單
                             </button>
-
-
 
 
                             <!-- 子功能按鈕區 (隱藏) -->
@@ -928,20 +773,14 @@
                             </div>
 
 
-
-
                             <!-- 3. 製作清單按鈕 -->
                             <button onclick="openMakeListModal(document.getElementById('keyGiftSelect').value)" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-100 text-xs px-4 py-2 rounded font-bold border border-emerald-500/30 transition-colors whitespace-nowrap ml-2">
                                 <i class="fas fa-file-code mr-1"></i>製作清單
                             </button>
 
 
-
-
                             <!-- Spacer -->
                             <div class="flex-1"></div>
-
-
 
 
                             <!-- 4. 連結產生器 (最右邊) -->
@@ -957,8 +796,6 @@
                              <span class="text-[10px] text-gray-500 italic" id="keyStatusText"></span>
                         </div>
                     </div>
-
-
 
 
                     <!-- 資料列表區 -->
@@ -1017,8 +854,6 @@
             </div>
 
 
-
-
             <div id="jsonListModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[150] backdrop-blur-sm">
                 <div class="bg-[#1a1a1a] border border-emerald-500/30 w-[500px] rounded-xl shadow-2xl overflow-hidden">
                     <div class="bg-[#202020] p-4 border-b border-white/10 flex justify-between items-center">
@@ -1035,14 +870,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
-
-
-
 
 
 
@@ -1086,14 +913,6 @@
 
 
 
-
-
-
-
-
-
-
-
             <div id="compareSection" class="hidden h-full flex flex-col p-8 overflow-y-auto">
                 <div class="w-full max-w-6xl mx-auto space-y-6">
                     <div class="bg-[#1a1a1a] p-6 rounded-xl border border-orange-500/30 shadow-lg">
@@ -1108,14 +927,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-
-
-
-
-
 
 
 
@@ -1156,14 +967,6 @@
 
 
 
-
-
-
-
-
-
-
-
                     <div id="unfollowedResult" class="hidden bg-[#1a1a1a] p-6 rounded-xl border border-red-500/30 shadow-lg">
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="text-lg font-bold text-red-400">疑似退追粉絲 (<span id="unfollowedCount">0</span>)</h4>
@@ -1192,14 +995,6 @@
             </div>
         </div>
     </main>
-
-
-
-
-
-
-
-
 
 
 
@@ -1249,10 +1044,6 @@
 
 
 
-
-
-
-
                 <div>
                     <label class="block text-gray-400 text-xs mb-2">活動日期 (YYYY/MM/DD)</label>
                     <div class="date-segment-container w-full bg-black/40">
@@ -1263,10 +1054,6 @@
                         <input type="text" id="histDateDD" maxlength="2" placeholder="DD" style="width: 40px;" class="text-center bg-transparent text-white outline-none">
                     </div>
                 </div>
-
-
-
-
 
 
 
@@ -1282,42 +1069,6 @@
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1391,10 +1142,6 @@
 
 
 
-
-
-
-
                     <input type="hidden" id="finalGeneratedLink">
                     <p class="text-[10px] text-gray-500 mt-1 italic">* 系統將「粉絲帳號+目前時間」打包加密成亂碼參數，Next.js 端需解碼驗證。</p>
                 </div>
@@ -1435,10 +1182,6 @@
  cursor-pointer hover:text-[#763BE3] text-[#763BE3] font-bold"><input type="checkbox" value="前帳粉" class="accent-[#763BE3]"> 前帳粉</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-amber-300 text-amber-500 font-bold"><input type="checkbox" value="高互動" class="accent-amber-500"> 高互動</label>
                         <label class="flex items-center gap-2 cursor-pointer hover:text-white text-gray-300 font-bold bg-black/40 rounded px-1"><input type="checkbox" value="Thread粉" class="accent-gray-500"> Thread粉</label>
-
-
-
-
 
 
 
@@ -1557,8 +1300,6 @@
     <div id="toast" class="fixed bottom-8 right-8 bg-indigo-600 text-white px-6 py-3 rounded shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-[200]">操作成功</div>
 
 
-
-
     <!-- 疑似重複篩選 Modal -->
     <div id="duplicateModal" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[150] backdrop-blur-sm">
         <div class="bg-[#1a1a1a] border border-cyan-500/30 w-[400px] rounded-xl shadow-2xl overflow-hidden">
@@ -1644,121 +1385,20 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 綁定 Google Apps Script 專屬 API 端點網址
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzVV-k20jbNMXdK9FeZyOd3NzeQ3UPB7G-ENOMzZs2I5RAFDk-FzcxyXqpkHL5S-1Nl/exec';
-
 let fans = JSON.parse(localStorage.getItem('fans')) || [];
-let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
-let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
-let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
-let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
-let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
-let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
+        let templates = JSON.parse(localStorage.getItem('templates')) || [{ id: 1, title: "感謝支持", body: "嗨 {nickname}，感謝你之前的支持！這裡有給你的專屬禮物：\n{link}" }];
+        let igPosts = JSON.parse(localStorage.getItem('igPosts')) || [];
+        let giftPosts = JSON.parse(localStorage.getItem('giftPosts')) || [];
+        let heartData = JSON.parse(localStorage.getItem('heartData')) || [];
+        let historyData = JSON.parse(localStorage.getItem('historyData')) || [];
+        let keyPermissions = JSON.parse(localStorage.getItem('keyPermissions')) || {}; // { "giftId": ["user1", "user2"] }
 let isHeartKeyMode = false; // 暖心互動選擇模式狀態
 let tempKeyBuffer = new Set(); // [新增] 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
-
-// 雲端同步鎖
-let isSyncing = false;
-
-// [純手動同步] 只有在按下按鈕時，將畫面上的資料「單向推播」至雲端備份，絕不自動下載或覆蓋
-async function manualSyncToCloud() {
-    if (isSyncing) return;
-    
-    // 多一層防護，讓您確認
-    if (!confirm("即將以「目前的資料」覆蓋雲端試算表備份，確認同步嗎？")) return;
-
-    isSyncing = true;
-    const btn = document.getElementById('btnManualSync');
-    const icon = document.getElementById('iconManualSync');
-    if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
-    if (icon) icon.classList.add('fa-spin'); // 讓圈圈圖示轉動
-
-    showToast("☁️ 雲端備份上傳中，請稍候...");
-    
-    try {
-        const payload = {
-            fans: localStorage.getItem('fans') || '[]',
-            templates: localStorage.getItem('templates') || '[]',
-            igPosts: localStorage.getItem('igPosts') || '[]',
-            giftPosts: localStorage.getItem('giftPosts') || '[]',
-            heartData: localStorage.getItem('heartData') || '[]',
-            historyData: localStorage.getItem('historyData') || '[]',
-            keyPermissions: localStorage.getItem('keyPermissions') || '{}'
-        };
-        
-        await fetch(GAS_API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        showToast("✅ 同步完成！目前資料已安全備份至雲端。");
-    } catch (error) {
-        console.error("雲端同步失敗:", error);
-        showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
-    } finally {
-        isSyncing = false;
-        if (btn) btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        if (icon) icon.classList.remove('fa-spin'); // 停止轉動
-    }
-}
-
-
 
 
         // [新增] 疑似重複篩選變數
         let isDuplicateMode = false;
         let duplicateResults = []; // 存放篩選出的資料
-
-
 
 
         // [新增] Levenshtein Distance 演算法 (計算字串相似度)
@@ -1781,8 +1421,6 @@ async function manualSyncToCloud() {
         }
 
 
-
-
         // [新增] 計算相似度百分比
         function calculateSimilarity(s1, s2) {
             if (!s1 || !s2) return 0;
@@ -1790,8 +1428,6 @@ async function manualSyncToCloud() {
             if (longer.length === 0) return 1.0;
             return (longer.length - levenshteinDistance(s1, s2)) / longer.length;
         }
-
-
 
 
         // [新增] 帳號正規化 (處理 AI 誤判形狀)
@@ -1803,8 +1439,6 @@ async function manualSyncToCloud() {
                 .replace(/_/g, '')
                 .replace(/\./g, '');
         }
-
-
 
 
         // [新增] 開啟篩選 Modal
@@ -1819,8 +1453,6 @@ async function manualSyncToCloud() {
             }
             document.getElementById('duplicateModal').classList.remove('hidden');
         }
-
-
 
 
         // [新增] 執行篩選分析
@@ -1858,8 +1490,6 @@ async function manualSyncToCloud() {
                 });
 
 
-
-
                 // 將暖心紀錄轉換為動態紀錄格式
                 const heartLogs = heartData.map(h => ({
                     id: h.id, 
@@ -1874,11 +1504,7 @@ async function manualSyncToCloud() {
                 }));
 
 
-
-
                 const allLogs = [...sysLogs, ...heartLogs];
-
-
 
 
                 sourceData = allLogs.filter(h => {
@@ -1889,18 +1515,12 @@ async function manualSyncToCloud() {
             }
 
 
-
-
             if (sourceData.length < 2) return showToast("篩選範圍內資料不足，無法比對");
-
-
 
 
             // 2. 執行比對演算法
             let groups = [];
             let visited = new Set();
-
-
 
 
             if (activeSection === 'fans') {
@@ -1913,8 +1533,6 @@ async function manualSyncToCloud() {
                     const nickA = (sourceData[i].nickname || '').trim().toLowerCase();
 
 
-
-
                     for (let j = i + 1; j < sourceData.length; j++) {
                         if (visited.has(sourceData[j].id)) continue;
                         const itemB = sourceData[j];
@@ -1922,13 +1540,9 @@ async function manualSyncToCloud() {
                         const nickB = (itemB.nickname || '').trim().toLowerCase();
 
 
-
-
                         // 判斷條件：帳號形狀極似 OR (帳號不同但暱稱完全相同且非空)
                         const isUserSimilar = calculateSimilarity(normA, normB) > 0.95; // 正規化後極高相似
                         const isNickSame = nickA && nickB && nickA === nickB; // 暱稱完全相同
-
-
 
 
                         if (isUserSimilar || isNickSame) {
@@ -1946,8 +1560,6 @@ async function manualSyncToCloud() {
                 }
 
 
-
-
             } else {
                 // B. 暖心/動態 比對邏輯
                 // 條件：同一人 + 同一日 + 內容相似度 > 80%
@@ -1959,8 +1571,6 @@ async function manualSyncToCloud() {
                     const contentA = activeSection === 'heartStats' ? (sourceData[i].content || '') : (sourceData[i].details || '');
 
 
-
-
                     for (let j = i + 1; j < sourceData.length; j++) {
                         if (visited.has(sourceData[j].id)) continue;
                         const itemB = sourceData[j];
@@ -1969,8 +1579,6 @@ async function manualSyncToCloud() {
                         
                         // 初步篩選：人與日期必須相同
                         if (userA !== userB || dateA !== dateB) continue;
-
-
 
 
                         const contentB = activeSection === 'heartStats' ? (itemB.content || '') : (itemB.details || '');
@@ -1990,14 +1598,10 @@ async function manualSyncToCloud() {
             }
 
 
-
-
             if (groups.length === 0) {
                 showToast("未發現疑似重複資料");
                 return;
             }
-
-
 
 
             // 3. 設定狀態並重新渲染
@@ -2010,16 +1614,12 @@ async function manualSyncToCloud() {
             saveData(false); 
 
 
-
-
             if (activeSection === 'fans') renderTable();
             else if (activeSection === 'heartStats') renderHeartData();
             else if (activeSection === 'history') renderHistory();
             
             showToast(`發現 ${groups.length} 筆疑似重複資料`);
         }
-
-
 
 
         // [新增] 退出篩選模式
@@ -2033,8 +1633,6 @@ async function manualSyncToCloud() {
             saveData(false);
 
 
-
-
             const sections = ['fans', 'heartStats', 'history'];
             const active = sections.find(s => !document.getElementById(s + 'Section').classList.contains('hidden'));
             
@@ -2044,19 +1642,9 @@ async function manualSyncToCloud() {
         }
 
 
-
-
         // 自動為舊資料補上 ID
         heartData = heartData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
         historyData = historyData.map(d => ({ ...d, id: d.id || Date.now() + Math.random() }));
-
-
-
-
-
-
-
-
 
 
 
@@ -2071,11 +1659,7 @@ async function manualSyncToCloud() {
         let activeKeyStatusFilters = []; // 存放: 'inList', 'notInList'
 
 
-
-
         // 移除 cycleDateFilter 函式，改用 toggleFilter 處理
-
-
 
 
         let headerLongPressTimer;
@@ -2107,7 +1691,7 @@ async function manualSyncToCloud() {
                 if (historyStack.length > MAX_HISTORY) historyStack.shift();
                 redoStack = [];
             }
-            // 將「操作後狀態」純粹寫入本地 LocalStorage (移除自動雲端同步)
+            // 將「操作後狀態」寫入 LocalStorage
             localStorage.setItem('fans', JSON.stringify(fans));
             localStorage.setItem('igPosts', JSON.stringify(igPosts));
             localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
@@ -2138,8 +1722,6 @@ async function manualSyncToCloud() {
             redoStack.push(currentSnapshot);
 
 
-
-
             const prevSnapshot = historyStack.pop();
             applySnapshot(prevSnapshot);
             
@@ -2165,21 +1747,13 @@ async function manualSyncToCloud() {
             historyStack.push(currentSnapshot);
 
 
-
-
             const nextSnapshot = redoStack.pop();
             applySnapshot(nextSnapshot);
-
-
 
 
             showToast("已重作");
             isUndoRedoAction = false;
         }
-
-
-
-
 
 
 
@@ -2193,14 +1767,10 @@ async function manualSyncToCloud() {
             keyPermissions = JSON.parse(snap.keyPermissions || '{}');
 
 
-
-
             // [新增] 還原篩選狀態
             isDuplicateMode = (snap.isDuplicateMode === 'true');
             // [關鍵] 這裡會將 snapshot 中的 duplicateResults 還原回變數
             duplicateResults = JSON.parse(snap.duplicateResults || '[]');
-
-
 
 
             // [新增] 根據還原的模式，更新 Header 按鈕的顯示狀態
@@ -2215,8 +1785,6 @@ async function manualSyncToCloud() {
                     btnExit.classList.add('hidden');
                 }
             }
-
-
 
 
             // 將還原後的狀態寫回 LocalStorage (不記歷史)
@@ -2294,14 +1862,6 @@ async function manualSyncToCloud() {
 
 
 
-
-
-
-
-
-
-
-
          function handleGlobalSearch() {
             const input = document.getElementById('globalSearch');
             const inputAnd = document.getElementById('globalSearchAnd');
@@ -2313,8 +1873,6 @@ async function manualSyncToCloud() {
             } else {
                 clearBtn.classList.add('hidden');
             }
-
-
 
 
             // [修正] 加入 keyManageSection 的判斷，讓搜尋框在鑰匙頁面生效
@@ -2330,8 +1888,6 @@ async function manualSyncToCloud() {
         }
 
 
-
-
         // [新增] 通用雙重搜尋判斷邏輯
         function checkSearchMatch(dataStr) {
             if (!dataStr) return false;
@@ -2343,14 +1899,10 @@ async function manualSyncToCloud() {
             const target = dataStr.toLowerCase();
 
 
-
-
             // 1. 主搜尋檢查 (僅在有實際輸入內容時才進行篩選)
             if (term1 && !target.includes(term1)) {
                 return false;
             }
-
-
 
 
             // 2. 子搜尋檢查 (僅在有實際輸入內容時才進行篩選)
@@ -2371,22 +1923,12 @@ async function manualSyncToCloud() {
         }
 
 
-
-
         function clearSearch() {
             document.getElementById('globalSearch').value = '';
             document.getElementById('globalSearchAnd').value = ''; // 清除子搜尋
             // 不清除反向勾選狀態，保留使用者偏好
             handleGlobalSearch(); 
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -2404,8 +1946,6 @@ async function manualSyncToCloud() {
             const totalFanCount = fans.filter(f => f.interactions && f.interactions.includes('粉絲')).length;
             const countBadge = document.getElementById('fanCountBadge');
             if(countBadge) countBadge.innerText = `粉絲人數: ${totalFanCount}`;
-
-
 
 
             // 更新表頭圖示狀態 (Fans)
@@ -2439,8 +1979,6 @@ async function manualSyncToCloud() {
                 if (!checkSearchMatch(fullText)) return false;
 
 
-
-
                 if (activeFilters.pending && f.sent) return false;
                     if (activeFilters.pending && f.sent) return false;
     
@@ -2449,8 +1987,6 @@ async function manualSyncToCloud() {
                         const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
                         if (!isOld) return false;
                     }
-
-
 
 
                     // [修正] 新版日期篩選 (多選 OR 邏輯)
@@ -2477,8 +2013,6 @@ async function manualSyncToCloud() {
                     }
                     return true;
                 });
-
-
 
 
                 if (filteredFans.length > 0) {
@@ -2517,8 +2051,6 @@ async function manualSyncToCloud() {
                 const DAYS_14 = 1209600000; // 14 days in ms
 
 
-
-
                 // [新增] 用於切換重複群組顏色的變數
                 let lastGroupId = -1;
                 let useGroupColorA = true;
@@ -2543,10 +2075,6 @@ async function manualSyncToCloud() {
 
 
 
-
-
-
-
                     // 掃描 HeartData 中是否有該粉絲的已發送紀錄，並比對時間
                     const userHearts = heartData.filter(h => h.username === fan.username);
                     userHearts.forEach(h => {
@@ -2559,10 +2087,6 @@ async function manualSyncToCloud() {
                             }
                         }
                     });
-
-
-
-
 
 
 
@@ -2668,14 +2192,10 @@ async function manualSyncToCloud() {
         }
 
 
-
-
         function renderHeartData() {
             const tbody = document.getElementById('heartTableBody');
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
             const DAYS_14 = 1209600000; // 14 days
-
-
 
 
             // [修改] 決定資料來源
@@ -2688,14 +2208,10 @@ async function manualSyncToCloud() {
             });
 
 
-
-
             // [修改] 重複模式下不以時間排序，而是維持群組排序 (dupGroupId)
             if (!isDuplicateMode) {
                 displayData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
             }
-
-
 
 
             // [新增] 用於切換重複群組顏色的變數
@@ -2714,8 +2230,6 @@ async function manualSyncToCloud() {
                 }
 
 
-
-
                 // --- [關鍵修正] 讀取時強制同步狀態 ---
                 const targetUser = (d.username || '').trim().toLowerCase();
                 
@@ -2723,14 +2237,10 @@ async function manualSyncToCloud() {
                 const currentNick = getFanNickname(d.username);
 
 
-
-
                 // 1. 預設使用該筆紀錄的狀態
                 let finalSent = d.sent;
                 let finalSentDate = d.sentDate;
                 let maxTimestamp = parseDate2(d.sentDate);
-
-
 
 
                 // 2. 檢查 [粉絲管理列表] 主檔 (Master) 是否已發送且時間更新
@@ -2744,8 +2254,6 @@ async function manualSyncToCloud() {
                         maxTimestamp = fanTime;
                     }
                 }
-
-
 
 
                 // 3. 檢查 [其他暖心紀錄] 是否有更新的發送時間 (Siblings)
@@ -2762,8 +2270,6 @@ async function manualSyncToCloud() {
                 // ------------------------------------
 
 
-
-
                 const isOldSent = finalSentDate && (Date.now() - parseDate2(finalSentDate)) > DAYS_14;
                 const sentStyle = isOldSent ? 'text-[#4B0082] border-[#4B0082]/30' : 'text-green-400 border-green-400/30';
                 
@@ -2773,14 +2279,10 @@ async function manualSyncToCloud() {
                     : `<span class="text-amber-500 text-xs font-bold border border-amber-500/30 px-2 py-0.5 rounded w-fit">● 待處理</span>`;
 
 
-
-
                 // 新增：根據模式決定是否顯示 checkbox
                 const checkHtml = (typeof isHeartKeyMode !== 'undefined' && isHeartKeyMode) ? 
                     `<td class="text-center"><input type="checkbox" value="${d.username}" class="heart-key-checkbox accent-emerald-500 w-4 h-4"></td>` : 
                     '';
-
-
 
 
                 return `
@@ -2846,8 +2348,7 @@ async function manualSyncToCloud() {
                 content: document.getElementById('editIgContent').value,
                 hashtag: document.getElementById('editIgHash').value
             };
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false);
+            localStorage.setItem('igPosts', JSON.stringify(igPosts));
             renderIgPosts();
             updateResponseOptions();
             document.getElementById('editIgModal').classList.add('hidden');
@@ -2863,8 +2364,7 @@ async function manualSyncToCloud() {
            
             if(!topic) return alert("請輸入主題");
             igPosts.push({ topic, content, fileName, hashtag, date: dateStr, isPlanned });
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false);
+            localStorage.setItem('igPosts', JSON.stringify(igPosts));
             renderIgPosts();
            
             document.getElementById('igTopic').value = '';
@@ -2878,8 +2378,7 @@ async function manualSyncToCloud() {
         function deleteIgPost(idx) {
             if(confirm("確定刪除?")) {
                 igPosts.splice(idx, 1);
-                // 統一透過 saveData 儲存本地並驅動雲端上傳
-                saveData(false);
+                localStorage.setItem('igPosts', JSON.stringify(igPosts));
                 renderIgPosts();
                 updateResponseOptions();
             }
@@ -2904,8 +2403,7 @@ async function manualSyncToCloud() {
                 fileName: document.getElementById('editGiftFile').value,
                 desc: document.getElementById('editGiftDesc').value
             };
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false);
+            localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             renderGiftPosts();
             updateResponseOptions();
             document.getElementById('editGiftModal').classList.add('hidden');
@@ -2920,8 +2418,7 @@ async function manualSyncToCloud() {
            
             if(!giftId) return alert("請輸入禮物 ID");
             giftPosts.push({ giftId, date: dateStr, fileName, desc, isPlanned });
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false);
+            localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
             renderGiftPosts();
            
             document.getElementById('giftId').value = '';
@@ -2934,8 +2431,7 @@ async function manualSyncToCloud() {
         function deleteGiftPost(idx) {
             if(confirm("確定刪除?")) {
                 giftPosts.splice(idx, 1);
-                // 統一透過 saveData 儲存本地並驅動雲端上傳
-                saveData(false);
+                localStorage.setItem('giftPosts', JSON.stringify(giftPosts));
                 renderGiftPosts();
                 updateResponseOptions();
             }
@@ -2965,14 +2461,6 @@ async function manualSyncToCloud() {
             const fan = fans.find(f => f.username === user);
             if(fan) document.getElementById('heartNick').value = fan.nickname || '';
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -3038,8 +2526,6 @@ async function manualSyncToCloud() {
             const isKeyPage = !document.getElementById('keyManageSection').classList.contains('hidden');
 
 
-
-
             if (key === 'username') {
                 if (isKeyPage) {
                     // 鑰匙管理模式：顯示「未加入/已加入」篩選
@@ -3075,8 +2561,6 @@ async function manualSyncToCloud() {
                 });
 
 
-
-
                 // 新版日期篩選 (Checkbox)
                 // 新版日期篩選 (Checkbox)
                 container.innerHTML += `<div class="mt-3 border-t border-white/10 pt-2"><label class="text-xs text-gray-400 block mb-1">日期篩選 (多選/OR)：</label></div>`;
@@ -3091,8 +2575,6 @@ async function manualSyncToCloud() {
                     const checked = activeDateFilters.includes(d.val) ? 'checked' : '';
                     container.innerHTML += `<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${d.val}" ${checked} onchange="toggleFilter('date', this.value)" class="accent-indigo-500"> ${d.txt}</label>`;
                 });
-
-
 
 
             } else if (key === 'interactions') {
@@ -3144,8 +2626,6 @@ async function manualSyncToCloud() {
                 if (activeKeyStatusFilters.includes(value)) activeKeyStatusFilters = activeKeyStatusFilters.filter(v => v !== value);
                 else activeKeyStatusFilters.push(value);
             }
-
-
 
 
             // 判斷要刷新哪個表格
@@ -3230,18 +2710,10 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
 
 
 
-
-
-
-
         // [新增] 訊息按鈕專用邏輯 (短按Modal / 長按Threads)
         let msgBtnTimer;
         let isMsgBtnLong = false;
         let currentMsgPlatform = 'ig'; // 新增：追蹤目前要發送的平台
-
-
-
-
 
 
 
@@ -3260,10 +2732,6 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
    
              }, 600);
         }
-
-
-
-
 
 
 
@@ -3335,16 +2803,8 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
 
 
 
-
-
-
-
             // 連動：寫入動態紀錄
             addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
-
-
-
-
 
 
 
@@ -3393,8 +2853,6 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                 fan.interactions = Array.from(new Set([...checked, ...currentExtra]));
 
 
-
-
                 // [修正] 若在篩選模式，同步更新 duplicateResults 以即時反映變更
                 if (isDuplicateMode) {
                     const dupFan = duplicateResults.find(f => f.id === id);
@@ -3405,8 +2863,6 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
                         dupFan.interactions = fan.interactions;
                     }
                 }
-
-
 
 
                 saveData(); 
@@ -3430,10 +2886,6 @@ element.classList.remove('text-indigo-300', 'hover:text-indigo-100');
 
 
 
-
-
-
-
                     // 2. 更新 LocalStorage
                     saveData();
 // 儲存 fans
@@ -3451,14 +2903,6 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
-
-
-
-
                     // 3. 重新渲染所有列表介面
                     renderTable();
                     renderIgPosts();
@@ -3467,14 +2911,6 @@ localStorage.setItem('giftPosts', '[]');
                     
                     // 4. 更新下拉選單選項 (移除已刪除的貼文/禮物選項)
                     updateResponseOptions();
-
-
-
-
-
-
-
-
 
 
 
@@ -3507,8 +2943,6 @@ localStorage.setItem('giftPosts', '[]');
             XLSX.utils.book_append_sheet(wb, ws1, "互動紀錄");
 
 
-
-
             // Sheet 2: 暖心時刻
             const wsData2 = heartData.map(h => ({
                 "粉絲帳號": h.username,
@@ -3519,8 +2953,6 @@ localStorage.setItem('giftPosts', '[]');
             }));
             const ws2 = XLSX.utils.json_to_sheet(wsData2);
             XLSX.utils.book_append_sheet(wb, ws2, "暖心時刻");
-
-
 
 
             // Sheet 3: 動態紀錄 (新增區塊)
@@ -3535,8 +2967,6 @@ localStorage.setItem('giftPosts', '[]');
             XLSX.utils.book_append_sheet(wb, ws3, "動態紀錄");
 
 
-
-
             // Sheet 4: IG貼文列表
             const wsData4 = igPosts.map(p => ({
                 "主題": p.topic,
@@ -3547,8 +2977,6 @@ localStorage.setItem('giftPosts', '[]');
             }));
             const ws4 = XLSX.utils.json_to_sheet(wsData4);
             XLSX.utils.book_append_sheet(wb, ws4, "IG貼文列表");
-
-
 
 
             // Sheet 5: 禮物貼文列表
@@ -3562,8 +2990,6 @@ localStorage.setItem('giftPosts', '[]');
             XLSX.utils.book_append_sheet(wb, ws5, "禮物貼文列表");
 
 
-
-
             // 檔名改為 FanConnect_"Brand Name"_Export_YYYYMMDD
             const profile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Brand' };
             const brandName = (profile.name || 'Brand').replace(/\s+/g, '_');
@@ -3572,14 +2998,6 @@ localStorage.setItem('giftPosts', '[]');
             
             XLSX.writeFile(wb, `FanConnect_${brandName}_Export_${ymd}.xlsx`);
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -3629,15 +3047,11 @@ localStorage.setItem('giftPosts', '[]');
                         }
 
 
-
-
                         // 更新粉絲資料邏輯
                         const existing = fans.find(f => f.username === username);
                         if (existing) {
                             let mergedTags = new Set([...existing.interactions, ...tags]);
                             existing.interactions = Array.from(mergedTags);
-
-
 
 
                             if (details && !existing.details.includes(details)) existing.details += " / " + details;
@@ -3674,8 +3088,6 @@ localStorage.setItem('giftPosts', '[]');
                     });
 
 
-
-
                     // 2. 處理 {暖心時刻} (新增去重邏輯)
                     const sheet2Name = workbook.SheetNames.find(n => n.includes('暖心'));
                     if (sheet2Name) {
@@ -3698,8 +3110,6 @@ localStorage.setItem('giftPosts', '[]');
                                );
 
 
-
-
                                if (!isDuplicate) {
                                    heartData.push({
                                        id: Date.now() + Math.random(),
@@ -3715,8 +3125,6 @@ localStorage.setItem('giftPosts', '[]');
                         });
                         console.log(`已匯入 ${addedHeartCount} 筆暖心紀錄 (略過重複)`);
                     }
-
-
 
 
                     localStorage.setItem('heartData', JSON.stringify(heartData));
@@ -3780,10 +3188,6 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
                     // 2. [強力同步] 掃描 FANS 列表：更新該粉絲的主檔狀態
                     fans.forEach(f => {
                         if (f.username.trim().toLowerCase() === targetUserLower) {
@@ -3791,10 +3195,6 @@ localStorage.setItem('giftPosts', '[]');
                             f.sentDate = timeStr;
                         }
                     });
-
-
-
-
 
 
 
@@ -3808,10 +3208,6 @@ localStorage.setItem('giftPosts', '[]');
                         }
                     });
                 }
-
-
-
-
 
 
 
@@ -3857,10 +3253,6 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
             // 2. 如果勾選縮網址，呼叫 TinyURL
             if (useShort) {
                 try {
@@ -3889,10 +3281,6 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
             // 3. 更新介面
             document.getElementById('finalGeneratedLink').value = finalUrl;
             btn.innerHTML = '<i class="fas fa-check"></i> 完成';
@@ -3907,16 +3295,8 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
             if(document.getElementById('modalTempSelect').value) applyTemplate();
         }
-
-
-
-
 
 
 
@@ -4033,85 +3413,11 @@ localStorage.setItem('giftPosts', '[]');
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function showSection(s) {
             // [修正] 切換頁面時，強制退出疑似重複篩選模式，避免資料欄位錯亂 (undefined)
             if (typeof exitDuplicateMode === 'function' && isDuplicateMode) {
                 exitDuplicateMode();
             }
-
-
 
 
             // 加入 'history', 'compare', 'keyManage' 到隱藏列表
@@ -4134,8 +3440,6 @@ function showSection(s) {
             if(s==='manual') initDateInput();
 
 
-
-
             if(s==='manual' || s==='heartStats') updateUsernameDatalist();
         }
         function closeModal() { document.getElementById('msgModal').classList.add('hidden');
@@ -4149,8 +3453,7 @@ function showSection(s) {
             if(!title || !body) return;
             if(id) { const t = templates.find(x => x.id == id); t.title = title; t.body = body;
             } else { templates.push({ id: Date.now(), title, body }); }
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false);
+            localStorage.setItem('templates', JSON.stringify(templates));
             cancelEditTemplate(); renderTemplateList();
         }
         function editTemplate(id) { const t = templates.find(x => x.id === id);
@@ -4159,8 +3462,7 @@ function showSection(s) {
         function cancelEditTemplate() { document.getElementById('tmpId').value = ''; document.getElementById('tmpTitle').value = ''; document.getElementById('tmpBody').value = '';
             document.getElementById('saveTmpBtn').innerText = "儲存模板"; document.getElementById('cancelTmpBtn').classList.add('hidden'); }
         function deleteTemplate(id) { if(confirm('刪除模板？')) { templates = templates.filter(t => t.id !== id);
-            // 統一透過 saveData 儲存本地並驅動雲端上傳
-            saveData(false); renderTemplateList(); } }
+            localStorage.setItem('templates', JSON.stringify(templates)); renderTemplateList(); } }
         function renderTemplateList() { document.getElementById('templateListDisplay').innerHTML = templates.map(t => `<div class="flex justify-between items-center bg-black/30 p-3 rounded border border-white/5"><div><div class="font-bold text-indigo-200 text-sm">${t.title}</div><div class="text-xs text-gray-500 truncate w-64">${t.body}</div></div><div><button onclick="editTemplate(${t.id})" class="text-gray-400 hover:text-white px-2"><i class="fas fa-edit"></i></button><button onclick="deleteTemplate(${t.id})" class="text-gray-600 hover:text-red-500 px-2"><i class="fas fa-trash"></i></button></div></div>`).join('');
         }
        
@@ -4205,174 +3507,6 @@ function showSection(s) {
             };
             r.readAsText(e.target.files[0]);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -4594,58 +3728,10 @@ function showSection(s) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // --- 新增：官方資料比對與動態紀錄邏輯 ---
         
         let pendingNewFans = [];
         let pendingUnfollowed = [];
-
-
-
-
-
-
-
-
 
 
 
@@ -4660,12 +3746,8 @@ function showSection(s) {
             const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
 
 
-
-
             // [修正] A. 準備資料來源
             let displayData = [];
-
-
 
 
             if (isDuplicateMode) {
@@ -4690,8 +3772,6 @@ function showSection(s) {
             }
 
 
-
-
             // C. 搜尋過濾
             // [修正] 改用 checkSearchMatch 進行雙重搜尋比對
             displayData = displayData.filter(h => {
@@ -4699,8 +3779,6 @@ function showSection(s) {
                 const fullText = `${h.username || ''} ${currentNick} ${h.type || ''} ${h.details || ''}`;
                 return checkSearchMatch(fullText);
             });
-
-
 
 
             // D. 排序
@@ -4711,8 +3789,6 @@ function showSection(s) {
                     return dateB - dateA;
                 });
             }
-
-
 
 
             // [新增] 用於切換重複群組顏色的變數
@@ -4731,12 +3807,8 @@ function showSection(s) {
                 }
 
 
-
-
                 // [關鍵] 強制取得最新暱稱
                 const currentNick = getFanNickname(h.username);
-
-
 
 
                 let typeClass = 'text-gray-400';
@@ -4752,8 +3824,6 @@ function showSection(s) {
                 else if(h.type === '留言') typeClass = 'text-pink-300'; // 留言 樣式
 
 
-
-
                 // 操作按鈕：如果是同步過來的互動紀錄，顯示提示文字代替按鈕，避免邏輯錯誤
                 // [修正] 重複模式下，即使是互動紀錄也允許操作(因為是顯示特定的duplicateResults項目)
                 const actionButtons = (h.isInteraction && !isDuplicateMode) ? 
@@ -4762,8 +3832,6 @@ function showSection(s) {
                         <button onclick="openHistoryModal('${h.id}')" class="text-gray-400 hover:text-white" title="編輯"><i class="fas fa-edit"></i></button>
                         <button onclick="deleteHistory('${h.id}')" class="text-red-500 hover:text-white" title="刪除"><i class="fas fa-trash-alt"></i></button>
                     </div>`;
-
-
 
 
                 return `<tr class="${rowClass}">
@@ -4794,14 +3862,6 @@ function showSection(s) {
 
 
 
-
-
-
-
-
-
-
-
         // [更新後的程式碼]
         // 增加 save 參數，預設為 true。批次匯入時可設為 false 以避免重複寫入歷史
         function addHistoryLog(username, nickname, type, dateStr, details, save = true) {
@@ -4816,10 +3876,6 @@ function showSection(s) {
             // 只有當 save 為 true 時才觸發存檔
             if (save) saveData();
         }
-
-
-
-
 
 
 
@@ -4840,10 +3896,6 @@ function showSection(s) {
             };
             
             document.querySelectorAll('#histCheckboxes input').forEach(cb => cb.checked = false);
-
-
-
-
 
 
 
@@ -4884,17 +3936,9 @@ function showSection(s) {
 
 
 
-
-
-
-
         function closeHistoryModal() {
             document.getElementById('historyModal').classList.add('hidden');
         }
-
-
-
-
 
 
 
@@ -4909,19 +3953,13 @@ function showSection(s) {
             const typeStr = checked.join(' / ');
 
 
-
-
             if (!user) return alert("請輸入帳號");
-
-
 
 
             if (id) {
                 // 1. 嘗試更新 HistoryData (系統/手動紀錄)
                 const histIdx = historyData.findIndex(h => h.id == id);
                 let isHeartSource = false;
-
-
 
 
                 if (histIdx !== -1) {
@@ -4939,8 +3977,6 @@ function showSection(s) {
                         // 暖心紀錄通常不修改 'type' (留言/DM 由 responseItem 決定)，此處略過 typeStr 更新
                     }
                 }
-
-
 
 
                 // 3. [修正] 同步更新 duplicateResults
@@ -4965,10 +4001,6 @@ function showSection(s) {
             
             closeHistoryModal();
         }
-
-
-
-
 
 
 
@@ -5000,15 +4032,7 @@ function showSection(s) {
 
 
 
-
-
-
-
             addHistoryLog(username, nickname, tags.join(' / '), manualDateStr, details);
-
-
-
-
 
 
 
@@ -5019,10 +4043,6 @@ function showSection(s) {
             saveData(); // 使用全局存檔
             renderTable();
         }
-
-
-
-
 
 
 
@@ -5046,8 +4066,6 @@ function showSection(s) {
         }
 
 
-
-
         // [新增] 下拉選單連動邏輯
         function handleHeartItemChange(select) {
             if (select.value === 'DM') {
@@ -5057,15 +4075,11 @@ function showSection(s) {
         }
 
 
-
-
         // [新增] 輔助函式：取得粉絲最新暱稱 (確保各列表顯示同步)
         function getFanNickname(username) {
             const fan = fans.find(f => f.username.toLowerCase() === username.toLowerCase());
             return fan ? (fan.nickname || '-') : '-';
         }
-
-
 
 
         function addHeartData() {
@@ -5083,14 +4097,10 @@ function showSection(s) {
             let saveResponseItem, saveContent, latestType, detailMsg;
 
 
-
-
             if (isDM) {
                 // --- DM 模式邏輯 ---
                 latestType = 'DM';
                 saveResponseItem = 'DM'; 
-
-
 
 
                 if (rawResponseItem && rawResponseItem !== 'DM') {
@@ -5102,8 +4112,6 @@ function showSection(s) {
                 }
 
 
-
-
             } else {
                 // --- 留言 模式邏輯 ---
                 latestType = '留言';
@@ -5111,8 +4119,6 @@ function showSection(s) {
                 saveContent = inputContent;
                 detailMsg = `在"${rawResponseItem}"留言`;
             }
-
-
 
 
             // 1. 新增暖心紀錄
@@ -5124,8 +4130,6 @@ function showSection(s) {
                 content: saveContent, 
                 date: dateStr 
             });
-
-
 
 
             // 2. 同步至粉絲列表
@@ -5148,8 +4152,6 @@ function showSection(s) {
                     fan.latestDate = dateStr;
                 }
                 if (nickname && !fan.nickname) fan.nickname = nickname;
-
-
 
 
                 // 更新詳細內容
@@ -5194,10 +4196,6 @@ function showSection(s) {
 
 
 
-
-
-
-
         function openEditHeartModal(id) {
             const d = heartData.find(h => h.id === id); // Fix: use find by id
             if(!d) return;
@@ -5209,10 +4207,6 @@ function showSection(s) {
             document.getElementById('editHeartContent').value = d.content;
             document.getElementById('editHeartModal').classList.remove('hidden');
         }
-
-
-
-
 
 
 
@@ -5234,8 +4228,6 @@ function showSection(s) {
                 };
 
 
-
-
                 // [修正] 若在篩選模式，同步更新 duplicateResults
                 if (isDuplicateMode) {
                     const dupItem = duplicateResults.find(h => h.id === id);
@@ -5249,8 +4241,6 @@ function showSection(s) {
                 }
 
 
-
-
                 saveData(); // 使用全局存檔
                 renderHeartData();
                 document.getElementById('editHeartModal').classList.add('hidden');
@@ -5262,8 +4252,6 @@ function showSection(s) {
                 // [關鍵修復] 如果在篩選模式，先強制同步當前狀態到 LocalStorage
                 // 這確保了等一下 saveData() 建立的快照裡，duplicateResults 是「刪除前」的完整狀態
                 if (isDuplicateMode) saveData(false);
-
-
 
 
                 // 1. 執行刪除 (寬鬆比對)
@@ -5289,20 +4277,10 @@ function showSection(s) {
 
 
 
-
-
-
-
-
-
-
-
         function deleteHistory(id) {
             if(confirm("刪除此條紀錄？")) {
                 // [關鍵修復] 刪除前強制同步，確保 Undo 快照包含完整篩選列表
                 if (isDuplicateMode) saveData(false);
-
-
 
 
                 // 1. 嘗試從 historyData (系統紀錄) 刪除
@@ -5315,14 +4293,10 @@ function showSection(s) {
                 }
 
 
-
-
                 // 3. 若在重複模式，同步移除篩選結果中的資料
                 if (isDuplicateMode) {
                     duplicateResults = duplicateResults.filter(h => h.id != id);
                 }
-
-
 
 
                 saveData();
@@ -5334,14 +4308,6 @@ function showSection(s) {
                 showToast('已刪除');
             }
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -5386,14 +4352,6 @@ function showSection(s) {
 
 
 
-
-
-
-
-
-
-
-
                     compareData(officialUsers);
                     e.target.value = ''; 
                 } catch(err) {
@@ -5410,20 +4368,10 @@ function showSection(s) {
 
 
 
-
-
-
-
-
-
-
-
         // --- [ 修正版 compareData ] ---
 function compareData(officialUsers) {
     // 1. 處理官方名單：統一轉小寫 + 去除隱藏空白 (解決完全沒出現的問題)
     const officialUsersLower = officialUsers.map(u => u.toLowerCase().trim());
-
-
 
 
     // 2. 找出新粉絲 (邏輯優化)
@@ -5435,8 +4383,6 @@ function compareData(officialUsers) {
     pendingNewFans = newUsers.map(u => ({ username: u, nickname: '', lang: '中' }));
 
 
-
-
     // 3. 找出退追者：嚴格執行「粉絲標籤」鐵律
     pendingUnfollowed = fans.filter(f => {
         // 鐵律：系統內必須有「粉絲」標籤才列入比對 [cite: 1, 229]
@@ -5444,14 +4390,10 @@ function compareData(officialUsers) {
         if (!isMarkedFan) return false;
 
 
-
-
         // 比對：不在官方名單中的人 [cite: 1, 46]
         const sysNameLower = (f.username || "").toLowerCase().trim();
         return !officialUsersLower.includes(sysNameLower);
     });
-
-
 
 
     renderCompareResults();
@@ -5464,20 +4406,10 @@ function compareData(officialUsers) {
 
 
 
-
-
-
-
-
-
-
-
         // --- [ 修正版 renderCompareResults ] ---
 function renderCompareResults() {
     document.getElementById('newFansCount').innerText = pendingNewFans.length;
     document.getElementById('unfollowedCount').innerText = pendingUnfollowed.length;
-
-
 
 
     // A. 渲染新粉絲
@@ -5500,8 +4432,6 @@ function renderCompareResults() {
     `).join('');
 
 
-
-
     // B. 渲染退追蹤 (對應你的 5 個 th 欄位)
     const unfBody = document.getElementById('unfollowedBody');
     unfBody.innerHTML = pendingUnfollowed.map((f, idx) => `
@@ -5521,18 +4451,10 @@ function renderCompareResults() {
     `).join('');
 
 
-
-
     // 控制區塊顯示
     document.getElementById('newFansResult').classList.toggle('hidden', pendingNewFans.length === 0);
     document.getElementById('unfollowedResult').classList.toggle('hidden', pendingUnfollowed.length === 0);
 }
-
-
-
-
-
-
 
 
 
@@ -5550,21 +4472,9 @@ function toggleAllCompare(type, isChecked) {
 
 
 
-
-
-
-
         function updatePendingNewFan(idx, field, value) {
             pendingNewFans[idx][field] = value;
         }
-
-
-
-
-
-
-
-
 
 
 
@@ -5579,16 +4489,12 @@ function toggleAllCompare(type, isChecked) {
             if(checkedBoxes.length === 0) return alert("請至少勾選一位要加入的新粉絲");
 
 
-
-
             if(!confirm(`確定加入勾選的 ${checkedBoxes.length} 位新粉絲？`)) return;
             const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
             
             // 2. 篩選出「要執行的」與「要保留在畫面上的」
             const selected = pendingNewFans.filter((_, idx) => checkedBoxes.includes(idx));
             pendingNewFans = pendingNewFans.filter((_, idx) => !checkedBoxes.includes(idx));
-
-
 
 
             // 3. 執行加入邏輯
@@ -5622,14 +4528,6 @@ function toggleAllCompare(type, isChecked) {
 
 
 
-
-
-
-
-
-
-
-
         function confirmUnfollowed() {
     // 1. 抓取目前畫面上有被勾選的索引
     const checkedBoxes = Array.from(document.querySelectorAll('.unfollow-checkbox:checked')).map(cb => parseInt(cb.value));
@@ -5637,11 +4535,7 @@ function toggleAllCompare(type, isChecked) {
     if(checkedBoxes.length === 0) return alert("請至少勾選一位要處理的退追人員");
 
 
-
-
     if(!confirm(`確定要將勾選的 ${checkedBoxes.length} 位人員移除「粉絲」標籤？`)) return;
-
-
 
 
     const nowStr = new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
@@ -5649,8 +4543,6 @@ function toggleAllCompare(type, isChecked) {
     // 2. 篩選出「要執行的」與「要保留在畫面上的」
     const selected = pendingUnfollowed.filter((_, idx) => checkedBoxes.includes(idx));
     pendingUnfollowed = pendingUnfollowed.filter((_, idx) => !checkedBoxes.includes(idx));
-
-
 
 
     // 3. 執行移除標籤
@@ -5661,8 +4553,6 @@ function toggleAllCompare(type, isChecked) {
             addHistoryLog(fan.username, fan.nickname, '退追', nowStr, '官方比對：確定退追');
         }
     });
-
-
 
 
     saveData();
@@ -5700,44 +4590,10 @@ function toggleAllCompare(type, isChecked) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // --- 鑰匙管理系統邏輯 (功能修復版) ---
 
 
-
-
         let currentKeyMode = 'none'; // 'none', 'append', 'edit'
-
-
 
 
         // 1. 初始化與更新下拉選單
@@ -5756,8 +4612,6 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         // 2. 複製連結功能
         function copyKeyLink() {
             const input = document.getElementById('keyLinkInput');
@@ -5765,8 +4619,6 @@ function toggleAllCompare(type, isChecked) {
             input.select(); document.execCommand('copy');
             showToast("連結已複製");
         }
-
-
 
 
         // 3. [核心] 主渲染函式：負責顯示邏輯、搜尋範圍與排序
@@ -5780,8 +4632,6 @@ function toggleAllCompare(type, isChecked) {
             const linkInput = document.getElementById('keyLinkInput');
 
 
-
-
             // 更新表頭圖示狀態 (Keys)
             const setIcon = (id, condition) => {
                 const el = document.getElementById(id);
@@ -5791,8 +4641,6 @@ function toggleAllCompare(type, isChecked) {
             setIcon('key_icon_filter_interactions', activeFilters.tags.length > 0);
             setIcon('key_icon_filter_sent', activeFilters.pending || activeFilters.oldSent || (activeSort && activeSort.col === 'sent'));
             setIcon('key_icon_filter_username', activeKeyStatusFilters.length > 0);
-
-
 
 
             // 1. 無 ID 狀態
@@ -5807,8 +4655,6 @@ function toggleAllCompare(type, isChecked) {
             }
 
 
-
-
             // 2. 有 ID，準備初始資料
             linkInput.value = `https://our-vault-iota.vercel.app/vault/${giftId}/entry`;
             emptyState.classList.add('hidden');
@@ -5821,15 +4667,11 @@ function toggleAllCompare(type, isChecked) {
             document.getElementById('keyStatusText').innerText = `名單人數: ${countDisplay}`;
 
 
-
-
             // 全選框狀態
             selectAllBox.disabled = (currentKeyMode === 'none');
             selectAllBox.classList.toggle('cursor-not-allowed', currentKeyMode === 'none');
             // 全選框是否勾選，暫時設為 false，需複雜邏輯判斷是否全選當前頁，這裡簡化處理
             selectAllBox.checked = false; 
-
-
 
 
             // 3. 決定初始資料池
@@ -5841,8 +4683,6 @@ function toggleAllCompare(type, isChecked) {
                 // 編輯/追加模式：顯示所有人，讓使用者挑選
                 displayFans = [...fans];
             }
-
-
 
 
             // 4. [修正] 多重篩選邏輯 (Date, Tags, Sent, KeyStatus)
@@ -5861,8 +4701,6 @@ function toggleAllCompare(type, isChecked) {
                 }
 
 
-
-
                 // B. 互動標籤篩選 (AND)
                 if (activeFilters.tags.length > 0) {
                     const matchAll = activeFilters.tags.every(tag => {
@@ -5873,8 +4711,6 @@ function toggleAllCompare(type, isChecked) {
                 }
 
 
-
-
                 // C. 訊息狀態篩選
                 if (activeFilters.pending && f.sent) return false;
                 const DAYS_14_MS = 1209600000;
@@ -5882,8 +4718,6 @@ function toggleAllCompare(type, isChecked) {
                     const isOld = f.sent && f.sentDate && (Date.now() - parseDate2(f.sentDate) > DAYS_14_MS);
                     if (!isOld) return false;
                 }
-
-
 
 
                 // D. 鑰匙名單狀態篩選
@@ -5900,12 +4734,8 @@ function toggleAllCompare(type, isChecked) {
                 }
 
 
-
-
                 return true;
             });
-
-
 
 
             // 5. [關鍵修正] 搜尋邏輯改用 checkSearchMatch
@@ -5913,8 +4743,6 @@ function toggleAllCompare(type, isChecked) {
                 const fullText = `${f.username} ${f.nickname || ''} ${(f.interactions || []).join(' ')} ${f.details || ''}`;
                 return checkSearchMatch(fullText);
             });
-
-
 
 
             // 6. 排序邏輯
@@ -5942,8 +4770,6 @@ function toggleAllCompare(type, isChecked) {
             });
 
 
-
-
             // 7. 產生 HTML
             tbody.innerHTML = displayFans.map(fan => {
                 // [核心邏輯] 判斷是否勾選/鎖定
@@ -5957,8 +4783,6 @@ function toggleAllCompare(type, isChecked) {
                 let checkboxChecked = false;
                 let checkboxClass = 'accent-emerald-500 cursor-not-allowed';
                 let onClickAttr = ''; // 新增點擊事件
-
-
 
 
                 if (currentKeyMode === 'none') {
@@ -5992,13 +4816,9 @@ function toggleAllCompare(type, isChecked) {
                 }
 
 
-
-
                 const latestInfo = (fan.latestDate || fan.latestType) ? `<div class="flex flex-col"><span class="text-white font-bold text-xs">${fan.latestType || '無'}</span><span class="text-[10px] text-gray-500">${fan.latestDate || ''}</span></div>` : `-`;
                 const tagsHtml = fan.interactions.map(tag => `<span class="px-1 py-0.5 rounded text-[10px] border border-white/10 bg-white/5 text-gray-400">${tag}</span>`).join('');
                 const statusHtml = fan.sent ? `<span class="text-green-400 text-xs">✓ 已發</span>` : `<span class="text-gray-600 text-xs">● 待發</span>`;
-
-
 
 
                 return `
@@ -6024,8 +4844,6 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         // [新增] 處理單一勾選狀態變更 (記憶功能)
         function updateKeyBuffer(username, isChecked) {
             if (isChecked) {
@@ -6038,14 +4856,10 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         // 4. [按鈕邏輯] 切換主編輯模式
         function toggleKeyEditMaster() {
             const giftId = document.getElementById('keyGiftSelect').value;
             if(!giftId) return alert("請先選擇禮物 ID");
-
-
 
 
             const masterBtn = document.getElementById('btnKeyMaster');
@@ -6072,14 +4886,10 @@ function toggleAllCompare(type, isChecked) {
             }
 
 
-
-
             // 啟動主編輯 (Master 閃爍)
             masterBtn.classList.add('flashing-master');
             subBtns.classList.remove('hidden');
         }
-
-
 
 
         // 5. [按鈕邏輯] 切換子模式 (初始化暫存區)
@@ -6092,8 +4902,6 @@ function toggleAllCompare(type, isChecked) {
             const btnEdit = document.getElementById('btnKeyEdit');
 
 
-
-
             // 如果點擊「正在閃爍」的按鈕 -> 執行 Finish
             if (currentKeyMode === mode) {
                 finishKeyAction();
@@ -6101,12 +4909,8 @@ function toggleAllCompare(type, isChecked) {
             }
 
 
-
-
             currentKeyMode = mode;
             masterBtn.classList.remove('flashing-master'); // 主按鈕停閃
-
-
 
 
             // [核心] 初始化 Buffer
@@ -6121,8 +4925,6 @@ function toggleAllCompare(type, isChecked) {
                 btnAppend.innerHTML = '<i class="fas fa-check mr-1"></i>確認追加'; 
 
 
-
-
                 btnEdit.classList.remove('flashing-edit', 'opacity-100');
                 btnEdit.classList.add('opacity-50');
                 btnEdit.innerHTML = '<i class="fas fa-edit mr-1"></i>僅編輯';
@@ -6131,13 +4933,9 @@ function toggleAllCompare(type, isChecked) {
                 existingKeys.forEach(k => tempKeyBuffer.add(k));
 
 
-
-
                 btnEdit.classList.add('flashing-edit', 'opacity-100');
                 btnEdit.classList.remove('opacity-50');
                 btnEdit.innerHTML = '<i class="fas fa-check mr-1"></i>確認存檔'; 
-
-
 
 
                 btnAppend.classList.remove('flashing-append', 'opacity-100');
@@ -6148,14 +4946,10 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         // 6. [核心功能] 完成並產出 (從 Buffer 存檔)
         function finishKeyAction() {
             const giftId = document.getElementById('keyGiftSelect').value;
             let copyText = "";
-
-
 
 
             // 無論是 append 還是 edit，最終名單都在 tempKeyBuffer 中
@@ -6164,8 +4958,6 @@ function toggleAllCompare(type, isChecked) {
             
             const finalUsers = Array.from(tempKeyBuffer);
             keyPermissions[giftId] = finalUsers;
-
-
 
 
             if (currentKeyMode === 'append') {
@@ -6206,8 +4998,6 @@ function toggleAllCompare(type, isChecked) {
             }
 
 
-
-
             // 2. 存檔
             saveData(); 
             
@@ -6217,8 +5007,6 @@ function toggleAllCompare(type, isChecked) {
             
             toggleKeyEditMaster(); // 結束編輯並重置
         }
-
-
 
 
         function handleKeySelectAll(source) {
@@ -6234,8 +5022,6 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         function openMakeListModal(giftId) {
              if(!giftId) return alert("請先選擇禮物 ID");
              const perms = keyPermissions[giftId] || [];
@@ -6243,8 +5029,6 @@ function toggleAllCompare(type, isChecked) {
              document.getElementById('jsonOutput').value = json;
              document.getElementById('jsonListModal').classList.remove('hidden');
         }
-
-
 
 
         function copyJsonOutput() {
@@ -6255,11 +5039,7 @@ function toggleAllCompare(type, isChecked) {
         }
 
 
-
-
         // --- 暖心互動整合邏輯 ---
-
-
 
 
         function toggleHeartKeyMode() {
@@ -6293,8 +5073,6 @@ function toggleAllCompare(type, isChecked) {
                 }
 
 
-
-
                 const usersToAdd = Array.from(checks).map(c => c.value);
                 
                 // 更新權限
@@ -6320,8 +5098,6 @@ function toggleAllCompare(type, isChecked) {
                 }, 2000);
             }
         }
-
-
 
 
         function toggleAllHeartChecks(source) {
@@ -6351,37 +5127,11 @@ function toggleAllCompare(type, isChecked) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         window.onload = () => {
             loadProfile();
-            initDateInput();
-            
-            // 系統啟動時，絕對只讀取本地瀏覽器快取 (切斷所有外部自動下載)
             renderTable();
             renderTemplateList();
+            initDateInput();
             renderIgPosts();
             renderGiftPosts();
             renderHeartData();
