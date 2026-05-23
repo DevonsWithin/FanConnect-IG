@@ -1515,7 +1515,7 @@
         // 雲端同步鎖
         let isSyncing = false;
 
-        // [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
+// [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
         async function manualSyncToCloud() {
             if (isSyncing) return;
             
@@ -1527,15 +1527,19 @@
 
             showToast("☁️ 雲端備份上傳中，請稍候...");
             
-try {
+            try {
+                // [專家修改]：同步前先強制將當前畫面(記憶體)資料寫入 LocalStorage，確保本地端也是最新
+                saveData(false);
+
+                // [專家修改]：改為直接抓取記憶體中最新的全域變數，確保推送到雲端的資料與畫面完全一致
                 const payload = {
-                    fans: localStorage.getItem('fans') || '[]',
-                    templates: localStorage.getItem('templates') || '[]',
-                    igPosts: localStorage.getItem('igPosts') || '[]',
-                    giftPosts: localStorage.getItem('giftPosts') || '[]',
-                    heartData: localStorage.getItem('heartData') || '[]',
-                    historyData: localStorage.getItem('historyData') || '[]',
-                    keyPermissions: localStorage.getItem('keyPermissions') || '{}'
+                    fans: JSON.stringify(fans || []),
+                    templates: JSON.stringify(templates || []),
+                    igPosts: JSON.stringify(igPosts || []),
+                    giftPosts: JSON.stringify(giftPosts || []),
+                    heartData: JSON.stringify(heartData || []),
+                    historyData: JSON.stringify(historyData || []),
+                    keyPermissions: JSON.stringify(keyPermissions || {})
                 };
                 
                 // 移除 mode: 'no-cors' 並改用 text/plain，確保能取得真實成功狀態並繞過預檢阻擋
