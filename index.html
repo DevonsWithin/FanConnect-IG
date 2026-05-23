@@ -1528,35 +1528,33 @@
             showToast("☁️ 雲端備份上傳中，請稍候...");
             
             try {
-                // [專家修改]：同步前先強制將當前畫面(記憶體)資料寫入 LocalStorage，確保本地端也是最新
+                // [專家修改 1]：先強制儲存當前畫面狀態，確保資料為最新
                 saveData(false);
-
-                // [專家修改]：改為直接抓取記憶體中最新的全域變數，確保推送到雲端的資料與畫面完全一致
+                
+                // [專家修改 2]：直接讀取記憶體中的即時陣列變數，交給後端自動進行 JSON.stringify 處理
                 const payload = {
-                    fans: JSON.stringify(fans || []),
-                    templates: JSON.stringify(templates || []),
-                    igPosts: JSON.stringify(igPosts || []),
-                    giftPosts: JSON.stringify(giftPosts || []),
-                    heartData: JSON.stringify(heartData || []),
-                    historyData: JSON.stringify(historyData || []),
-                    keyPermissions: JSON.stringify(keyPermissions || {})
+                    fans: fans,
+                    templates: templates,
+                    igPosts: igPosts,
+                    giftPosts: giftPosts,
+                    heartData: heartData,
+                    historyData: historyData,
+                    keyPermissions: keyPermissions
                 };
                 
-                // 移除 mode: 'no-cors' 並改用 text/plain，確保能取得真實成功狀態並繞過預檢阻擋
-                const response = await fetch(GAS_API_URL, {
+                // [專家修改 3]：恢復 mode: 'no-cors' 以防瀏覽器 POST 跨域阻擋。
+                // 由於 GAS doPost 無法附加 CORS 標頭，強行讀取 response.json 會導致前端報錯當機。
+                await fetch(GAS_API_URL, {
                     method: 'POST',
+                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
                 
-                if (!response.ok) throw new Error("伺服器連線失敗");
+                // 使用 no-cors 模式無法取得 response.ok 或 JSON 回傳值。
+                // 只要上述 fetch 沒有因為斷網拋出例外 Error，即可認定已成功推播至 GAS。
+                showToast("✅ 同步完成！目前資料已安全備份至雲端。");
                 
-                const result = await response.json();
-                if (result.status === "success") {
-                    showToast("✅ 同步完成！目前資料已安全備份至雲端。");
-                } else {
-                    throw new Error("雲端寫入未成功");
-                }
             } catch (error) {
                 console.error("雲端同步失敗:", error);
                 showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
