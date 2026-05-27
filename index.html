@@ -268,7 +268,7 @@
             
             <div>
                 <!-- [更新] 雲端同步與讀取按鈕 -->
-                <a href="#" onclick="event.preventDefault(); manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
+                <a href="#" onclick="manualSyncToCloud()" class="flex items-center gap-4 p-4 hover:bg-indigo-900/40 text-indigo-300 hover:text-indigo-100 transition-colors border-l-4 border-indigo-500 bg-indigo-900/10">
                     <i id="iconManualSync" class="fas fa-cloud-upload-alt w-6 text-center text-indigo-400"></i> <span class="menu-text font-bold">同步資料至雲端</span>
                 </a>
                 <a href="#" onclick="loadFromCloud()" class="flex items-center gap-4 p-4 hover:bg-emerald-900/40 text-emerald-300 hover:text-emerald-100 transition-colors border-l-4 border-emerald-500 bg-emerald-900/10">
@@ -490,6 +490,8 @@
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="回覆" class="accent-indigo-500"> 回覆</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="提及" class="accent-indigo-500"> 提及</label>
                                     <label class="flex items-center gap-2 cursor-pointer hover:text-indigo-300 p-2"><input type="checkbox" value="轉發" class="accent-indigo-500"> 轉發</label>
+                                    <!-- [新增] 活動標籤選項，樣式設定為翡翠綠視覺高亮 -->
+                                    <label class="flex items-center gap-2 cursor-pointer hover:text-emerald-300 p-2 text-emerald-400 font-bold bg-emerald-950/10 rounded border border-emerald-900/30"><input type="checkbox" value="活動" class="accent-emerald-500"> 活動</label>
                                 </div>
                             </div>
                             <div class="mt-4">
@@ -1512,54 +1514,45 @@
         let isHeartKeyMode = false; // 暖心互動選擇模式狀態
         let tempKeyBuffer = new Set(); // 用於在編輯/追加模式下，暫存使用者的勾選狀態 (跨搜尋記憶)
 
-        // 雲端同步鎖
+// 雲端同步鎖
         let isSyncing = false;
-
-// [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
-        async function manualSyncToCloud() {
+        // [純手動同步] 只有在按下左側按鈕時，將目前的資料單向推播至雲端
+        async function manualSyncToCloud() { // [修正] 函數名稱對應 HTML 的 onclick 事件
             if (isSyncing) return;
-            
-            if (!confirm("⚠️ 確認要以「目前的畫面資料」覆蓋雲端試算表備份嗎？")) return;
-
             isSyncing = true;
-            const icon = document.getElementById('iconManualSync');
-            if (icon) icon.classList.add('fa-spin'); // 讓圈圈圖示轉動
-
-            showToast("☁️ 雲端備份上傳中，請稍候...");
             
+            // [新增] 讓按鈕圖示旋轉並顯示 Toast，提示處理中
+            const icon = document.getElementById('iconManualSync');
+            if (icon) icon.classList.add('fa-spin');
+            showToast("☁️ 正在同步資料至雲端...");
+
             try {
-                // [專家修改 1]：先強制儲存當前畫面狀態，確保資料為最新
-                saveData(false);
-                
-                // [專家修改 2]：直接讀取記憶體中的即時陣列變數，交給後端自動進行 JSON.stringify 處理
+                const currentTimestamp = new Date().toLocaleString('zh-TW'); // 取得當下時間
                 const payload = {
-                    fans: fans,
-                    templates: templates,
-                    igPosts: igPosts,
-                    giftPosts: giftPosts,
-                    heartData: heartData,
-                    historyData: historyData,
-                    keyPermissions: keyPermissions
+                    fans: JSON.stringify(fans),
+                    templates: JSON.stringify(templates),
+                    igPosts: JSON.stringify(igPosts),
+                    giftPosts: JSON.stringify(giftPosts),
+                    heartData: JSON.stringify(heartData),
+                    historyData: JSON.stringify(historyData),
+                    keyPermissions: JSON.stringify(keyPermissions),
+                    lastSyncTime: currentTimestamp // [新增] 將同步時間傳送至雲端，方便在 Sheets 中查看
                 };
-                
-                // [專家修改 3]：恢復 mode: 'no-cors' 以防瀏覽器 POST 跨域阻擋。
-                // 移除自定義 headers，讓瀏覽器底層自動以純文字發送，保證不觸發嚴格的 OPTIONS 預檢
+                // 使用 no-cors 模式確保能跨域順暢將資料推送到 Apps Script Web App
                 await fetch(GAS_API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', 
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
-                // 使用 no-cors 模式無法取得 response.ok 或 JSON 回傳值。
-                // 只要上述 fetch 沒有因為斷網拋出例外 Error，即可認定已成功推播至 GAS。
-                showToast("✅ 同步完成！目前資料已安全備份至雲端。");
-                
+                console.log("☁️ 雲端同步完成");
+                showToast(`✅ 雲端同步完成！時間：${currentTimestamp}`); // [新增] 成功後的畫面提示
             } catch (error) {
                 console.error("雲端同步失敗:", error);
-                showToast("⚠️ 雲端備份失敗（請檢查網路連線狀態）");
+                showToast("⚠️ 雲端備份未成功（請檢查網路連線狀態）");
             } finally {
                 isSyncing = false;
-                if (icon) icon.classList.remove('fa-spin'); // 停止轉動
+                if (icon) icon.classList.remove('fa-spin'); // [新增] 結束動畫
             }
         }
 
@@ -2975,7 +2968,8 @@
 
             } else if (key === 'interactions') {
                 container.innerHTML = `<div class="text-xs text-gray-400 mb-2 font-bold">篩選標籤 (需同時滿足/AND)：</div>`;
-                ['粉絲', '非粉絲', '前帳粉', 'Thread粉', '高互動', '留言', '轉發', '分享', 'DM'].forEach(tag => {
+                // [新增] 將 '活動' 標籤加入可篩選列表陣列中
+                ['粉絲', '非粉絲', '前帳粉', 'Thread粉', '高互動', '活動', '留言', '轉發', '分享', 'DM'].forEach(tag => {
                     const checked = activeFilters.tags.includes(tag) ? 'checked' : '';
                     let colorClass = "text-gray-300";
                     if(tag==='粉絲') colorClass = "text-pink-200";
@@ -2983,6 +2977,7 @@
                     if(tag==='Thread粉') colorClass = "text-white";
                     if(tag==='高互動') colorClass = "text-amber-400";
                     if(tag==='DM') colorClass = "text-indigo-300";
+                    if(tag==='活動') colorClass = "text-emerald-400"; // [新增] 活動標籤專屬字色
                     
                     container.innerHTML += `<label class="flex items-center gap-2 text-sm ${colorClass} cursor-pointer hover:bg-white/5 p-1 rounded"><input type="checkbox" value="${tag}" ${checked} onchange="toggleFilter('tag', this.value)" class="accent-indigo-500"> ${tag}</label>`;
                 });
@@ -6290,6 +6285,7 @@ function toggleAllCompare(type, isChecked) {
     </script>
 </body>
 </html>
+
 
 
 
